@@ -1,0 +1,24 @@
+<div id="dialog" class="window">
+	<div class="header">
+		<div class="buttons">
+			<div class="blue button" onclick="hidePopup()">X</div>
+		</div>
+		<h2>Select a transport option</h2>
+	</div>
+	<hr />
+	<div class="options">
+		{% for option in data.options %}
+			<div class="option {% if option.selected %}selected{% else %}gray{% endif %}" onclick="goTo('{{option.alias}}')">
+				<img src="images/{{option.icon}}.png" alt="{{option.title}}" width="100%" class="image" />
+				<h3>{{option.title}}</h3>
+				<div class="time">Time estimation: {{option.time}}</div>
+				<div class="price">Price: {{option.price}}</div>
+				<div class="experience">Experience: {{option.experience}}</div>
+				<div class="simplicity">Simplicity: {{option.simplicity}}</div>
+				<div class="onfoot">Distance on foot: {{option.onfoot}}</div>
+				<div class="risks">{{option.risks}}</div>
+			</div>
+		{% endfor %}
+	</div>
+</div>     
+<div id="mask"></div>

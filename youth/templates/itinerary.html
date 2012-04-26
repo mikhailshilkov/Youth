@@ -1,0 +1,56 @@
+{% extends "master/master.html" %}
+
+{% block title %}Itinerary{% endblock %}
+
+{% block content %}
+<section class="itinerary">
+	<div class="buttons">	
+		<div class="blue button" onclick="alert('Printing does not work yet')">Print</div>
+	</div>
+	<h1>Itinerary</h1>
+	{% for trip in data.trips %}
+		<hr/>
+		<div class="title">
+			<h2>{{trip.title}}</h2>
+			{% if trip.change_action != null %}
+				<div class="gray button" onclick="showPopup()">{{trip.change_action}}</div>
+			{% endif %}
+		</div>		
+		{% if trip.summary != null%}
+			<div class="summary">{{trip.summary}}</div>
+		{% endif %}
+		{% for step in trip.steps %}
+		<div class="step">
+			<div class="info">
+				<div class="time">{{step.start_time}}</div>
+				<div class="hint">{{step.hint}}</div>
+			</div>
+			<div class="instuction">
+				<div class="text">{{step.instruction}}</div>
+				{% if step.show_details_action != null and step.details_section != null %}
+					<div id="details_collapsed_{{forloop.counter}}" class="gray button" onclick="showDetails({{forloop.counter}})">
+						{{step.show_details_action}}
+					</div>
+					<div id="details_expanded_{{forloop.counter}}" style="display:none">
+						<div class="gray button" onclick="showDetails({{forloop.counter}})">
+							{{step.hide_details_action}}
+						</div>
+						<div class="details">
+							<img src="{{step.details_section.image.path}}" width="{{step.details_section.image.width}}" />
+						</div>
+					</div>
+				{% endif %}
+			</div>
+		</div>
+		{% endfor %}
+	{% endfor %}
+</section>
+{% include "controls/popup.html" %}
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" language="javascript">
+    var Context = new Object();
+    Context.startTime = '{{data.context.start_time}}';	
+</script>
+{% endblock %}

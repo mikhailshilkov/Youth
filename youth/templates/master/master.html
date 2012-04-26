@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% block title %}{% endblock %}</title>    
+    <script type="text/javascript" src="scripts/jquery_dev.js"></script>
+    <script type="text/javascript" src="scripts/main.js"></script>
+    <link href="styles/main.css" rel="stylesheet" type="text/css"/>
+</head>
+<body>
+    {% block content %}{% endblock %}
+    {% include "../controls/footer.html" %}
+    {% block scripts %}{% endblock %}    
+</body>
+</html>
