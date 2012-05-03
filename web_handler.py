@@ -5,10 +5,15 @@ from google.appengine.ext.webapp.util import run_wsgi_app
 
 from youth import itinerary
 from youth import view
+from youth import stuff
 
 class MainHandler(webapp.RequestHandler):    
     
-    def get(self):        
+    def get(self):  
+        if self.request.get('test') == 'true':
+            self.response.out.write(stuff.test())
+            return
+              
         # get request parameters
         try: 
             start_time = datetime.datetime.strptime(self.request.get('time', '10:00'), '%H:%M')

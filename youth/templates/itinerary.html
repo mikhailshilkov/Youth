@@ -27,16 +27,18 @@
 			</div>
 			<div class="instuction">
 				<div class="text">{{step.instruction}}</div>
-				{% if step.show_details_action != null and step.details_section != null %}
-					<div id="details_collapsed_{{forloop.counter}}" class="gray button" onclick="showDetails({{forloop.counter}})">
-						{{step.show_details_action}}
+				{% if step.details != null %}
+					<div id="details_collapsed_{{forloop.counter}}" class="gray button" onclick="showDetails({{forloop.counter}}, '{{step.details.action}}')">
+						{{step.details.show_label}}						
 					</div>
 					<div id="details_expanded_{{forloop.counter}}" style="display:none">
 						<div class="gray button" onclick="showDetails({{forloop.counter}})">
-							{{step.hide_details_action}}
-						</div>
+							{{step.details.hide_label}}
+						</div>						
 						<div class="details">
-							<img src="{{step.details_section.image.path}}" width="{{step.details_section.image.width}}" />
+							{% if step.details.image != null %}
+							   <img src="{{step.details.image.path}}" width="{{step.details.image.width}}" />
+							{% endif %}							
 						</div>
 					</div>
 				{% endif %}
@@ -49,8 +51,19 @@
 {% endblock %}
 
 {% block scripts %}
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false">
+</script>
 <script type="text/javascript" language="javascript">
+{% autoescape off %}
     var Context = new Object();
-    Context.startTime = '{{data.context.start_time}}';	
+    {% for trip in data.trips %}
+    	{% for step in trip.steps %}
+    		{% if step.details.map != null %}
+				Context.route{{forloop.counter}} = {{step.details.map.points}};
+			{% endif %}
+		{% endfor %}
+	{% endfor %}
+    Context.startTime = '{{data.context.start_time}}';
+{% endautoescape %}	
 </script>
 {% endblock %}
