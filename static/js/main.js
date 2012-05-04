@@ -1,3 +1,28 @@
+function navigateToItinerary() {
+    var address = $('#address').val();
+    navigateToItineraryByAddress(address);
+}
+function navigateToItineraryByAddress(address) {
+    if (address != '') {
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode( { 'address': address }, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                var latLng = results[0].geometry.location;
+                var lat = latLng.lat();
+                var lng = latLng.lng();
+                if (lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58)
+                    document.location = '/itinerary?from=' + encodeURIComponent(lat.toString() + ',' + lng.toString());
+                else if (address.indexOf('St. Petersburg') < 0)
+                    navigateToItineraryByAddress('St. Petersburg, ' + address);
+                else
+                    alert("Address was not found: not in St. Petersburg");
+            } else {
+                alert("Address was not found for the following reason: " + status);
+            }        
+        });
+    }    
+}
+
 function showDetails(index, action) {
     $("#details_collapsed_" + index.toString()).toggle();
     var id = "#details_expanded_" + index.toString();
@@ -27,7 +52,7 @@ function showDetails(index, action) {
                 var marker = new google.maps.Marker({
                     position : point,
                     map : map,
-                    title : "Hello World!"
+                    title : i == 0 ? "From" : "To"
                 });
             }
 
@@ -78,7 +103,7 @@ function hidePopup() {
 }
 
 function goTo(transport) {
-    window.location.href = '/?transport=' + transport + '&time=' + Context.startTime;
+    window.location.href = '/itinerary?from=' + encodeURIComponent(Context.from) + '&transport=' + transport + '&time=' + Context.startTime;
 }
 
 

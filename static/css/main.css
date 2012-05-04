@@ -18,6 +18,57 @@ html
 	font-family: Arial, Helvetica, sans-serif;
 	font-size: 14px;
 }
+
+.searchpane
+{
+    position: relative;
+    top: 220px;
+    margin: auto;
+    min-width: 534px;
+    padding: 0 223px !important;
+    max-width: 572px;
+}
+.searchpane h3
+{
+    color: #DD4B39;
+    font-size: 1.2em;    
+}
+.searchbox
+{
+    background: white;
+    border: 1px solid #D9D9D9;
+    border-top: 1px solid silver;
+    height: 27px;
+    width: 522px;
+    margin-top: .5em;
+    margin-bottom: .5em;
+}
+.searchbox input
+{
+    background-color: transparent;
+    border: 0px;
+    width: 508px;
+    color: black;
+    height: 20px;
+    outline: none;
+    vertical-align: top;
+    font-size: 1.2em;
+    margin: 3px 8px 1px 8px;
+}
+
+.pageheader
+{
+    width: 100%;
+    background-color: #222;
+    padding: .5em .7em; 
+}
+.pageheader a, .pageheader a:active, .pageheader a:visited
+{
+    color: white;
+    text-decoration: none;
+    font-size: 1em;
+}
+
 .button
 {
 	border-radius: 2px;

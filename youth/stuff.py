@@ -3,11 +3,11 @@
 import urllib
 import re
 from google.appengine.api import urlfetch
-from BeautifulSoup import BeautifulSoup
+from lib.BeautifulSoup import BeautifulSoup
 
 def test():
-    saddr = urllib.quote('59.945085,30.292699')
-    daddr = urllib.quote('59.93993,30.309073')
+    saddr = urllib.quote('59.94474100000001,30.294258000000013')
+    daddr = urllib.quote('59.86732529999999,30.261337499999968')
     #saddr = urllib.quote("St. Petersburg Shavrova 13")
     #daddr = urllib.quote("St. Petersburg Sadovaya 32")
     #saddr = urllib.quote("59.883884,29.911548")
@@ -24,6 +24,7 @@ def test():
     start_index = response.find(',points:[{') + 8
     end_index = response.find('}],', start_index) + 2
     points_string = response[start_index:end_index].decode('string-escape').replace('lat', '"lat"').replace('lng', '"lng"').replace('arrow', '"arrow"').replace('point', '"point"').replace('prevPoint', '"prevPoint"')
+    #return points_string
     points = eval(points_string)
     
     start_index = response.find(',steps:[{') + 7
@@ -64,11 +65,9 @@ def parse(html, points, steps):
                     direction = str(action_node.text) + ' ' + str(location_node.text)
                 else:
                     direction = str(direction_node.renderContents())
-            duration_node = step.find(attrs = { "class" : "duration" })
-            if duration_node != None:
-                duration = str(duration_node.text)
             addinfo_nodes = step.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })
-            addinfo = get_nodes_text(addinfo_nodes)
+            addinfo = remove_html_tags(get_nodes_text(addinfo_nodes))
+            duration = parse_duration(addinfo)
             segtext_nodes = step.findAll(attrs = { "class": "dirsegtext" })
             direction += ', ' + get_nodes_text(segtext_nodes)
             line_number_node = step.find(attrs = { "class" : "trtline" })
@@ -110,23 +109,14 @@ def _callback(matches):
 def decode_unicode_references(data):
     return re.sub("&#(\d+)(;|(?=\s))", _callback, data)
 
-#from google.appengine.api import urlfetch
-#import json
-#import urllib
-
-#        saddr = urllib.quote("St. Petersburg Shavrova 13")
-#        daddr = urllib.quote("St. Petersburg Sadovaya 32")
-#        saddr = urllib.quote("Stokholm")
-#        daddr = urllib.quote("Uppsals")
-#        url = "http://maps.google.com/?saddr=" + saddr + "&daddr=" + daddr + "&dirflg=r&output=json"
-#        result = urlfetch.fetch(url)
-#        if result.status_code == 200:
-#            try:
-#                routeJson = result.content.replace('while(1);','')
-#                route = json.loads(routeJson)
-#                self.response.out.write(route)
-#            except:
-#                self.response.out.write(routeJson)
-#        else:
-#            html = template.render('templates/test.html', {})
-#            self.response.out.write(html)   
+def parse_duration(info):
+    tmp = info
+    # remove all text after the comma
+    comma_index = tmp.find(',')
+    if comma_index > 0:
+        tmp = info[0:comma_index] 
+    # remove 'About', '(', ' mins'
+    tmp = tmp.replace('About ', '')
+    tmp = tmp.replace('(', '')
+    tmp = tmp.replace(' mins', '')
+    return int(tmp)

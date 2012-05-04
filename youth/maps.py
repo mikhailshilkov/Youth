@@ -6,9 +6,23 @@ import urllib
 
 from google.appengine.api import urlfetch
 
-from BeautifulSoup import BeautifulSoup
+from lib.BeautifulSoup import BeautifulSoup
 
-def get_route(origin, destination, mode = 'walking'):
+def get_route(from_addr, to_addr):
+    transit = get_transit_route(from_addr, to_addr)
+    for step in transit: 
+        start = step['start_location'] 
+        end = step['end_location']
+        transport_type = step['transport']['type']
+        if transport_type == 'subway':
+            step['points'] = [start, end]
+        else:
+            step['points'] = get_route_leg(str(start['lat']) + ',' + str(start['lng']), 
+                                           str(end['lat']) + ',' + str(end['lng']),
+                                           'walking' if transport_type == 'walk' else 'driving')
+    return transit
+
+def get_route_leg(origin, destination, mode = 'walking'):
     route_points = []
     url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + origin + "&destination=" + destination + "&sensor=false&mode=" + mode
     result = urlfetch.fetch(url)
@@ -63,8 +77,8 @@ def parse(html, points, steps):
         
         if step_node != None:
             direction = get_node_text(step_node.find(attrs = { "class" : "dir-ts-direction" }))
-            duration  = get_node_text(step_node.find(attrs = { "class" : "duration" }))
             addinfo = get_nodes_text(step_node.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') }))
+            duration = parse_duration(addinfo)
             segment_text = get_nodes_text(step_node.findAll(attrs = { "class": "dirsegtext" }))
             if segment_text != '':
                 direction += ': ' + segment_text 
@@ -74,7 +88,7 @@ def parse(html, points, steps):
         end_point = points[steps[index]['arrPoint']]
         directions.append({
                            'direction': direction, 
-                           'duration': format_duration(duration),
+                           'duration': duration,
                            'addinfo': addinfo.replace('(', '').replace(')', ''),
                            'transport': 
                             {
@@ -110,6 +124,8 @@ def get_transport(direction):
         return 'share_taxi'
     elif direction.find('Trolleybus') >= 0:
         return 'trolleybus'
+    elif direction.find('Subway') >= 0:
+        return 'subway'
     
     return ''
 
@@ -122,13 +138,22 @@ def _callback(matches):
 
 def decode_unicode_references(data):
     return re.sub("&#(\d+)(;|(?=\s))", _callback, data)
-
-def format_duration(text):
-    try:
-        num = float(text.replace(' mins', ''))
-        return num
-    except ValueError:
-        return 0
     
 def create_point(point):
     return { 'lat': point['lat'], 'lng': point['lng'] }
+
+def parse_duration(info):
+    tmp = info
+    # remove all text after the comma
+    comma_index = tmp.find(',')
+    if comma_index > 0:
+        tmp = info[0:comma_index] 
+    # remove 'About', '(', ' mins'
+    tmp = tmp.replace('About ', '')
+    tmp = tmp.replace('(', '')
+    tmp = tmp.replace(' mins', '')
+    tmp = tmp.replace(' min', '')
+    try:
+        return int(tmp)
+    except ValueError:
+        return 0

@@ -3,86 +3,54 @@
 from youth import utils
 from youth import maps
 
-def get(start_time, transport):
+def get(from_location, start_time, transport):
     if transport == 'meteor':
         title_to = 'Way to Peterhof: Meteor (speed boat)'
         summary_to = 'Expenses: 95 RUR, travel time: 1h15'
-        route = maps.get_transit_route('59.945085,30.292699', '59.93993,30.309073')
-        steps_to = []
-        duration = 0
-        for step in route: 
-            start = step['start_location'] 
-            end = step['end_location']
-            steps_to.append({'instruction': step['direction'],
-                     'start_time': utils.time_to_string(utils.time_add_mins(start_time, duration)),
-                     'hint' : step['addinfo'],
-                     'details' :
-                     {
-                        'show_label': 'Show the map',
-                        'hide_label': 'Hide the map',
-                        'action': 'map',
-                        'map': { 'points' : maps.get_route(str(start['lat']) + ',' + str(start['lng']), 
-                                                           str(end['lat']) + ',' + str(end['lng']),
-                                                           'walking' if step['transport']['type'] == 'walk' else 'driving')}
-                     }})
-            duration += step['duration']
+        route = maps.get_route(from_location, '59.93993,30.309073')
+        steps_to = get_steps(route, start_time)
     elif transport == 'train':
         title_to = 'Way to Peterhof: subway + suburban train'
         summary_to = 'Expenses: 95 RUR, travel time: 1h55'
-        steps_to = [{'instruction': 'Go to Peterhof by train. We do not have details yet',
-                     'start_time': utils.time_to_string(start_time),
-                     'hint' : ''}]
-    else:                
+        route = maps.get_route(from_location, '59.9072128,30.299578099999962')
+        steps_to = get_steps(route, start_time)
+    elif transport == 'bus':
         title_to = 'Way to Peterhof: subway + bus'
         summary_to = 'Expenses: 95 RUR, travel time: 2h00'
-        steps_to = [
-            {'instruction': 'Leave the hotel and go to the subway station Sadovaya',
-             'start_time': utils.time_to_string(start_time),
-             'hint': 'on foot: 350 m',
-             'details' :
-             {
-                'show_label': 'Show the map',
-                'hide_label': 'Hide the map',
-                'action' : 'map',
-                'map': { 'points' : maps.get_route('59.9295,30.317', '59.9266,30.3175') }  
-             },
-            },
-            {'instruction': 'Buy 2 tokens ("жетон") and enter in subway',
-             'start_time': utils.time_to_string(utils.time_add_mins(start_time, 10)),
-             'hint' : 'pay fare: 25 RUR'},
-            {'instruction': 'You enter the subway at line 5 (purple). Take a train to Volkovskaya direction. ' +
-                            'After 1 stop, get out of the train at Zvenigorodskaya station. Take a change to ' +
-                            'Pushkinskaya station, line 1 (red). Take a train to Prospect Veteranov direction. ' +
-                            'After 5 stops, exit to the city at Avtovo station.',
-             'start_time': utils.time_to_string(utils.time_add_mins(start_time, 15)),
-             'hint' : 'subway: 1 stop + change + 5 stops'},
-            {'instruction': 'Leave the subway, cross the street through the underpass and find a bus stop',
-             'start_time': utils.time_to_string(utils.time_add_mins(start_time, 40)),
-             'hint' : 'on foot: 150 m',
-             'details' :
-             {
-                'show_label': 'Show the map',
-                'hide_label': 'Hide the map',
-                'action': 'map',
-                'map': { 'points' : maps.get_route('59.86758,30.261308', '59.868398,30.259806') }
-             }
-            },
-            {'instruction': 'Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
+        route = maps.get_route(from_location, '59.86732529999999,30.261337499999968')
+        route.append({
+                       'direction': 'Leave the subway, cross the street through the underpass and find a bus stop', 
+                       'duration': 5,
+                       'addinfo': 'About 5 mins, 150 m',
+                       'transport': { 'type': 'walk' },
+                       'start_location': { 'lat': 59.86758, 'lng': 30.261308 },
+                       'end_location': { 'lat': 59.868398, 'lng': 30.259806 },
+                       'points' : maps.get_route_leg('59.86758,30.261308', '59.868398,30.259806')
+                     })
+        route.append({
+                       'direction': 'Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
                             'K-424a, К-300, К-224, К-401a, К-404 or any route-taxi where you see word "Фонтаны" ' + 
-                            'on the window. Pay to driver, price may slightly vary. You should ask driver to stop in Petrodhof.',
-             'start_time': utils.time_to_string(utils.time_add_mins(start_time, 45)),
-             'hint' : 'pay fare: 70 RUR'},
-            {'instruction': 'Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry',
-             'start_time': utils.time_to_string(utils.time_add_mins(start_time, 105)),
-             'hint' : 'on foot: 800 m',
-             'details' :
-             {
-                'show_label': 'Show the map',
-                'hide_label': 'Hide the map',
-                'action' : 'map',
-                'map': { 'points' : maps.get_route('59.883884,29.911548', '59.880511,29.906809') }
-             }
-            }]    
+                            'on the window. Pay to driver, price may slightly vary. You should ask driver to stop in Petrodhof.', 
+                       'duration': 60,
+                       'addinfo': 'About 1 hour, pay fare 70 RUR',
+                       'transport': { 'type': 'sharetaxi' }
+                     })
+        route.append({
+                       'direction': 'Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry', 
+                       'duration': 10,
+                       'addinfo': 'About 10 mins, 800 m',
+                       'transport': { 'type': 'walk' },
+                       'start_location': { 'lat': 59.883884, 'lng': 29.911548 },
+                       'end_location': { 'lat': 59.880511, 'lng': 29.906809 },
+                       'points' : maps.get_route_leg('59.883884,29.911548', '59.880511,29.906809')
+                     })            
+        steps_to = get_steps(route, start_time)
+
+    else:                
+        title_to = 'Unknown'
+        summary_to = 'Unknown'
+        steps_to = []
+            
     trip_to = {'title': title_to,
                'summary': summary_to,
                'change_action': 'Change transport',
@@ -126,6 +94,23 @@ def get(start_time, transport):
                   'icon': 'placeholder',
                   'selected': transport == 'train'}
     
-    context = { 'start_time' : utils.time_serialize(start_time) }
+    context = { 'from_location': from_location, 'start_time' : utils.time_serialize(start_time) }
         
     return {'trips': [trip_to, trip_in], 'options': [option_bus, option_meteor, option_train], 'context': context}
+
+def get_steps(route, start_time):    
+    steps_to = []
+    duration = 0
+    for step in route: 
+        steps_to.append({'instruction': step['direction'],
+                 'start_time': utils.time_to_string(utils.time_add_mins(start_time, duration)),
+                 'hint' : step['addinfo'],
+                 'details' :
+                 {
+                    'show_label': 'Show the map',
+                    'hide_label': 'Hide the map',
+                    'action': 'map',
+                    'map': { 'points' : step['points'] }
+                 } if 'points' in step else None})
+        duration += step['duration']
+    return steps_to

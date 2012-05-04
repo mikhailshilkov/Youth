@@ -3,6 +3,9 @@
 {% block title %}Itinerary{% endblock %}
 
 {% block content %}
+<div class="pageheader">
+	<a href="/">Home</a>
+</div>
 <section class="itinerary">
 	<div class="buttons">	
 		<div class="blue button" onclick="alert('Printing does not work yet')">Print</div>
@@ -63,6 +66,7 @@
 			{% endif %}
 		{% endfor %}
 	{% endfor %}
+	Context.from = '{{data.context.from_location}}';
     Context.startTime = '{{data.context.start_time}}';
 {% endautoescape %}	
 </script>
