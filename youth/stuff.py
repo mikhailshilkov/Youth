@@ -6,9 +6,9 @@ from google.appengine.api import urlfetch
 from lib.BeautifulSoup import BeautifulSoup
 
 def test():
-    saddr = urllib.quote('59.94474100000001,30.294258000000013')
+    #saddr = urllib.quote('59.94474100000001,30.294258000000013')
     daddr = urllib.quote('59.86732529999999,30.261337499999968')
-    #saddr = urllib.quote("St. Petersburg Shavrova 13")
+    saddr = urllib.quote("St. Petersburg Shavrova 13")
     #daddr = urllib.quote("St. Petersburg Sadovaya 32")
     #saddr = urllib.quote("59.883884,29.911548")
     #daddr = urllib.quote("59.880511,29.906809")
@@ -55,6 +55,8 @@ def parse(html, points, steps):
         duration = ''
         addinfo = ''
         line_number = ''
+        arrive =''
+        addinfo_duration = ''
         
         if step != None:
             direction_node = step.find(attrs = { "class" : "dir-ts-direction" })
@@ -65,14 +67,21 @@ def parse(html, points, steps):
                     direction = str(action_node.text) + ' ' + str(location_node.text)
                 else:
                     direction = str(direction_node.renderContents())
+                if step.nextSibling != 'None':
+                    arrive_node = step.nextSibling.find(text = re.compile('^Arrive.*'))
+                    if arrive_node != None:
+                        arrive = arrive_node.nextSibling.text
             addinfo_nodes = step.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })
             addinfo = remove_html_tags(get_nodes_text(addinfo_nodes))
+            addinfo_duration_m = re.search('Service runs every\s(\d+)\smin', addinfo)
+            if addinfo_duration_m != None:
+                addinfo_duration = addinfo_duration_m.group(1) 
             duration = parse_duration(addinfo)
             segtext_nodes = step.findAll(attrs = { "class": "dirsegtext" })
             direction += ', ' + get_nodes_text(segtext_nodes)
             line_number_node = step.find(attrs = { "class" : "trtline" })
             if line_number_node != None:
-                line_number = str(line_number_node.text)
+                line_number = str(line_number_node.text)            
             
         start_point = points[steps[index]['depPoint']]
         end_point = points[steps[index]['arrPoint']]
@@ -80,7 +89,9 @@ def parse(html, points, steps):
                            'direction': remove_html_tags(direction), 
                            'duration': duration,
                            'addinfo': addinfo,
+                           'addinfo_duration': addinfo_duration,
                            'line_number' : line_number,
+                           'arrive': arrive,
                            'start_location': { 'lat': start_point['lat'], 'lng': start_point['lng'] },
                            'end_location': { 'lat': end_point['lat'], 'lng': end_point['lng'] } 
                            })
@@ -119,4 +130,5 @@ def parse_duration(info):
     tmp = tmp.replace('About ', '')
     tmp = tmp.replace('(', '')
     tmp = tmp.replace(' mins', '')
+    tmp = tmp.replace(' min', '')
     return int(tmp)

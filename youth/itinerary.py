@@ -1,69 +1,52 @@
 #coding=utf-8
 
+import json
+
 from youth import utils
 from youth import maps
 
+# Class that represents a Trip
+class Trip(object):
+    def __init__(self, title, expenses, duration, steps):
+        self.title = title
+        self.expenses = expenses
+        self.duration = duration
+        self.steps = steps
+        self.change_action = None
+    def summary(self):
+        return 'Expenses: ' + str(self.expenses) + ' RUR, travel time: ' + utils.duration_to_string(self.duration)
+    def jsonable(self):
+        return self.__dict__
+
 def get(from_location, start_time, transport):
     if transport == 'meteor':
-        title_to = 'Way to Peterhof: Meteor (speed boat)'
-        summary_to = 'Expenses: 95 RUR, travel time: 1h15'
         route = maps.get_route(from_location, '59.93993,30.309073')
-        steps_to = get_steps(route, start_time)
+        trip_to = create_trip('Way to Peterhof: Meteor (speed boat)', route, start_time)
     elif transport == 'train':
-        title_to = 'Way to Peterhof: subway + suburban train'
-        summary_to = 'Expenses: 95 RUR, travel time: 1h55'
         route = maps.get_route(from_location, '59.9072128,30.299578099999962')
-        steps_to = get_steps(route, start_time)
+        trip_to = create_trip('Way to Peterhof: subway + suburban train', route, start_time)
     elif transport == 'bus':
-        title_to = 'Way to Peterhof: subway + bus'
-        summary_to = 'Expenses: 95 RUR, travel time: 2h00'
         route = maps.get_route(from_location, '59.86732529999999,30.261337499999968')
-        route.append({
-                       'direction': 'Leave the subway, cross the street through the underpass and find a bus stop', 
-                       'duration': 5,
-                       'addinfo': 'About 5 mins, 150 m',
-                       'transport': { 'type': 'walk' },
-                       'start_location': { 'lat': 59.86758, 'lng': 30.261308 },
-                       'end_location': { 'lat': 59.868398, 'lng': 30.259806 },
-                       'points' : maps.get_route_leg('59.86758,30.261308', '59.868398,30.259806')
-                     })
-        route.append({
-                       'direction': 'Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
-                            'K-424a, К-300, К-224, К-401a, К-404 or any route-taxi where you see word "Фонтаны" ' + 
-                            'on the window. Pay to driver, price may slightly vary. You should ask driver to stop in Petrodhof.', 
-                       'duration': 60,
-                       'addinfo': 'About 1 hour, pay fare 70 RUR',
-                       'transport': { 'type': 'sharetaxi' }
-                     })
-        route.append({
-                       'direction': 'Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry', 
-                       'duration': 10,
-                       'addinfo': 'About 10 mins, 800 m',
-                       'transport': { 'type': 'walk' },
-                       'start_location': { 'lat': 59.883884, 'lng': 29.911548 },
-                       'end_location': { 'lat': 59.880511, 'lng': 29.906809 },
-                       'points' : maps.get_route_leg('59.883884,29.911548', '59.880511,29.906809')
-                     })            
-        steps_to = get_steps(route, start_time)
-
-    else:                
-        title_to = 'Unknown'
-        summary_to = 'Unknown'
-        steps_to = []
+        route.append(maps.RouteStep('Cross the street through the underpass and find a bus stop',
+                                    5, 'About 5 mins, 150 m', None, maps.GeoPoint(59.86758, 30.261308), maps.GeoPoint(59.868398, 30.259806),
+                                    maps.get_route_leg('59.86758,30.261308', '59.868398,30.259806')))
+        route.append(maps.RouteStep('Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
+                                    'K-424a, К-300, К-224, К-401a, К-404 or any route-taxi where you see word "Фонтаны" ' + 
+                                    'on the window. Pay to driver, price may slightly vary. You should ask driver to stop in Peterhof.',
+                                    60, 'About 1 hour', maps.Transport('Share taxi', 'К-424, K-424a, К-300, К-224, К-401a, К-404', None, 70)))
+        route.append(maps.RouteStep('Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry',
+                                    10, 'About 10 mins, 800 m', None, maps.GeoPoint(59.883884, 29.911548), maps.GeoPoint(59.880511, 29.906809),
+                                    maps.get_route_leg('59.883884,29.911548', '59.880511,29.906809')))
+        trip_to = create_trip('Way to Peterhof: subway + bus', route, start_time)
+    trip_to.change_action = 'Change transport'
             
-    trip_to = {'title': title_to,
-               'summary': summary_to,
-               'change_action': 'Change transport',
-               'steps': steps_to}
     
     steps_in = [
         {'instruction': 'Buy the Lower Park tickets in a box office.' + 
                         'Our recommendation to visit Lower park and Upper park with all fountains at least. Also you can try to visit Grand palace you should be prepared to the huge queues. First one to buy tickets and another one to enter. Note that ticket in lower park works only for one visit. If you leave park you are not able to visit it again at the same day.',
          'start_time': utils.time_to_string(utils.time_add_mins(start_time, 120)),
          'hint' : 'pay fare: XXX RUR'}]
-    trip_in = {'title': 'Peterhof sightseeing',
-               'summary': 'Summary to be done',
-               'steps': steps_in}
+    trip_in = Trip('Peterhof sightseeing', 0, 120, steps_in)
     
     option_bus = {'alias': 'bus',
                   'title': 'Subway + bus',
@@ -98,19 +81,21 @@ def get(from_location, start_time, transport):
         
     return {'trips': [trip_to, trip_in], 'options': [option_bus, option_meteor, option_train], 'context': context}
 
-def get_steps(route, start_time):    
+def create_trip(title, route, start_time):    
     steps_to = []
     duration = 0
+    expenses = 0
     for step in route: 
-        steps_to.append({'instruction': step['direction'],
+        steps_to.append({'instruction': step.direction,
                  'start_time': utils.time_to_string(utils.time_add_mins(start_time, duration)),
-                 'hint' : step['addinfo'],
+                 'hint' : step.addinfo,
                  'details' :
                  {
                     'show_label': 'Show the map',
                     'hide_label': 'Hide the map',
                     'action': 'map',
-                    'map': { 'points' : step['points'] }
-                 } if 'points' in step else None})
-        duration += step['duration']
-    return steps_to
+                    'map': { 'points' : json.dumps([s.__dict__ for s in step.points]) }
+                 } if step.points != None else None})
+        duration += step.duration
+        expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
+    return Trip(title, expenses, duration, steps_to)

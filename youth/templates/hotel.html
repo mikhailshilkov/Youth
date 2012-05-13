@@ -1,0 +1,16 @@
+{% extends "master/master.html" %}
+
+{% block title %}Hotels{% endblock %}
+
+{% block content %}
+<table>
+	{% for hotel in data %}
+	<tr>
+		<td>{{hotel.name}}</td>
+		<td>{{hotel.latitude}}</td>
+		<td>{{hotel.longitude}}</td>
+		<td>{{hotel.address}}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}

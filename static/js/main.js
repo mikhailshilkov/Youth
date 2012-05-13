@@ -2,25 +2,43 @@ function navigateToItinerary() {
     var address = $('#address').val();
     navigateToItineraryByAddress(address);
 }
+
 function navigateToItineraryByAddress(address) {
-    if (address != '') {
+    if(address != '') {
         var geocoder = new google.maps.Geocoder();
-        geocoder.geocode( { 'address': address }, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                var latLng = results[0].geometry.location;
-                var lat = latLng.lat();
-                var lng = latLng.lng();
-                if (lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58)
+        var bounds = new google.maps.LatLngBounds(new google.maps.LatLng(60.28, 29.93), new google.maps.LatLng(59.79, 30.58));
+        geocoder.geocode({
+            'address' : address,
+            'bounds' : bounds
+        }, function(results, status) {
+            if(status == google.maps.GeocoderStatus.OK) {
+                var location = null;
+                for(var i = 0; i < results.length; i++) {
+                    var latLng = results[i].geometry.location;
+                    var lat = latLng.lat();
+                    var lng = latLng.lng();
+                    var wellType = Math.max($.inArray('street_address', results[i].types), 
+                        $.inArray('subpremise', results[i].types),
+                        $.inArray('premise', results[i].types));
+                    if(lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58 && wellType >= 0) {
+                        location = lat.toString() + ',' + lng.toString();
+                        break;                         
+                    }
+                }
+                if (location != null) {
                     document.location = '/itinerary?from=' + encodeURIComponent(lat.toString() + ',' + lng.toString());
-                else if (address.indexOf('St. Petersburg') < 0)
-                    navigateToItineraryByAddress('St. Petersburg, ' + address);
-                else
-                    alert("Address was not found: not in St. Petersburg");
+                }
+                else {
+                    if(address.indexOf('St. Petersburg') < 0)
+                        navigateToItineraryByAddress(address + ', St. Petersburg, Russia');
+                    else
+                        alert("Address was not found");
+                }
             } else {
                 alert("Address was not found for the following reason: " + status);
-            }        
+            }
         });
-    }    
+    }
 }
 
 function showDetails(index, action) {
@@ -31,7 +49,8 @@ function showDetails(index, action) {
     if(action == 'map' && !initialized[index]) {
         initialized[index] = true;
         var myOptions = {
-            mapTypeId : google.maps.MapTypeId.ROADMAP
+            mapTypeId : google.maps.MapTypeId.ROADMAP,
+            scaleControl : true
         };
         var mapPane = $(id + " .details");
         mapPane.css('width', '100%');
@@ -47,8 +66,7 @@ function showDetails(index, action) {
             flightPlanCoordinates.push(point);
             bounds.extend(point);
 
-            if (i == 0 || i == route.length - 1)
-            {
+            if(i == 0 || i == route.length - 1) {
                 var marker = new google.maps.Marker({
                     position : point,
                     map : map,

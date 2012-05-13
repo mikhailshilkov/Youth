@@ -297,3 +297,8 @@ html
 	float: right;
 	margin-right: .5em;
 }
+
+.gmnoprint
+{
+    display: none !important; //TODO: this statement breaks the ToS of Google maps, to be reviewed
+}
