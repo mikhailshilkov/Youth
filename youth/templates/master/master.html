@@ -2,9 +2,11 @@
 <html lang="en">
 <head>
     <title>{% block title %}{% endblock %}</title>    
-    <script type="text/javascript" src="scripts/jquery_dev.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
     <script type="text/javascript" src="scripts/main.js"></script>
     <link href="styles/main.css" rel="stylesheet" type="text/css"/>
+	<link href="styles/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" />    
 </head>
 <body>
     {% block content %}{% endblock %}

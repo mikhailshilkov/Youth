@@ -93,7 +93,7 @@ def get_route(from_addr, to_addr):
         else:
             step.points = get_route_leg(str(start.lat) + ',' + str(start.lng), 
                                        str(end.lat) + ',' + str(end.lng),
-                                       'walking' if step.transport != None else 'driving')            
+                                       'walking' if step.transport == None else 'driving')            
             
     # Find all subways
     subways = [step for step in transit if step.transport != None and step.transport.is_subway()]

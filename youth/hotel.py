@@ -9,9 +9,15 @@ class Hotel(db.Model):
     def jsonable(self):
         return utils.model_to_dict(self)
     
-def get():
-    hotels = db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")
-    return [x for x in hotels]
+def get(term):
+    hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
+    if term != None and term != '':
+        result = [x for x in hotels if x.name.lower().startswith(term.lower())]
+        if len(result) < 10:
+            result.extend([x for x in hotels if x.name.lower().find(term.lower()) > 0])
+        return result
+    else:
+        return hotels
 
 def add(name, address, lat, lng):
     new_hotel = Hotel(key_name=name)

@@ -1,6 +1,15 @@
+var CurrentHotel = null;
+
 function navigateToItinerary() {
     var address = $('#address').val();
-    navigateToItineraryByAddress(address);
+    if (CurrentHotel != null && address == CurrentHotel.name)
+        navigateToItineraryByLatLng(CurrentHotel.latitude, CurrentHotel.longitude);
+    else
+        navigateToItineraryByAddress(address);
+}
+
+function navigateToItineraryByLatLng(lat, lng) {
+    document.location = '/itinerary?from=' + encodeURIComponent(lat.toString() + ',' + lng.toString());
 }
 
 function navigateToItineraryByAddress(address) {
@@ -26,7 +35,7 @@ function navigateToItineraryByAddress(address) {
                     }
                 }
                 if (location != null) {
-                    document.location = '/itinerary?from=' + encodeURIComponent(lat.toString() + ',' + lng.toString());
+                    navigateToItineraryByLatLng(lat, lng);
                 }
                 else {
                     if(address.indexOf('St. Petersburg') < 0)
@@ -39,6 +48,29 @@ function navigateToItineraryByAddress(address) {
             }
         });
     }
+}
+
+function setupAddressAutocomplete()
+{
+    $("#address").autocomplete({
+            source: "/hotel?out=json",
+            minLength: 2,
+            focus: function( event, ui ) {
+                $("#address").val( ui.item.name );
+                return false;
+            },
+            select: function( event, ui ) {
+                $("#address").val( ui.item.name );
+                CurrentHotel = ui.item;
+                return false;
+            }
+        })
+        .data("autocomplete")._renderItem = function( ul, item ) {
+            return $( "<li></li>" )
+                .data( "item.autocomplete", item )
+                .append( "<a>" + item.name + "</a>" )
+                .appendTo( ul );
+        };
 }
 
 function showDetails(index, action) {

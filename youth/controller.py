@@ -30,11 +30,10 @@ def do_itinerary(request, response):
 def do_hotel(request, response):
     # get request parameters        
     view_mode = request.get('out', 'html')
+    term = request.get('term', '')
     
     # produce data        
-    data = hotel.get()
-    
-    hotel.delete('Test 2')
+    data = hotel.get(term)
     
     # populate the requested view
     if view_mode == 'json':
