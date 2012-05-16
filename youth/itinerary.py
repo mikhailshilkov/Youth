@@ -25,6 +25,11 @@ def get(from_location, start_time, transport):
     elif transport == 'train':
         route = maps.get_route(from_location, '59.9072128,30.299578099999962')
         trip_to = create_trip('Way to Peterhof: subway + suburban train', route, start_time)
+        route.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ' +
+                                    'You may enter the railway station directly from subway entering hall following the directions. ' +
+                                    'The orientation at the railway station is not difficult as soon as you are in the main hall. ' + 
+                                    'All booking offices as well as platforms are located in one area. ',
+                                    5, 'About 5 mins, 150 m', None))
     elif transport == 'bus':
         route = maps.get_route(from_location, '59.86732529999999,30.261337499999968')
         route.append(maps.RouteStep('Cross the street through the underpass and find a bus stop',

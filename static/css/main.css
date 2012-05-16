@@ -45,7 +45,7 @@ html {
     margin: 3px 8px 1px 8px;
 }
 .ui-autocomplete {
-    max-height: 270px;
+    max-height: 275px;
     overflow-y: auto;
     /* prevent horizontal scrollbar */
     overflow-x: hidden;
@@ -61,6 +61,7 @@ html {
     color: white;
     text-decoration: none;
     font-size: 1em;
+    margin-right: 1em;
 }
 .button {
     border-radius: 2px;
@@ -246,7 +247,6 @@ html {
     float: right;
     margin-right: .5em;
 }
-.gmnoprint {
-    display: none !important;//
-    TODO: this statement breaks the ToS of Google maps, to be reviewed
+.gmnoprint div a {
+    display: none !important;//TODO: this statement might break the ToS of Google maps, to be reviewed
 }

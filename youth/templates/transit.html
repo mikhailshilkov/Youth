@@ -1,0 +1,20 @@
+{% extends "master/master.html" %}
+
+{% block title %}Transit options{% endblock %}
+
+{% block content %}
+{% for route in data %}
+	<h2>Option {{forloop.counter}}</h2>
+	<h4>Duration: {{route.duration}}</h4>
+	<table>
+	{% for step in route.directions %}
+		<tr>
+			<td>{{step.duration}} min</td>
+			<td>{{step.direction}}</td>
+			<td>{{step.start_location}}</td>
+			<td>{{step.end_location}}</td>
+		</tr>
+	{% endfor %}
+	</table>
+{% endfor %}
+{% endblock %}

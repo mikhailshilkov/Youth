@@ -7,6 +7,12 @@ from google.appengine.api import urlfetch
 from lib.BeautifulSoup import BeautifulSoup
 from youth import utils
 
+# Class that represents a Route
+class Route(object):
+    def __init__(self, directions, duration):
+        self.directions = directions
+        self.duration = duration
+
 # Class that represents a Route Step
 class RouteStep(object):
     def __init__(self, direction = None, duration = None, addinfo = None, 
@@ -54,7 +60,7 @@ class GeoPoint(object):
         
 
 def get_route(from_addr, to_addr):
-    transit = get_transit_route(from_addr, to_addr)
+    transit = get_transit_route(from_addr, to_addr).directions
     first_subway = True
     for index in range(len(transit)):
         step = transit[index]
@@ -118,22 +124,32 @@ def get_route_leg(origin, destination, mode = 'walking'):
     return route_points
 
 def get_transit_route(from_addr, to_addr):
+    
+    routes = get_transit_routes(from_addr, to_addr)
+    route_optimal = min(routes, key=lambda x: x.duration) 
+    return route_optimal    
+
+def get_transit_routes(from_addr, to_addr):
     # Make request to Google Transit
     url = "http://maps.google.com/?saddr=" + urllib.quote(from_addr) + "&daddr=" + urllib.quote(to_addr) + "&dirflg=r&output=json"
     result = urlfetch.fetch(url)
     response = result.content
 
-    # Get points array    
-    start_index = response.find(',points:[{') + 8
-    end_index = response.find('}],', start_index) + 2
-    points_string = response[start_index:end_index].decode('string-escape').replace('lat', '"lat"').replace('lng', '"lng"').replace('arrow', '"arrow"').replace('point', '"point"').replace('prevPoint', '"prevPoint"')
-    points = eval(points_string)
+    # Get points arrays    
+    points = []
+    points_starts = [match.start() + 8 for match in re.finditer(re.escape(',points:[{'), response)]
+    for start_index in points_starts:
+        end_index = response.find('}],', start_index) + 2
+        points_string = response[start_index:end_index].decode('string-escape').replace('lat', '"lat"').replace('lng', '"lng"').replace('arrow', '"arrow"').replace('point', '"point"').replace('prevPoint', '"prevPoint"')
+        points.append(eval(points_string))
     
-    # Get steps array
-    start_index = response.find(',steps:[{') + 7
-    end_index = response.find('}],', start_index) + 2
-    steps_string = response[start_index:end_index].decode('string-escape').replace('depPoint', '"depPoint"').replace('arrPoint', '"arrPoint"').replace('depMarker', '"depMarker"').replace('arrMarker', '"arrMarker"')
-    steps = eval(steps_string)
+    # Get steps arrays
+    steps = []
+    steps_starts = [match.start() + 7 for match in re.finditer(re.escape(',steps:[{'), response)]
+    for start_index in steps_starts:
+        end_index = response.find('}],', start_index) + 2
+        steps_string = response[start_index:end_index].decode('string-escape').replace('depPoint', '"depPoint"').replace('arrPoint', '"arrPoint"').replace('depMarker', '"depMarker"').replace('arrMarker', '"arrMarker"')
+        steps.append(eval(steps_string))
 
     # Get route description HTML
     start_index = response.find(',panel:"') + 8
@@ -141,50 +157,59 @@ def get_transit_route(from_addr, to_addr):
     html = response[start_index:end_index].decode("string-escape")
     
     # Parse the route
-    route = parse(html, points, steps)
-    return route
+    return parse(html, points, steps)
     
-    
-def parse(html, points, steps):    
+def parse(html, points_array, steps_array):    
     soup = BeautifulSoup(html)
-    route0 = soup.find("div", { "id" : "ts_route_0" })
-    directions = []
-    for index in range(len(steps) - 1): 
-        step_node = route0.find(attrs = { "id" : "step_0_" + str(index) + "_segment" })
-
-        step = RouteStep()                
-        
-        if step_node != None:
-            step.direction = get_node_text(step_node.find(attrs = { "class" : "dir-ts-direction" }))
-            segment_text = get_nodes_text(step_node.findAll(attrs = { "class": "dirsegtext" }))
-            if segment_text != '':
-                step.direction += ': ' + segment_text
-                 
-            step.addinfo = get_nodes_text(step_node.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })).replace('(','').replace(')','')            
-            step.duration = parse_duration(step.addinfo)
+    routes = []
+    route_index = 0
+    while True:
+        route_node = soup.find("div", { "id" : "ts_route_" + str(route_index) })
+        if route_node == None:
+            break;
+        directions = []
+        total_duration = 0
+        steps = steps_array[route_index]
+        points = points_array[route_index]
+        for index in range(len(steps) - 1): 
+            step_node = route_node.find(attrs = { "id" : "step_" + str(route_index) + "_" + str(index) + "_segment" })
+    
+            step = RouteStep()                
             
-            transport_type = get_transport(step.direction)
-            if transport_type != None and transport_type != 'Walk':
-                line_number = get_node_text(step_node.find(attrs = { "class" : "trtline" }))
-                service_interval = parse_service_interval(step.addinfo)
-                step.transport = Transport(transport_type, line_number, service_interval)                
-                if not step.transport.is_subway(): 
-                    step.direction = step.direction.replace(step.transport.type, step.transport.type + ' number ' + step.transport.line_number)            
+            if step_node != None:
+                step.direction = get_node_text(step_node.find(attrs = { "class" : "dir-ts-direction" }))
+                segment_text = get_nodes_text(step_node.findAll(attrs = { "class": "dirsegtext" }))
+                if segment_text != '':
+                    step.direction += ': ' + segment_text
+                     
+                step.addinfo = get_nodes_text(step_node.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })).replace('(','').replace(')','')            
+                step.duration = parse_duration(step.addinfo)
+                total_duration += step.duration
+                
+                transport_type = get_transport(step.direction)
+                if transport_type != None and transport_type != 'Walk':
+                    line_number = get_node_text(step_node.find(attrs = { "class" : "trtline" }))
+                    service_interval = parse_service_interval(step.addinfo)
+                    step.transport = Transport(transport_type, line_number, service_interval)                
+                    if not step.transport.is_subway(): 
+                        step.direction = step.direction.replace(step.transport.type, step.transport.type + ' number ' + step.transport.line_number)            
+                
+                if step_node.nextSibling != None:
+                        arrive_node = step_node.nextSibling.find(text = re.compile('^Arrive.*'))
+                        if arrive_node != None:
+                            step.direction += ' till ' + get_node_text(arrive_node.nextSibling)
+                
+            start_point = points[steps[index]['depPoint']]
+            end_point = points[steps[index]['arrPoint']]
             
-            if step_node.nextSibling != None:
-                    arrive_node = step_node.nextSibling.find(text = re.compile('^Arrive.*'))
-                    if arrive_node != None:
-                        step.direction += ' till ' + get_node_text(arrive_node.nextSibling)
+            step.start_location = GeoPoint(start_point['lat'], start_point['lng'])
+            step.end_location = GeoPoint(end_point['lat'], end_point['lng'])
             
-        start_point = points[steps[index]['depPoint']]
-        end_point = points[steps[index]['arrPoint']]
-        
-        step.start_location = GeoPoint(start_point['lat'], start_point['lng'])
-        step.end_location = GeoPoint(end_point['lat'], end_point['lng'])
-        
-        directions.append(step)
+            directions.append(step)
+        routes.append(Route(directions, total_duration))
+        route_index += 1
   
-    return directions
+    return routes
 
 def get_node_text(node):
     if node != None:
