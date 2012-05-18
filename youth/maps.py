@@ -9,9 +9,11 @@ from youth import utils
 
 # Class that represents a Route
 class Route(object):
-    def __init__(self, directions, duration):
+    def __init__(self, directions):
         self.directions = directions
-        self.duration = duration
+        
+    def get_duration(self):
+        return sum([step.duration for step in self.directions])
 
 # Class that represents a Route Step
 class RouteStep(object):
@@ -59,13 +61,12 @@ class GeoPoint(object):
         
         
 
-def get_route(from_addr, to_addr):
-    transit = get_transit_route(from_addr, to_addr).directions
+def process_transit_route(transit):
     first_subway = True
-    for index in range(len(transit)):
-        step = transit[index]
-        previous_step = transit[index - 1] if index > 0 else None
-        next_step = transit[index + 1] if index < len(transit) - 1 else None
+    for index in range(len(transit.directions)):
+        step = transit.directions[index]
+        previous_step = transit.directions[index - 1] if index > 0 else None
+        next_step = transit.directions[index + 1] if index < len(transit.directions) - 1 else None
         
         start = step.start_location 
         end = step.end_location
@@ -97,41 +98,46 @@ def get_route(from_addr, to_addr):
         if step.is_subway():
             step.points = [start, end]
         else:
-            step.points = get_route_leg(str(start.lat) + ',' + str(start.lng), 
-                                       str(end.lat) + ',' + str(end.lng),
-                                       'walking' if step.transport == None else 'driving')            
+            step.points = get_route_leg(start, end, 'walking' if step.transport == None else 'driving')            
             
     # Find all subways
-    subways = [step for step in transit if step.transport != None and step.transport.is_subway()]
+    subways = [step for step in transit.directions if step.transport != None and step.transport.is_subway()]
     if len(subways) > 0:
         # Add 4 minutes to exit subway
         subways[-1].direction += ', leave the subway'
-        subways[-1].duration += 4            
-        
-    return transit
+        subways[-1].duration += 4
 
 def get_route_leg(origin, destination, mode = 'walking'):
     route_points = []
-    url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + origin + "&destination=" + destination + "&sensor=false&mode=" + mode
+    params = { 
+              'origin': str(origin.lat) + ',' + str(origin.lng),
+              'destination': str(destination.lat) + ',' + str(destination.lng), 
+              'sensor' : 'false', 
+              'mode': mode 
+              }
+    url = 'http://maps.google.com/maps/api/directions/json?' + urllib.urlencode(params)
     result = urlfetch.fetch(url)
     if result.status_code == 200:
         route = json.loads(result.content)
+        if route['status'] == 'OVER_QUERY_LIMIT':
+            return [origin, destination] # Google refuses to work
+        
         for leg in route['routes'][0]['legs']:
             for step in leg['steps']:
                 if len(route_points) == 0:
                     route_points.append(GeoPoint(step['start_location']['lat'], step['start_location']['lng']));                
-                route_points.append(GeoPoint(step['end_location']['lat'], step['end_location']['lng']));
+                    route_points.append(GeoPoint(step['end_location']['lat'], step['end_location']['lng']));
     return route_points
 
 def get_transit_route(from_addr, to_addr):
     
     routes = get_transit_routes(from_addr, to_addr)
-    route_optimal = min(routes, key=lambda x: x.duration) 
+    route_optimal = min(routes, key=lambda x: x.get_duration()) 
     return route_optimal    
 
 def get_transit_routes(from_addr, to_addr):
     # Make request to Google Transit
-    url = "http://maps.google.com/?saddr=" + urllib.quote(from_addr) + "&daddr=" + urllib.quote(to_addr) + "&dirflg=r&output=json"
+    url = "http://maps.google.com/?saddr=" + urllib.quote(from_addr) + "&daddr=" + urllib.quote(to_addr) + "&dirflg=r&output=json&time=10:00am"
     result = urlfetch.fetch(url)
     response = result.content
 
@@ -156,8 +162,11 @@ def get_transit_routes(from_addr, to_addr):
     end_index = response.find('",panelId:', start_index)
     html = response[start_index:end_index].decode("string-escape")
     
-    # Parse the route
-    return parse(html, points, steps)
+    # Parse the routes
+    routes = parse(html, points, steps)
+    for route in routes:
+        process_transit_route(route)
+    return routes
     
 def parse(html, points_array, steps_array):    
     soup = BeautifulSoup(html)
@@ -206,7 +215,7 @@ def parse(html, points_array, steps_array):
             step.end_location = GeoPoint(end_point['lat'], end_point['lng'])
             
             directions.append(step)
-        routes.append(Route(directions, total_duration))
+        routes.append(Route(directions))
         route_index += 1
   
     return routes

@@ -20,10 +20,10 @@ class Trip(object):
 
 def get(from_location, start_time, transport):
     if transport == 'meteor':
-        route = maps.get_route(from_location, '59.93993,30.309073')
+        route = maps.get_transit_route(from_location, '59.93993,30.309073')
         trip_to = create_trip('Way to Peterhof: Meteor (speed boat)', route, start_time)
     elif transport == 'train':
-        route = maps.get_route(from_location, '59.9072128,30.299578099999962')
+        route = maps.get_transit_route(from_location, '59.9072128,30.299578099999962')
         trip_to = create_trip('Way to Peterhof: subway + suburban train', route, start_time)
         route.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ' +
                                     'You may enter the railway station directly from subway entering hall following the directions. ' +
@@ -31,17 +31,17 @@ def get(from_location, start_time, transport):
                                     'All booking offices as well as platforms are located in one area. ',
                                     5, 'About 5 mins, 150 m', None))
     elif transport == 'bus':
-        route = maps.get_route(from_location, '59.86732529999999,30.261337499999968')
-        route.append(maps.RouteStep('Cross the street through the underpass and find a bus stop',
+        route = maps.get_transit_route(from_location, '59.86732529999999,30.261337499999968')
+        route.directions.append(maps.RouteStep('Cross the street through the underpass and find a bus stop',
                                     5, 'About 5 mins, 150 m', None, maps.GeoPoint(59.86758, 30.261308), maps.GeoPoint(59.868398, 30.259806),
-                                    maps.get_route_leg('59.86758,30.261308', '59.868398,30.259806')))
-        route.append(maps.RouteStep('Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
+                                    maps.get_route_leg(maps.GeoPoint(59.86758,30.261308), maps.GeoPoint(59.868398,30.259806))))
+        route.directions.append(maps.RouteStep('Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
                                     'K-424a, К-300, К-224, К-401a, К-404 or any route-taxi where you see word "Фонтаны" ' + 
                                     'on the window. Pay to driver, price may slightly vary. You should ask driver to stop in Peterhof.',
                                     60, 'About 1 hour', maps.Transport('Share taxi', 'К-424, K-424a, К-300, К-224, К-401a, К-404', None, 70)))
-        route.append(maps.RouteStep('Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry',
+        route.directions.append(maps.RouteStep('Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry',
                                     10, 'About 10 mins, 800 m', None, maps.GeoPoint(59.883884, 29.911548), maps.GeoPoint(59.880511, 29.906809),
-                                    maps.get_route_leg('59.883884,29.911548', '59.880511,29.906809')))
+                                    maps.get_route_leg(maps.GeoPoint(59.883884,29.911548), maps.GeoPoint(59.880511,29.906809))))
         trip_to = create_trip('Way to Peterhof: subway + bus', route, start_time)
     trip_to.change_action = 'Change transport'
             
@@ -90,7 +90,7 @@ def create_trip(title, route, start_time):
     steps_to = []
     duration = 0
     expenses = 0
-    for step in route: 
+    for step in route.directions: 
         steps_to.append({'instruction': step.direction,
                  'start_time': utils.time_to_string(utils.time_add_mins(start_time, duration)),
                  'hint' : step.addinfo,

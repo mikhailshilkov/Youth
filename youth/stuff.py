@@ -4,6 +4,8 @@ import urllib
 import re
 from google.appengine.api import urlfetch
 from lib.BeautifulSoup import BeautifulSoup
+import json
+from youth.maps import GeoPoint
 
 def test():
     #saddr = urllib.quote('59.94474100000001,30.294258000000013')
@@ -38,7 +40,22 @@ def test():
     #return html
     #return points
     #return points_string
-    return routes
+    #return routes
+    
+    route_points = []
+    origin = 'shavrova'
+    destination = 'utochkina'
+    mode = 'walking'
+    url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + origin + "&destination=" + destination + "&sensor=false&mode=" + mode
+    result = urlfetch.fetch(url)
+    if result.status_code == 200:
+        return result.content
+        #for leg in route['routes'][0]['legs']:
+         #   for step in leg['steps']:
+          #      if len(route_points) == 0:
+           #         route_points.append(GeoPoint(step['start_location']['lat'], step['start_location']['lng']));                
+            #    route_points.append(GeoPoint(step['end_location']['lat'], step['end_location']['lng']));
+    return route_points
     
     
 def parse(html, points_arr, steps_arr):    

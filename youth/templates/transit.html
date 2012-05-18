@@ -5,7 +5,7 @@
 {% block content %}
 {% for route in data %}
 	<h2>Option {{forloop.counter}}</h2>
-	<h4>Duration: {{route.duration}}</h4>
+	<h4>Duration: {{route.get_duration}}</h4>
 	<table>
 	{% for step in route.directions %}
 		<tr>

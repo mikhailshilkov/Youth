@@ -61,8 +61,8 @@ def do_transit(request, response):
     view_mode = request.get('out', 'html')
 
     # produce data        
-    data = maps.get_transit_routes(from_location, '59.86732529999999,30.261337499999968')              
-    
+    data = maps.get_transit_routes(from_location, '59.86732529999999,30.261337499999968')
+        
     # populate the requested view
     if view_mode == 'json':
         view.to_json(data, response)
