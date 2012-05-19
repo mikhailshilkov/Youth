@@ -5,7 +5,13 @@
 {% block content %}
 {% for route in data %}
 	<h2>Option {{forloop.counter}}</h2>
-	<h4>Duration: {{route.get_duration}}</h4>
+	<table>
+		<tr>
+			<td><h4>Duration: {{route.get_duration}} min</h4></td>
+			<td><h4 style='margin-left: 30px'>Metric: {{route.get_cost}}</h4></td>
+			<td>(price + time * k, where k is 3 for subway, 2.5 for walk and 3.5 for land transport)	</td>
+		</tr>
+	</table>	
 	<table>
 	{% for step in route.directions %}
 		<tr>

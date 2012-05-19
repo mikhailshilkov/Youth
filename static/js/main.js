@@ -2,7 +2,7 @@ var CurrentHotel = null;
 
 function navigateToItinerary() {
     var address = $('#address').val();
-    if (CurrentHotel != null && address == CurrentHotel.name)
+    if(CurrentHotel != null && address == CurrentHotel.name)
         navigateToItineraryByLatLng(CurrentHotel.latitude, CurrentHotel.longitude);
     else
         navigateToItineraryByAddress(address);
@@ -26,18 +26,15 @@ function navigateToItineraryByAddress(address) {
                     var latLng = results[i].geometry.location;
                     var lat = latLng.lat();
                     var lng = latLng.lng();
-                    var wellType = Math.max($.inArray('street_address', results[i].types), 
-                        $.inArray('subpremise', results[i].types),
-                        $.inArray('premise', results[i].types));
+                    var wellType = Math.max($.inArray('street_address', results[i].types), $.inArray('subpremise', results[i].types), $.inArray('premise', results[i].types));
                     if(lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58 && wellType >= 0) {
                         location = lat.toString() + ',' + lng.toString();
-                        break;                         
+                        break;
                     }
                 }
-                if (location != null) {
+                if(location != null) {
                     navigateToItineraryByLatLng(lat, lng);
-                }
-                else {
+                } else {
                     if(address.indexOf('St. Petersburg') < 0)
                         navigateToItineraryByAddress(address + ', St. Petersburg, Russia');
                     else
@@ -50,27 +47,22 @@ function navigateToItineraryByAddress(address) {
     }
 }
 
-function setupAddressAutocomplete()
-{
+function setupAddressAutocomplete() {
     $("#address").autocomplete({
-            source: "/hotel?out=json",
-            minLength: 2,
-            focus: function( event, ui ) {
-                $("#address").val( ui.item.name );
-                return false;
-            },
-            select: function( event, ui ) {
-                $("#address").val( ui.item.name );
-                CurrentHotel = ui.item;
-                return false;
-            }
-        })
-        .data("autocomplete")._renderItem = function( ul, item ) {
-            return $( "<li></li>" )
-                .data( "item.autocomplete", item )
-                .append( "<a>" + item.name + "</a>" )
-                .appendTo( ul );
-        };
+        source : "/hotel?out=json",
+        minLength : 2,
+        focus : function(event, ui) {
+            $("#address").val(ui.item.name);
+            return false;
+        },
+        select : function(event, ui) {
+            $("#address").val(ui.item.name);
+            CurrentHotel = ui.item;
+            return false;
+        }
+    }).data("autocomplete")._renderItem = function(ul, item) {
+        return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.name + "</a>").appendTo(ul);
+    };
 }
 
 function showDetails(index, action) {
@@ -90,32 +82,76 @@ function showDetails(index, action) {
         var map = new google.maps.Map(mapPane.get(0), myOptions);
 
         var bounds = new google.maps.LatLngBounds();
-        var flightPlanCoordinates = [];
+        var coordinates = [];
         var route = eval('Context.route' + index.toString());
-        for(var i = 0; i < route.length; i++) {
-            var step = route[i];
-            var point = new google.maps.LatLng(step['lat'], step['lng']);
-            flightPlanCoordinates.push(point);
-            bounds.extend(point);
 
-            if(i == 0 || i == route.length - 1) {
-                var marker = new google.maps.Marker({
-                    position : point,
-                    map : map,
-                    title : i == 0 ? "From" : "To"
-                });
-            }
+        var startPoint = new google.maps.LatLng(route['start']['lat'], route['start']['lng']);
+        var endPoint = new google.maps.LatLng(route['end']['lat'], route['end']['lng']);
+        coordinates.push(startPoint);
+        bounds.extend(startPoint);
+        mapAddMarker(map, startPoint, 'From');
 
+        var needsDirections = route['type'] != 'Subway';
+        if(route['type'] = 'Walk')// don't search directions for walks < 200 m
+            needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 200;
+        if(needsDirections) {
+            var request = {
+                origin : startPoint,
+                destination : endPoint,
+                travelMode : route['type'] == 'Walk' ? google.maps.TravelMode.WALKING : google.maps.TravelMode.DRIVING
+            };
+            var directionsService = new google.maps.DirectionsService();
+            directionsService.route(request, function(result, status) {
+                if(status == google.maps.DirectionsStatus.OK) {
+                    steps = result.routes[0].legs[0].steps;
+                    for(var i = 0; i < steps.length - 1; i++) {
+                        var point = steps[i].end_location;
+                        coordinates.push(point);
+                        bounds.extend(point);
+                    }
+
+                    coordinates.push(endPoint);
+                    bounds.extend(endPoint);
+                    mapAddMarker(map, endPoint, 'To');
+                    mapAddPolyline(map, coordinates);
+                    mapFitBounds(map, bounds);
+                }
+            });
+        } else {
+            coordinates.push(endPoint);
+            bounds.extend(endPoint);
+            mapAddMarker(map, endPoint, 'To');
+            mapAddPolyline(map, coordinates);
+            mapFitBounds(map, bounds);
         }
-        var flightPath = new google.maps.Polyline({
-            path : flightPlanCoordinates,
-            strokeColor : "#6666FF",
-            strokeOpacity : 0.8,
-            strokeWeight : 5
-        });
-        flightPath.setMap(map);
-        map.fitBounds(bounds);
     }
+}
+
+function mapAddMarker(map, point, name) {
+    new google.maps.Marker({
+        position : point,
+        map : map,
+        title : name
+    });
+}
+
+function mapAddPolyline(map, coordinates) {
+    var polyline = new google.maps.Polyline({
+        path : coordinates,
+        strokeColor : "#6666FF",
+        strokeOpacity : 0.8,
+        strokeWeight : 5
+    });
+    polyline.setMap(map);
+}
+
+function mapFitBounds(map, bounds) {
+    map.fitBounds(bounds);
+    var listener = google.maps.event.addListener(map, "idle", function() {
+        if(map.getZoom() > 16)
+            map.setZoom(16);
+        google.maps.event.removeListener(listener);
+    });
 }
 
 var initialized = new Object();

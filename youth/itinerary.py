@@ -33,15 +33,13 @@ def get(from_location, start_time, transport):
     elif transport == 'bus':
         route = maps.get_transit_route(from_location, '59.86732529999999,30.261337499999968')
         route.directions.append(maps.RouteStep('Cross the street through the underpass and find a bus stop',
-                                    5, 'About 5 mins, 150 m', None, maps.GeoPoint(59.86758, 30.261308), maps.GeoPoint(59.868398, 30.259806),
-                                    maps.get_route_leg(maps.GeoPoint(59.86758,30.261308), maps.GeoPoint(59.868398,30.259806))))
+                                    5, 'About 5 mins, 150 m', None, maps.GeoPoint(59.86758, 30.261308), maps.GeoPoint(59.868398, 30.259806), True))
         route.directions.append(maps.RouteStep('Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
                                     'K-424a, К-300, К-224, К-401a, К-404 or any route-taxi where you see word "Фонтаны" ' + 
                                     'on the window. Pay to driver, price may slightly vary. You should ask driver to stop in Peterhof.',
                                     60, 'About 1 hour', maps.Transport('Share taxi', 'К-424, K-424a, К-300, К-224, К-401a, К-404', None, 70)))
         route.directions.append(maps.RouteStep('Leave route taxi on Pravlentskaya ulitsa and go to Lower Park entry',
-                                    10, 'About 10 mins, 800 m', None, maps.GeoPoint(59.883884, 29.911548), maps.GeoPoint(59.880511, 29.906809),
-                                    maps.get_route_leg(maps.GeoPoint(59.883884,29.911548), maps.GeoPoint(59.880511,29.906809))))
+                                    10, 'About 10 mins, 800 m', None, maps.GeoPoint(59.883884, 29.911548), maps.GeoPoint(59.880511, 29.906809), True))
         trip_to = create_trip('Way to Peterhof: subway + bus', route, start_time)
     trip_to.change_action = 'Change transport'
             
@@ -99,8 +97,8 @@ def create_trip(title, route, start_time):
                     'show_label': 'Show the map',
                     'hide_label': 'Hide the map',
                     'action': 'map',
-                    'map': { 'points' : json.dumps([s.__dict__ for s in step.points]) }
-                 } if step.points != None else None})
+                    'map': { 'route' : step.get_route_json() }
+                 } if step.has_map else None})
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
     return Trip(title, expenses, duration, steps_to)

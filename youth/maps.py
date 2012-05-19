@@ -14,24 +14,48 @@ class Route(object):
         
     def get_duration(self):
         return sum([step.duration for step in self.directions])
+    
+    def get_cost(self):
+        return sum([step.get_cost() for step in self.directions])
 
 # Class that represents a Route Step
 class RouteStep(object):
     def __init__(self, direction = None, duration = None, addinfo = None, 
-                 transport = None, start_location = None, end_location = None, points = None):
+                 transport = None, start_location = None, end_location = None, has_map = False):
         self.direction = direction
         self.duration = duration
         self.addinfo = addinfo
         self.start_location = start_location 
         self.end_location = end_location
-        self.points = points        
         self.transport = transport
+        self.has_map = has_map
         
     def is_subway(self):
         return self.transport != None and self.transport.is_subway()
+    
+    def is_land_transport(self):
+        return self.transport != None and not self.transport.is_subway()
         
     def jsonable(self):
-        return self.__dict__   
+        return self.__dict__  
+    
+    def get_cost(self):
+        result = 0
+        # add price as-is
+        if self.transport != None and self.transport.price != None:
+            result += self.transport.price
+        # add minutes * coefficient
+        coef = 3
+        if self.transport == None:
+            coef = 2.5 # walking is nice
+        elif self.is_land_transport():
+            coef = 3.5 # land transport is not reliable
+        result += self.duration * coef
+        return result 
+    
+    def get_route_json(self):
+        params = { 'type': self.transport.type if self.transport != None else 'Walk', 'start': self.start_location, 'end': self.end_location }
+        return utils.to_json(params)
         
 # Class that represents a Transport        
 class Transport(object):
@@ -68,10 +92,6 @@ def process_transit_route(transit):
         previous_step = transit.directions[index - 1] if index > 0 else None
         next_step = transit.directions[index + 1] if index < len(transit.directions) - 1 else None
         
-        start = step.start_location 
-        end = step.end_location
-        
-        
         if step.transport != None:
             # Calculate step expenses
             if step.transport.is_subway() and first_subway:
@@ -89,16 +109,12 @@ def process_transit_route(transit):
                 step.duration += step.transport.interval * 3 / 4 
                                         
         # Do not show the map for change walks inside subway
-        elif step.transport == None and previous_step != None and next_step != None and \
+        if step.transport == None and previous_step != None and next_step != None and \
             previous_step.transport.is_subway() and next_step.transport.is_subway():
             step.duration = 4 # subway change is 4 minutes
             step.addinfo = 'About ' + str(step.duration) + ' mins'
-            
-        # Subway step should be a direct line on the map
-        if step.is_subway():
-            step.points = [start, end]
         else:
-            step.points = get_route_leg(start, end, 'walking' if step.transport == None else 'driving')            
+            step.has_map = step.start_location != None and step.end_location != None
             
     # Find all subways
     subways = [step for step in transit.directions if step.transport != None and step.transport.is_subway()]
@@ -117,6 +133,7 @@ def get_route_leg(origin, destination, mode = 'walking'):
               }
     url = 'http://maps.google.com/maps/api/directions/json?' + urllib.urlencode(params)
     result = urlfetch.fetch(url)
+    
     if result.status_code == 200:
         route = json.loads(result.content)
         if route['status'] == 'OVER_QUERY_LIMIT':
@@ -132,7 +149,7 @@ def get_route_leg(origin, destination, mode = 'walking'):
 def get_transit_route(from_addr, to_addr):
     
     routes = get_transit_routes(from_addr, to_addr)
-    route_optimal = min(routes, key=lambda x: x.get_duration()) 
+    route_optimal = min(routes, key=lambda x: x.get_cost()) 
     return route_optimal    
 
 def get_transit_routes(from_addr, to_addr):

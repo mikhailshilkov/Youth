@@ -43,9 +43,9 @@ def test():
     #return routes
     
     route_points = []
-    origin = 'shavrova'
-    destination = 'utochkina'
-    mode = 'walking'
+    origin = '59.841864,30.318321'
+    destination = '59.86732529999999,30.261337499999968'
+    mode = 'driving'
     url = "http://maps.googleapis.com/maps/api/directions/json?origin=" + origin + "&destination=" + destination + "&sensor=false&mode=" + mode
     result = urlfetch.fetch(url)
     if result.status_code == 200:

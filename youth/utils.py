@@ -1,6 +1,7 @@
 import datetime
 import time
 import re
+import json
 
 from google.appengine.ext import db
  
@@ -62,3 +63,12 @@ def model_to_dict(model):
             raise ValueError('cannot encode ' + repr(prop))
 
     return output
+
+def JsonHandler(Obj):
+    if hasattr(Obj, 'jsonable'):
+        return Obj.jsonable()
+    else:
+        raise TypeError, 'Object of type %s with value of %s is not JSON serializable' % (type(Obj), repr(Obj))    
+    
+def to_json(data):
+    return json.dumps(data, default = JsonHandler)
