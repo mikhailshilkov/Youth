@@ -24,14 +24,21 @@ def get(from_location, start_time, transport):
         trip_to = create_trip('Way to Peterhof: Meteor (speed boat)', route, start_time)
     elif transport == 'train':
         route = maps.get_transit_route(from_location, '59.9072128,30.299578099999962')
-        trip_to = create_trip('Way to Peterhof: subway + suburban train', route, start_time)
-        route.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ' +
+        clean_post_subway_walk(route)
+        route.directions.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ' +
                                     'You may enter the railway station directly from subway entering hall following the directions. ' +
                                     'The orientation at the railway station is not difficult as soon as you are in the main hall. ' + 
                                     'All booking offices as well as platforms are located in one area. ',
                                     5, 'About 5 mins, 150 m', None))
+        route.directions.append(maps.RouteStep('Buy tickets to the station Peterhof; the fare is 44 RUR for one person one way (88 for return ticket). ' +
+                                               'We would recommend buying return ticket if you plan to use the same way to travel in both directions. ' +
+                                               'The ticket is valid for the whole day so you don’t have to take any particular trains. ' +
+                                               'You need to find train with Ораниенбаум-1 direction in departure.',
+                                    5, 'About 5 mins', None))
+        trip_to = create_trip('Way to Peterhof: subway + suburban train', route, start_time)
     elif transport == 'bus':
         route = maps.get_transit_route(from_location, '59.86732529999999,30.261337499999968')
+        clean_post_subway_walk(route)
         route.directions.append(maps.RouteStep('Cross the street through the underpass and find a bus stop',
                                     5, 'About 5 mins, 150 m', None, maps.GeoPoint(59.86758, 30.261308), maps.GeoPoint(59.868398, 30.259806), True))
         route.directions.append(maps.RouteStep('Take a minibus ("route-taxi"). Look for one of the following route numbers: К-424, ' +
@@ -102,3 +109,7 @@ def create_trip(title, route, start_time):
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
     return Trip(title, expenses, duration, steps_to)
+
+def clean_post_subway_walk(route):
+    if route.directions[-1].is_walk() and route.directions[-2].is_subway():
+        route.directions.pop()

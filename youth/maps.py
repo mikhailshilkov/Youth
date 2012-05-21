@@ -33,6 +33,9 @@ class RouteStep(object):
     def is_subway(self):
         return self.transport != None and self.transport.is_subway()
     
+    def is_walk(self):
+        return self.transport == None
+    
     def is_land_transport(self):
         return self.transport != None and not self.transport.is_subway()
         

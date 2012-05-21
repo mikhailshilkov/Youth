@@ -1,5 +1,8 @@
+#coding=utf-8
+
 import datetime
 
+from youth import bot
 from youth import itinerary
 from youth import hotel
 from youth import maps
@@ -68,6 +71,20 @@ def do_transit(request, response):
         view.to_json(data, response)
     else:
         view.to_html(data, 'transit', response)    
+        
+def do_train(request, response):
+    # get request parameters
+    view_mode = request.get('out', 'html')
+
+    # produce data        
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    data = bot.fetch_trains('Санкт-Петербург', 'Новый Петергоф', tomorrow)
+        
+    # populate the requested view
+    if view_mode == 'json':
+        view.to_json(data, response)
+    else:
+        view.to_html(data, 'train', response)
 
 def do_test(request, response):
     from google.appengine.tools import dev_appserver 

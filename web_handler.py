@@ -14,6 +14,8 @@ class MainHandler(webapp.RequestHandler):
             controller.do_hotel(self.request, self.response)
         elif self.request.path == '/transit':
             controller.do_transit(self.request, self.response)
+        elif self.request.path == '/train':
+            controller.do_train(self.request, self.response)
         elif self.request.path == '/test':
             controller.do_test(self.request, self.response)
         else:

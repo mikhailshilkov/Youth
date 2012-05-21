@@ -1,0 +1,16 @@
+{% extends "master/master.html" %}
+
+{% block title %}Train schedule{% endblock %}
+
+{% block content %}
+<h4>Train timetable for tomorrow (St. Pete - New Peterhof)</h4>
+<table>
+{% for time in data %}
+	<tr>
+		<td>{{time.departure}}</td>
+		<td>-</td>
+		<td>{{time.arrival}}</td>
+	</tr>
+{% endfor %}
+</table>
+{% endblock %}

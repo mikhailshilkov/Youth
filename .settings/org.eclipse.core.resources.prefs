@@ -1,5 +1,7 @@
-#Tue May 01 09:58:11 MSD 2012
+#Mon May 21 19:30:08 MSD 2012
 eclipse.preferences.version=1
+encoding//youth/bot.py=utf-8
+encoding//youth/controller.py=utf-8
 encoding//youth/itinerary.py=utf-8
 encoding//youth/maps.py=utf-8
 encoding//youth/stuff.py=utf-8

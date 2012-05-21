@@ -92,7 +92,7 @@ function showDetails(index, action) {
         mapAddMarker(map, startPoint, 'From');
 
         var needsDirections = route['type'] != 'Subway';
-        if(route['type'] = 'Walk')// don't search directions for walks < 200 m
+        if(route['type'] == 'Walk')// don't search directions for walks < 200 m
             needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 200;
         if(needsDirections) {
             var request = {
