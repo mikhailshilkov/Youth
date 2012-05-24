@@ -26,6 +26,10 @@ def time_add_mins(tm, mins):
     fulldate = fulldate + datetime.timedelta(minutes = mins)
     return fulldate.time()
 
+def time_get_delta_minutes(start, end):
+    delta = datetime.datetime.combine(datetime.date.today(), start) - datetime.datetime.combine(datetime.date.today(), end)
+    return delta.seconds / 60
+
 def remove_html_tags(data):
     p = re.compile(r'<.*?>')
     return p.sub('', data)

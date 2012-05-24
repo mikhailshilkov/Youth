@@ -10,6 +10,8 @@ class MainHandler(webapp.RequestHandler):
             controller.do_home(self.request, self.response)
         elif self.request.path == '/itinerary':
             controller.do_itinerary(self.request, self.response)
+        elif self.request.path == '/itinerary_js':
+            controller.do_itinerary(self.request, self.response, 'itinerary_js')
         elif self.request.path == '/hotel':
             controller.do_hotel(self.request, self.response)
         elif self.request.path == '/transit':

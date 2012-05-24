@@ -14,5 +14,8 @@ handlers:
 - url: /images
   static_dir: static/img
 
+- url: /templates
+  static_dir: static/templates
+
 - url: /.*
   script: web_handler.py

@@ -38,6 +38,9 @@ class RouteStep(object):
     
     def is_land_transport(self):
         return self.transport != None and not self.transport.is_subway()
+    
+    def is_train(self):
+        return self.transport != None and self.transport.is_train()
         
     def jsonable(self):
         return self.__dict__  
@@ -62,7 +65,7 @@ class RouteStep(object):
         
 # Class that represents a Transport        
 class Transport(object):
-    def __init__(self, transport_type, line_number, interval, price = None):
+    def __init__(self, transport_type, line_number = None, interval = None, price = None):
         self.type = transport_type
         self.line_number = line_number
         self.interval = interval
@@ -70,6 +73,9 @@ class Transport(object):
         
     def is_subway(self):
         return self.type == 'Subway'
+    
+    def is_train(self):
+        return self.type == 'Train'
     
     def jsonable(self):
         return self.__dict__

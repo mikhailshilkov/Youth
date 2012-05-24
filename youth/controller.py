@@ -12,7 +12,7 @@ from youth import view
 def do_home(request, response):
     view.to_html(None, 'home', response)
 
-def do_itinerary(request, response):
+def do_itinerary(request, response, view_name = 'itinerary'):
     # get request parameters
     try: 
         start_time = datetime.datetime.strptime(request.get('time', '10:00'), '%H:%M')
@@ -29,7 +29,7 @@ def do_itinerary(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'itinerary', response)
+        view.to_html(data, view_name, response)
         
 def do_hotel(request, response):
     # get request parameters        

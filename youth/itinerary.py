@@ -1,9 +1,10 @@
 #coding=utf-8
 
-import json
+import datetime
 
 from youth import utils
 from youth import maps
+from youth import bot
 
 # Class that represents a Trip
 class Trip(object):
@@ -13,7 +14,8 @@ class Trip(object):
         self.duration = duration
         self.steps = steps
         self.change_action = None
-    def summary(self):
+        self.summary = self.get_summary()
+    def get_summary(self):
         return 'Expenses: ' + str(self.expenses) + ' RUR, travel time: ' + utils.duration_to_string(self.duration)
     def jsonable(self):
         return self.__dict__
@@ -23,7 +25,7 @@ def get(from_location, start_time, transport):
         route = maps.get_transit_route(from_location, '59.93993,30.309073')
         trip_to = create_trip('Way to Peterhof: Meteor (speed boat)', route, start_time)
     elif transport == 'train':
-        route = maps.get_transit_route(from_location, '59.9072128,30.299578099999962')
+        route = maps.get_transit_route(from_location, '59.907486,30.299383')
         clean_post_subway_walk(route)
         route.directions.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ' +
                                     'You may enter the railway station directly from subway entering hall following the directions. ' +
@@ -32,9 +34,13 @@ def get(from_location, start_time, transport):
                                     5, 'About 5 mins, 150 m', None))
         route.directions.append(maps.RouteStep('Buy tickets to the station Peterhof; the fare is 44 RUR for one person one way (88 for return ticket). ' +
                                                'We would recommend buying return ticket if you plan to use the same way to travel in both directions. ' +
-                                               'The ticket is valid for the whole day so you don’t have to take any particular trains. ' +
-                                               'You need to find train with Ораниенбаум-1 direction in departure.',
-                                    5, 'About 5 mins', None))
+                                               'The ticket is valid for the whole day so you don’t have to take any particular trains. ',
+                                               5, 'About 5 mins', None))
+        route.directions.append(maps.RouteStep('Take a train. You need to find a train in Ораниенбаум-1 direction.',
+                                               0, '<Train at>', maps.Transport('Train')))
+        route.directions.append(maps.RouteStep('If the weather is fine take a stroll from railway station to the Peterhof palace (you can walk via park).',
+                                               45, 'About 45 mins', None, maps.GeoPoint(59.864165, 29.925073), maps.GeoPoint(59.880511, 29.906809), True))
+        
         trip_to = create_trip('Way to Peterhof: subway + suburban train', route, start_time)
     elif transport == 'bus':
         route = maps.get_transit_route(from_location, '59.86732529999999,30.261337499999968')
@@ -54,7 +60,7 @@ def get(from_location, start_time, transport):
     steps_in = [
         {'instruction': 'Buy the Lower Park tickets in a box office.' + 
                         'Our recommendation to visit Lower park and Upper park with all fountains at least. Also you can try to visit Grand palace you should be prepared to the huge queues. First one to buy tickets and another one to enter. Note that ticket in lower park works only for one visit. If you leave park you are not able to visit it again at the same day.',
-         'start_time': utils.time_to_string(utils.time_add_mins(start_time, 120)),
+         'start_time': utils.time_to_string(utils.time_add_mins(start_time, trip_to.duration)),
          'hint' : 'pay fare: XXX RUR'}]
     trip_in = Trip('Peterhof sightseeing', 0, 120, steps_in)
     
@@ -95,10 +101,18 @@ def create_trip(title, route, start_time):
     steps_to = []
     duration = 0
     expenses = 0
+    step_start_time = start_time
     for step in route.directions: 
+        if step.is_train():
+            next_train = get_next_peterhot_train(step_start_time)
+            step_start_time = next_train.departure
+            hint = 'Train at ' + utils.time_to_string(next_train.departure)
+            step.duration = next_train.get_duration()
+        else:
+            hint = step.addinfo
         steps_to.append({'instruction': step.direction,
-                 'start_time': utils.time_to_string(utils.time_add_mins(start_time, duration)),
-                 'hint' : step.addinfo,
+                 'start_time': utils.time_to_string(step_start_time),
+                 'hint' : hint,
                  'details' :
                  {
                     'show_label': 'Show the map',
@@ -106,6 +120,7 @@ def create_trip(title, route, start_time):
                     'action': 'map',
                     'map': { 'route' : step.get_route_json() }
                  } if step.has_map else None})
+        step_start_time = utils.time_add_mins(step_start_time, step.duration)
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
     return Trip(title, expenses, duration, steps_to)
@@ -113,3 +128,8 @@ def create_trip(title, route, start_time):
 def clean_post_subway_walk(route):
     if route.directions[-1].is_walk() and route.directions[-2].is_subway():
         route.directions.pop()
+        
+def get_next_peterhot_train(time_after):
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+    timetable = bot.fetch_trains('Санкт-Петербург', 'Новый Петергоф', tomorrow)
+    return [x for x in timetable if x.departure > time_after][0]

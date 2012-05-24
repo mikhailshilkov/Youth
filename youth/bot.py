@@ -3,11 +3,15 @@ import urllib
 from google.appengine.api import urlfetch
 from lib.BeautifulSoup import BeautifulSoup
 import datetime
+import utils
 
 class TrainTiming(object):
     def __init__(self, departure, arrival):
         self.departure = departure
         self.arrival = arrival
+        
+    def get_duration(self):
+        return utils.time_get_delta_minutes(self.arrival, self.departure)
 
 def fetch_trains(place_from, place_to, date):    
     params = {'fromName': place_from,

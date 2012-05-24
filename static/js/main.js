@@ -72,59 +72,63 @@ function showDetails(index, action) {
 
     if(action == 'map' && !initialized[index]) {
         initialized[index] = true;
-        var myOptions = {
-            mapTypeId : google.maps.MapTypeId.ROADMAP,
-            scaleControl : true
-        };
         var mapPane = $(id + " .details");
         mapPane.css('width', '100%');
         mapPane.css('height', '300px');
-        var map = new google.maps.Map(mapPane.get(0), myOptions);
 
-        var bounds = new google.maps.LatLngBounds();
-        var coordinates = [];
         var route = eval('Context.route' + index.toString());
-
-        var startPoint = new google.maps.LatLng(route['start']['lat'], route['start']['lng']);
-        var endPoint = new google.maps.LatLng(route['end']['lat'], route['end']['lng']);
-        coordinates.push(startPoint);
-        bounds.extend(startPoint);
-        mapAddMarker(map, startPoint, 'From');
-
-        var needsDirections = route['type'] != 'Subway';
-        if(route['type'] == 'Walk')// don't search directions for walks < 200 m
-            needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 200;
-        if(needsDirections) {
-            var request = {
-                origin : startPoint,
-                destination : endPoint,
-                travelMode : route['type'] == 'Walk' ? google.maps.TravelMode.WALKING : google.maps.TravelMode.DRIVING
-            };
-            var directionsService = new google.maps.DirectionsService();
-            directionsService.route(request, function(result, status) {
-                if(status == google.maps.DirectionsStatus.OK) {
-                    steps = result.routes[0].legs[0].steps;
-                    for(var i = 0; i < steps.length - 1; i++) {
-                        var point = steps[i].end_location;
-                        coordinates.push(point);
-                        bounds.extend(point);
-                    }
-
-                    coordinates.push(endPoint);
-                    bounds.extend(endPoint);
-                    mapAddMarker(map, endPoint, 'To');
-                    mapAddPolyline(map, coordinates);
-                    mapFitBounds(map, bounds);
-                }
-            });
-        } else {
-            coordinates.push(endPoint);
-            bounds.extend(endPoint);
-            mapAddMarker(map, endPoint, 'To');
-            mapAddPolyline(map, coordinates);
-            mapFitBounds(map, bounds);
-        }
+        showDetailsMap(mapPane, route);
     }
+}
+
+function showDetailsMap(mapPane, route) {
+    var myOptions = {
+        mapTypeId : google.maps.MapTypeId.ROADMAP,
+        scaleControl : true
+    };
+    var map = new google.maps.Map(mapPane.get(0), myOptions);
+    var bounds = new google.maps.LatLngBounds();
+    var coordinates = [];
+    var startPoint = new google.maps.LatLng(route['start']['lat'], route['start']['lng']);
+    var endPoint = new google.maps.LatLng(route['end']['lat'], route['end']['lng']);
+    coordinates.push(startPoint);
+    bounds.extend(startPoint);
+    mapAddMarker(map, startPoint, 'From');
+
+    var needsDirections = route['type'] != 'Subway';
+    if(route['type'] == 'Walk')// don't search directions for walks < 200 m
+        needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 200;
+    if(needsDirections) {
+        var request = {
+            origin : startPoint,
+            destination : endPoint,
+            travelMode : route['type'] == 'Walk' ? google.maps.TravelMode.WALKING : google.maps.TravelMode.DRIVING
+        };
+        var directionsService = new google.maps.DirectionsService();
+        directionsService.route(request, function(result, status) {
+            if(status == google.maps.DirectionsStatus.OK) {
+                steps = result.routes[0].legs[0].steps;
+                for(var i = 0; i < steps.length - 1; i++) {
+                    var point = steps[i].end_location;
+                    coordinates.push(point);
+                    bounds.extend(point);
+                }
+
+                coordinates.push(endPoint);
+                bounds.extend(endPoint);
+                mapAddMarker(map, endPoint, 'To');
+                mapAddPolyline(map, coordinates);
+                mapFitBounds(map, bounds);
+            }
+        });
+    } else {
+        coordinates.push(endPoint);
+        bounds.extend(endPoint);
+        mapAddMarker(map, endPoint, 'To');
+        mapAddPolyline(map, coordinates);
+        mapFitBounds(map, bounds);
+    }
+
 }
 
 function mapAddMarker(map, point, name) {
