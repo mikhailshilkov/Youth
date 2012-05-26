@@ -15,7 +15,7 @@ html {
 }
 .searchpane {
     position: relative;
-    top: 150px;
+    top: 130px;
     margin: auto;
     padding: 0 223px !important;
     max-width: 572px;
@@ -24,25 +24,45 @@ html {
     color: #DD4B39;
     font-size: 1.2em;
 }
-.searchbox {
+.inputbox {
     background: white;
     border: 1px solid #D9D9D9;
     border-top: 1px solid silver;
     height: 27px;
-    width: 522px;
     margin-top: .5em;
     margin-bottom: .5em;
 }
-.searchbox input {
+.inputbox input {
     background-color: transparent;
     border: 0px;
-    width: 508px;
     color: black;
     height: 20px;
     outline: none;
     vertical-align: top;
     font-size: 1.2em;
     margin: 3px 8px 1px 8px;
+}
+.searchbox {
+    width: 522px;
+}
+.searchbox input {
+    width: 508px;
+}
+.datebox {
+    float: left;
+    padding-right: 1em;
+}
+.datebox input {
+    width: 8em;
+}
+.timebox {
+    float: left;
+}
+.timebox input {
+    width: 6em;
+}
+.searchpane .buttons {
+    clear: left;
 }
 .ui-autocomplete {
     max-height: 275px;
@@ -199,8 +219,7 @@ html {
     display: none;
 }
 .window {
-    position: fixed;
-    display: none;
+    position: fixed;    
     z-index: 9999;
     background-color: white;
     border: 1px solid #CCC;
@@ -248,5 +267,6 @@ html {
     margin-right: .5em;
 }
 .gmnoprint div a {
-    display: none !important;//TODO: this statement might break the ToS of Google maps, to be reviewed
+    display: none !important;//
+    TODO: this statement might break the ToS of Google maps, to be reviewed
 }

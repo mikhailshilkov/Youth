@@ -12,63 +12,25 @@
 		<div class="blue button" onclick="alert('Printing does not work yet')">Print</div>
 	</div>
 	<h1>Itinerary</h1>
-	{% for trip in data.trips %}
-		<hr/>
-		<div class="title">
-			<h2>{{trip.title}}</h2>
-			{% if trip.change_action != null %}
-				<div class="gray button" onclick="showPopup()">{{trip.change_action}}</div>
-			{% endif %}
-		</div>		
-		{% if trip.summary != null%}
-			<div class="summary">{{trip.summary}}</div>
-		{% endif %}
-		{% for step in trip.steps %}
-		<div class="step">
-			<div class="info">
-				<div class="time">{{step.start_time}}</div>
-				<div class="hint">{{step.hint}}</div>
-			</div>
-			<div class="instuction">
-				<div class="text">{{step.instruction}}</div>
-				{% if step.details != null %}
-					<div id="details_collapsed_{{forloop.counter}}" class="gray button" onclick="showDetails({{forloop.counter}}, '{{step.details.action}}')">
-						{{step.details.show_label}}						
-					</div>
-					<div id="details_expanded_{{forloop.counter}}" style="display:none">
-						<div class="gray button" onclick="showDetails({{forloop.counter}})">
-							{{step.details.hide_label}}
-						</div>						
-						<div class="details">
-							{% if step.details.image != null %}
-							   <img src="{{step.details.image.path}}" width="{{step.details.image.width}}" />
-							{% endif %}							
-						</div>
-					</div>
-				{% endif %}
-			</div>
-		</div>
-		{% endfor %}
-	{% endfor %}
+	<div id="itineraryContent"></div>
 </section>
-{% include "controls/popup.html" %}
+<div id="mask"></div>
 {% endblock %}
 
 {% block scripts %}
 <script type="text/javascript" src="https://maps.google.com/maps/api/js?libraries=geometry&sensor=false">
 </script>
+<script type="text/javascript" src="scripts/mustache.js">
+</script>
+<script type="text/javascript" src="scripts/rendering.js">
+</script>
 <script type="text/javascript" language="javascript">
 {% autoescape off %}
     var Context = new Object();
-    {% for trip in data.trips %}
-    	{% for step in trip.steps %}
-    		{% if step.details.map != null %}
-				Context.route{{forloop.counter}} = {{step.details.map.route}};
-			{% endif %}
-		{% endfor %}
-	{% endfor %}
-	Context.from = '{{data.context.from_location}}';
-    Context.startTime = '{{data.context.start_time}}';
+	Context.from = '{{data.from_location}}';
+	Context.date = '{{data.date}}';
+    Context.time = '{{data.time}}';
+    Context.transport = '{{data.transport}}';
 {% endautoescape %}	
 </script>
 {% endblock %}

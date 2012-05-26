@@ -4,9 +4,18 @@ import re
 import json
 
 from google.appengine.ext import db
+
+def date_to_string(tm):
+    return tm.strftime('%d %B %Y')
+
+def date_serialize(tm):
+    return tm.strftime('%Y-%m-%d')
  
 def time_to_string(tm):
-    return tm.strftime('%I:%M %p')
+    return tm.strftime('%H:%M')
+
+def time_serialize(tm):
+    return tm.strftime('%H-%M')
 
 def duration_to_string(duration):
     if duration > 120:
@@ -18,16 +27,13 @@ def duration_to_string(duration):
     else:
         return str(duration) + ' mins'
 
-def time_serialize(tm):
-    return tm.strftime('%H:%M')
-
 def time_add_mins(tm, mins):
     fulldate = datetime.datetime(1,1,1,tm.hour,tm.minute,tm.second)
     fulldate = fulldate + datetime.timedelta(minutes = mins)
     return fulldate.time()
 
 def time_get_delta_minutes(start, end):
-    delta = datetime.datetime.combine(datetime.date.today(), start) - datetime.datetime.combine(datetime.date.today(), end)
+    delta = datetime.datetime.combine(datetime.date.today(), end) - datetime.datetime.combine(datetime.date.today(), start)
     return delta.seconds / 60
 
 def remove_html_tags(data):

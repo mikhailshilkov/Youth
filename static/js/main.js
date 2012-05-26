@@ -1,6 +1,19 @@
 var CurrentHotel = null;
+var CurrentTime = null;
+var CurrentDate = null;
 
 function navigateToItinerary() {
+    CurrentDate = $("#datepicker").datepicker('getDate');
+    if(CurrentDate == null) {
+        alert('Wrong date');
+        return;
+    }
+    CurrentTime = formatTime($('#timepicker').val());
+    if(!CurrentTime) {
+        alert('Wrong time');
+        return;
+    }
+
     var address = $('#address').val();
     if(CurrentHotel != null && address == CurrentHotel.name)
         navigateToItineraryByLatLng(CurrentHotel.latitude, CurrentHotel.longitude);
@@ -9,7 +22,7 @@ function navigateToItinerary() {
 }
 
 function navigateToItineraryByLatLng(lat, lng) {
-    document.location = '/itinerary?from=' + encodeURIComponent(lat.toString() + ',' + lng.toString());
+    document.location = '/itinerary?from=' + lat.toString() + '-' + lng.toString() + '&date=' + $.datepicker.formatDate('yy-mm-dd', CurrentDate) + '&time=' + CurrentTime.replace(':', '-');
 }
 
 function navigateToItineraryByAddress(address) {
@@ -28,7 +41,7 @@ function navigateToItineraryByAddress(address) {
                     var lng = latLng.lng();
                     var wellType = Math.max($.inArray('street_address', results[i].types), $.inArray('subpremise', results[i].types), $.inArray('premise', results[i].types));
                     if(lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58 && wellType >= 0) {
-                        location = lat.toString() + ',' + lng.toString();
+                        navigateToItineraryByLatLng(lat.toString(), lng.toString());
                         break;
                     }
                 }
@@ -47,7 +60,7 @@ function navigateToItineraryByAddress(address) {
     }
 }
 
-function setupAddressAutocomplete() {
+function setupHomeInputs() {
     $("#address").autocomplete({
         source : "/hotel?out=json",
         minLength : 2,
@@ -63,9 +76,16 @@ function setupAddressAutocomplete() {
     }).data("autocomplete")._renderItem = function(ul, item) {
         return $("<li></li>").data("item.autocomplete", item).append("<a>" + item.name + "</a>").appendTo(ul);
     };
+
+    $("#datepicker").datepicker({
+        minDate : 0,
+        maxDate : "+6M"
+    });
+    $("#datepicker").datepicker("option", "dateFormat", "dd MM yy");
+    $("#datepicker").datepicker('setDate', new Date().setDate(new Date().getDate() + 1));
 }
 
-function showDetails(index, action) {
+function showDetails(index, action, route) {
     $("#details_collapsed_" + index.toString()).toggle();
     var id = "#details_expanded_" + index.toString();
     $(id).toggle();
@@ -76,8 +96,7 @@ function showDetails(index, action) {
         mapPane.css('width', '100%');
         mapPane.css('height', '300px');
 
-        var route = eval('Context.route' + index.toString());
-        showDetailsMap(mapPane, route);
+        showDetailsMap(mapPane, eval('(' + route + ')'));
     }
 }
 
@@ -193,32 +212,46 @@ function hidePopup() {
 }
 
 function goTo(transport) {
-    window.location.href = '/itinerary?from=' + encodeURIComponent(Context.from) + '&transport=' + transport + '&time=' + Context.startTime;
+    hidePopup();
+    Context.transport = transport;
+    loadItinerary();
+}
+
+function alignPopups() {
+    var box = $('.window');
+
+    //Get the screen height and width
+    var maskHeight = $(document).height();
+    var maskWidth = $(window).width();
+
+    //Set height and width to mask to fill up the whole screen
+    $('#mask').css({
+        'width' : maskWidth,
+        'height' : maskHeight
+    });
+
+    //Get the window height and width
+    var winH = $(window).height();
+    var winW = $(window).width();
+
+    //Set the popup window to center
+    box.css('top', winH / 2 - box.height() / 2);
+    box.css('left', winW / 2 - box.width() / 2);
 }
 
 
 $(document).ready(function() {
     $(window).resize(function() {
 
-        var box = $('.window');
-
-        //Get the screen height and width
-        var maskHeight = $(document).height();
-        var maskWidth = $(window).width();
-
-        //Set height and width to mask to fill up the whole screen
-        $('#mask').css({
-            'width' : maskWidth,
-            'height' : maskHeight
-        });
-
-        //Get the window height and width
-        var winH = $(window).height();
-        var winW = $(window).width();
-
-        //Set the popup window to center
-        box.css('top', winH / 2 - box.height() / 2);
-        box.css('left', winW / 2 - box.width() / 2);
+        alignPopups();
 
     });
 });
+function formatTime(time) {
+    var result = false, m;
+    var re = /^\s*([01]?\d|2[0-3]):?([0-5]\d)\s*$/;
+    if(( m = time.match(re))) {
+        result = (m[1].length == 2 ? "" : "0") + m[1] + ":" + m[2];
+    }
+    return result;
+}

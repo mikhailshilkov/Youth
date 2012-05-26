@@ -1,6 +1,7 @@
 import re
 import urllib
 from google.appengine.api import urlfetch
+from google.appengine.api import memcache
 from lib.BeautifulSoup import BeautifulSoup
 import datetime
 import utils
@@ -11,14 +12,19 @@ class TrainTiming(object):
         self.arrival = arrival
         
     def get_duration(self):
-        return utils.time_get_delta_minutes(self.arrival, self.departure)
+        return utils.time_get_delta_minutes(self.departure, self.arrival)
 
-def fetch_trains(place_from, place_to, date):    
+def fetch_trains(place_from, place_to, date):  
+    key = 'trains_' + place_from + '_' + place_to + '_' + str(date)
+    data = memcache.get(key) #@UndefinedVariable
+    if data != None:
+        return data
+      
     params = {'fromName': place_from,
               'toName': place_to,
-              'when': date.isoformat(),
+              'when': utils.date_serialize(date),
               'search_type': 'suburban'}
-    url = 'http://m.rasp.yandex.ru/search?' + urllib.urlencode(params)                    
+    url = 'http://m.rasp.yandex.ru/search?' + urllib.urlencode(params)
     response = urlfetch.fetch(url)
     html = response.content
     soup = BeautifulSoup(html)
@@ -29,6 +35,10 @@ def fetch_trains(place_from, place_to, date):
         result = []
         for b_node in b_nodes:
             data = regex.split(b_node.renderContents())
-            time = [datetime.datetime.strptime(x, '%H:%M').time() for x in data]            
-            result.append(TrainTiming(time[0], time[1]))
+            try:
+                time = [datetime.datetime.strptime(x, '%H:%M').time() for x in data]
+                result.append(TrainTiming(time[0], time[1]))
+            except:
+                pass
+        memcache.add(key, result)  #@UndefinedVariable
         return result

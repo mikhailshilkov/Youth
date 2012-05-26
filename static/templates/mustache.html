@@ -1,0 +1,63 @@
+<script id="itinerary" type="text/html">
+{{#.}}
+	<hr/>
+	<div class="title">
+		<h2>{{title}}</h2>
+		{{#change_action}}
+			<div class="gray button" onclick="createPopup()">{{change_action}}</div>
+		{{/change_action}}
+	</div>
+	{{#summary}}
+		<div class="summary">{{summary}}</div>
+	{{/summary}}
+	{{#steps}}
+		<div class="step">
+			<div class="info">
+				<div class="time">{{start_time}}</div>
+				<div class="hint">{{hint}}</div>
+			</div>
+			<div class="instuction">
+				<div class="text">{{instruction}}</div>
+				{{#details}}
+					<div id="details_collapsed_{{step_index}}" class="gray button" onclick="showDetails({{step_index}}, '{{action}}', '{{map.route}}')">
+						{{show_label}}						
+					</div>
+					<div id="details_expanded_{{step_index}}" style="display:none">
+						<div class="gray button" onclick="showDetails({{step_index}})">
+							{{hide_label}}
+						</div>						
+						<div class="details">														
+						</div>
+					</div>
+				{{/details}}
+			</div>
+		</div>
+	{{/steps}}
+{{/.}}
+</script>
+
+<script id="popup" type="text/html">
+<div id="dialog" class="window">
+	<div class="header">
+		<div class="buttons">
+			<div class="blue button" onclick="hidePopup()">X</div>
+		</div>
+		<h2>Select a transport option</h2>
+	</div>
+	<hr />
+	<div class="options">
+		{{#.}}
+			<div class="option {{background}}" onclick="goTo('{{alias}}')">
+				<img src="images/{{icon}}.png" alt="{{title}}" width="100%" class="image" />
+				<h3>{{title}}</h3>
+				<div class="time">Time: {{time}}</div>
+				<div class="price">Price: {{price}}</div>
+				<div class="experience">Experience: {{experience}}</div>
+				<div class="simplicity">Simplicity: {{simplicity}}</div>
+				<div class="onfoot">Distance on foot: {{onfoot}}</div>
+				<div class="risks">{{risks}}</div>
+			</div>
+		{{/.}}
+	</div>
+</div> 
+</script>

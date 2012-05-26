@@ -7,29 +7,82 @@ from youth import itinerary
 from youth import hotel
 from youth import maps
 from youth import stuff
+from youth import utils
 from youth import view
 
 def do_home(request, response):
     view.to_html(None, 'home', response)
-
-def do_itinerary(request, response, view_name = 'itinerary'):
-    # get request parameters
+    
+def get_start_time(request):
     try: 
-        start_time = datetime.datetime.strptime(request.get('time', '10:00'), '%H:%M')
+        start_time = datetime.datetime.strptime(request.get('time', '10-00'), '%H-%M').time()
     except:
         start_time = datetime.time(hour=10, minute=0)
-    from_location = request.get('from', '59.945085,30.292699')
+    return start_time
+
+def do_itinerary(request, response):
+    # get request parameters
+    start_time = get_start_time(request)
+    from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
     view_mode = request.get('out', 'html')
     transport = request.get('transport', 'bus')
+    try:
+        date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
+    except:
+        date = datetime.date.today() + datetime.timedelta(days=1)
 
     # produce data        
-    data = itinerary.get(from_location, start_time, transport)              
+    data = { 
+            'from_location': from_location,
+            'date': utils.date_serialize(date), 
+            'time' : utils.time_serialize(start_time),
+            'transport': transport 
+           }              
     
     # populate the requested view
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, view_name, response)
+        view.to_html(data, 'itinerary', response)
+
+def do_itinerary_trip(request, response):
+    # get request parameters
+    start_time = get_start_time(request)
+    from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
+    view_mode = request.get('out', 'html')
+    transport = request.get('transport', 'bus')
+    try:
+        date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
+    except:
+        date = datetime.date.today() + datetime.timedelta(days=1)
+
+    # produce data        
+    data = itinerary.get_trip(from_location, date, start_time, transport)              
+    
+    # populate the requested view
+    if view_mode == 'json':
+        view.to_json(data, response)
+    else:
+        view.to_html(data, 'trip', response)
+
+def do_itinerary_options(request, response):
+    # get request parameters
+    start_time = get_start_time(request)
+    from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
+    view_mode = request.get('out', 'html')
+    try:
+        date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
+    except:
+        date = datetime.date.today() + datetime.timedelta(days=1)
+
+    # produce data        
+    data = itinerary.get_options(from_location, date, start_time)              
+    
+    # populate the requested view
+    if view_mode == 'json':
+        view.to_json(data, response)
+    else:
+        view.to_html(data, 'itineraryOptions', response)
         
 def do_hotel(request, response):
     # get request parameters        

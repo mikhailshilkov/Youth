@@ -4,6 +4,7 @@ import json
 import re
 import urllib
 from google.appengine.api import urlfetch
+from google.appengine.api import memcache
 from lib.BeautifulSoup import BeautifulSoup
 from youth import utils
 
@@ -156,9 +157,14 @@ def get_route_leg(origin, destination, mode = 'walking'):
     return route_points
 
 def get_transit_route(from_addr, to_addr):
+    key = 'route_' + from_addr + '_' + to_addr
+    data = memcache.get(key) #@UndefinedVariable
+    if data != None:
+        return data
     
     routes = get_transit_routes(from_addr, to_addr)
-    route_optimal = min(routes, key=lambda x: x.get_cost()) 
+    route_optimal = min(routes, key=lambda x: x.get_cost())
+    memcache.add(key, route_optimal, 3600) #@UndefinedVariable
     return route_optimal    
 
 def get_transit_routes(from_addr, to_addr):
