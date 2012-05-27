@@ -34,25 +34,21 @@ function navigateToItineraryByAddress(address) {
             'bounds' : bounds
         }, function(results, status) {
             if(status == google.maps.GeocoderStatus.OK) {
-                var location = null;
                 for(var i = 0; i < results.length; i++) {
                     var latLng = results[i].geometry.location;
                     var lat = latLng.lat();
                     var lng = latLng.lng();
                     var wellType = Math.max($.inArray('street_address', results[i].types), $.inArray('subpremise', results[i].types), $.inArray('premise', results[i].types));
                     if(lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58 && wellType >= 0) {
-                        navigateToItineraryByLatLng(lat.toString(), lng.toString());
-                        break;
+                        navigateToItineraryByLatLng(address, lat.toString(), lng.toString());
+                        return;
                     }
                 }
-                if(location != null) {
-                    navigateToItineraryByLatLng(address, lat, lng);
-                } else {
-                    if(address.indexOf('St. Petersburg') < 0)
-                        navigateToItineraryByAddress(address + ', St. Petersburg, Russia');
-                    else
-                        alert("Address was not found");
-                }
+                
+                if(address.indexOf('St. Petersburg') < 0)
+                    navigateToItineraryByAddress(address + ', St. Petersburg, Russia');
+                else
+                    alert("Address was not found");
             } else {
                 alert("Address was not found for the following reason: " + status);
             }
