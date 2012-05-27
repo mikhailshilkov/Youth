@@ -13,9 +13,21 @@
 		</tr>
 	</table>	
 	<table>
+		<tr>
+			<td>Duration</td>
+			<td>(travel)</td>
+			<td>(interval)</td>
+			<td>Info</td>
+			<td>Direction</td>
+			<td>Start</td>
+			<td>End</td>
+		</tr>
 	{% for step in route.directions %}
 		<tr>
 			<td>{{step.duration}} min</td>
+			<td>{{step.initial_duration}} min</td>
+			<td>{{step.service_interval}} min</td>
+			<td>{{step.addinfo}}</td>
 			<td>{{step.direction}}</td>
 			<td>{{step.start_location}}</td>
 			<td>{{step.end_location}}</td>

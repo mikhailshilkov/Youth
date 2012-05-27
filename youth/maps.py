@@ -172,7 +172,7 @@ def get_transit_routes(from_addr, to_addr):
     url = "http://maps.google.com/?saddr=" + urllib.quote(from_addr) + "&daddr=" + urllib.quote(to_addr) + "&dirflg=r&output=json&time=10:00am"
     result = urlfetch.fetch(url)
     response = result.content
-
+    
     # Get points arrays    
     points = []
     points_starts = [match.start() + 8 for match in re.finditer(re.escape(',points:[{'), response)]
@@ -223,15 +223,16 @@ def parse(html, points_array, steps_array):
                 if segment_text != '':
                     step.direction += ': ' + segment_text
                      
-                step.addinfo = get_nodes_text(step_node.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })).replace('(','').replace(')','')            
+                step.addinfo = get_nodes_text(step_node.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })).replace('(','').replace(')','')
                 step.duration = parse_duration(step.addinfo)
+                step.initial_duration = step.duration
                 total_duration += step.duration
                 
                 transport_type = get_transport(step.direction)
                 if transport_type != None and transport_type != 'Walk':
                     line_number = get_node_text(step_node.find(attrs = { "class" : "trtline" }))
-                    service_interval = parse_service_interval(step.addinfo)
-                    step.transport = Transport(transport_type, line_number, service_interval)                
+                    step.service_interval = parse_service_interval(step.addinfo)
+                    step.transport = Transport(transport_type, line_number, step.service_interval)                
                     if not step.transport.is_subway(): 
                         step.direction = step.direction.replace(step.transport.type, step.transport.type + ' number ' + step.transport.line_number)            
                 

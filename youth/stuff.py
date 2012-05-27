@@ -10,7 +10,7 @@ from youth.maps import GeoPoint
 def test():
     #saddr = urllib.quote('59.94474100000001,30.294258000000013')
     daddr = urllib.quote('59.86732529999999,30.261337499999968')
-    saddr = urllib.quote("59.841864,30.318321")
+    saddr = urllib.quote("59.9029446,30.398085000000037")
     #daddr = urllib.quote("St. Petersburg Sadovaya 32")
     url = "http://maps.google.com/?saddr=" + saddr + "&daddr=" + daddr + "&dirflg=r&output=json&hl=en"
     result = urlfetch.fetch(url)
@@ -40,7 +40,7 @@ def test():
     #return html
     #return points
     #return points_string
-    #return routes
+    return routes
     
     route_points = []
     origin = '59.841864,30.318321'
@@ -95,6 +95,7 @@ def parse(html, points_arr, steps_arr):
                             arrive = arrive_node.nextSibling.text
                 addinfo_nodes = step.findAll(attrs = { "class" : re.compile('^dir-ts-addinfo.*') })
                 addinfo = remove_html_tags(get_nodes_text(addinfo_nodes))
+                
                 addinfo_duration_m = re.search('Service runs every\s(\d+)\smin', addinfo)
                 if addinfo_duration_m != None:
                     addinfo_duration = addinfo_duration_m.group(1) 
@@ -155,4 +156,7 @@ def parse_duration(info):
     tmp = tmp.replace('(', '')
     tmp = tmp.replace(' mins', '')
     tmp = tmp.replace(' min', '')
-    return int(tmp)
+    try:
+        return int(tmp)
+    except:
+        return 0
