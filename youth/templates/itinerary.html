@@ -5,11 +5,19 @@
 {% block content %}
 <div class="pageheader">
 	<a href="/">Home</a>
-	<a href="/transit?from={{data.context.from_location}}" target="_blank">Route options</a>
+	<a href="/transit?from={{data.from_location}}" target="_blank">Route options</a>
+</div>
+<div class="sidepanel">
+	<div class="preferences">
+		<h4>Your trip</h4>
+		<div class="date">{{data.date}}</div>
+		<div class="leave">Leave {{data.address}} at {{data.time}}</div>
+		<div class="gray button" onclick="document.location='/'">New search</div>
+	</div>
 </div>
 <section class="itinerary">
 	<div class="buttons">	
-		<div class="blue button" onclick="alert('Printing does not work yet')">Print</div>
+		<div class="blue button" onclick="printIt($('.itinerary').html())">Print</div>
 	</div>
 	<h1>Itinerary</h1>
 	<div id="itineraryContent"></div>

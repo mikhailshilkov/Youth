@@ -164,7 +164,7 @@ def get_transit_route(from_addr, to_addr):
     
     routes = get_transit_routes(from_addr, to_addr)
     route_optimal = min(routes, key=lambda x: x.get_cost())
-    memcache.add(key, route_optimal, 3600) #@UndefinedVariable
+    memcache.add(key, route_optimal, 60*60) #@UndefinedVariable
     return route_optimal    
 
 def get_transit_routes(from_addr, to_addr):

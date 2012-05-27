@@ -40,5 +40,5 @@ def fetch_trains(place_from, place_to, date):
                 result.append(TrainTiming(time[0], time[1]))
             except:
                 pass
-        memcache.add(key, result)  #@UndefinedVariable
+        memcache.add(key, result, 60*60)  #@UndefinedVariable
         return result

@@ -1,4 +1,5 @@
 from google.appengine.ext import db
+from google.appengine.api import memcache
 from youth import utils
 
 class Hotel(db.Model):
@@ -10,7 +11,12 @@ class Hotel(db.Model):
         return utils.model_to_dict(self)
     
 def get(term):
-    hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
+    key = 'hotels'
+    hotels = memcache.get(key) #@UndefinedVariable
+    if hotels == None:
+        hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
+        memcache.add(key, hotels, 24*60*60) #@UndefinedVariable
+        
     if term != None and term != '':
         result = [x for x in hotels if x.name.lower().startswith(term.lower())]
         if len(result) < 10:

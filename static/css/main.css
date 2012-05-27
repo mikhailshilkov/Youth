@@ -73,7 +73,6 @@ html {
     padding-right: 20px;
 }
 .pageheader {
-    width: 100%;
     background-color: #222;
     padding: .5em .7em;
 }
@@ -145,9 +144,34 @@ html {
 .linkbutton:hover {
     text-decoration: underline;
 }
+.sidepanel {
+    float:left;
+    width: 250px;
+}
+
+.sidepanel .preferences {
+    background-color: #FFE599;
+    border: solid 1px #CCCCCC;
+    margin: 10px;
+    padding: 10px;        
+}
+
+.sidepanel .preferences .button {
+    margin-top: 1em;
+}
+
+.sidepanel h4 {
+    color: #DD4B39;
+    font-size: 1.2em;
+    font-weight: normal;
+    margin-bottom: 0.5em;
+}
+
 .itinerary {
-    width: 620px;
-    margin: 1.3em;
+    margin: 10px 10px 10px 250px;
+    max-width: 800px;
+    padding: 10px;
+    border: solid 1px #CCCCCC;
 }
 .itinerary h1 {
     color: #DD4B39;
@@ -171,7 +195,6 @@ html {
 .itinerary .summary {
     color: #093;
     margin-bottom: 1.1em;
-    clear: both;
 }
 .itinerary .step {
     position: relative;

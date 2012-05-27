@@ -26,6 +26,7 @@ def do_itinerary(request, response):
     from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
     view_mode = request.get('out', 'html')
     transport = request.get('transport', 'bus')
+    address = request.get('address', from_location)
     try:
         date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
     except:
@@ -34,6 +35,7 @@ def do_itinerary(request, response):
     # produce data        
     data = { 
             'from_location': from_location,
+            'address': address,
             'date': utils.date_serialize(date), 
             'time' : utils.time_serialize(start_time),
             'transport': transport 
