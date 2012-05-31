@@ -19,13 +19,15 @@
 			<div class="instuction">
 				<div class="text">{{instruction}}</div>
 				{{#details}}
-					<div id="details_collapsed_{{step_index}}" class="gray button" onclick="showDetails({{step_index}}, '{{action}}', '{{map.route}}')">
+					<div id="details_showbutton_{{step_index}}" class="gray button" onclick="showDetails('{{step_index}}', '{{action}}', '{{data}}')">
 						{{show_label}}						
 					</div>
-					<div id="details_expanded_{{step_index}}" style="display:none">
-						<div class="gray button" onclick="showDetails({{step_index}})">
-							{{hide_label}}
-						</div>						
+					<div id="details_hidebutton_{{step_index}}" class="gray button" onclick="hideDetails('{{step_index}}')" style="display:none">
+						{{hide_label}}
+					</div>						
+				{{/details}}
+				{{#details}}
+					<div id="details_pane_{{step_index}}" style="display:none">
 						<div class="details">														
 						</div>
 					</div>

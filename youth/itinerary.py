@@ -27,11 +27,10 @@ def get_trip(from_location, date, start_time, transport):
     elif transport == 'train':
         route = maps.get_transit_route(from_location, '59.907486,30.299383')
         clean_post_subway_walk(route)
-        route.directions.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ' +
-                                    'You may enter the railway station directly from subway entering hall following the directions. ' +
+        route.directions.append(maps.RouteStep('Leave the subway on Baltiiskaya (Балтийская) and exit to the central railway station (Voksal - Вокзал). ',                            
+                                    5, 'About 5 mins, 150 m', None, hint = 'You may enter the railway station directly from subway entering hall following the directions. ' +
                                     'The orientation at the railway station is not difficult as soon as you are in the main hall. ' + 
-                                    'All booking offices as well as platforms are located in one area. ',
-                                    5, 'About 5 mins, 150 m', None))
+                                    'All booking offices as well as platforms are located in one area. '))
         route.directions.append(maps.RouteStep('Buy tickets to the station Peterhof; the fare is 44 RUR for one person one way (88 for return ticket). ' +
                                                'We would recommend buying return ticket if you plan to use the same way to travel in both directions. ' +
                                                'The ticket is valid for the whole day so you don’t have to take any particular trains. ',
@@ -101,6 +100,7 @@ def create_trip(title, route, date, start_time):
     steps_to = []
     duration = 0
     expenses = 0
+    has_subway_info = False
     step_start_time = start_time
     for step in route.directions: 
         if step.is_train():
@@ -110,16 +110,33 @@ def create_trip(title, route, date, start_time):
             step.duration = next_train.get_duration()
         else:
             hint = step.addinfo
-        steps_to.append({'instruction': step.direction,
-                 'start_time': utils.time_to_string(step_start_time),
-                 'hint' : hint,
-                 'details' :
-                 {
+        details = []
+        if step.has_map:
+            details.append({
                     'show_label': 'Show the map',
                     'hide_label': 'Hide the map',
                     'action': 'map',
-                    'map': { 'route' : step.get_route_json() }
-                 } if step.has_map else None})
+                    'data' : step.get_route_json()
+                    })
+        if step.is_subway() and not has_subway_info:
+            has_subway_info = True
+            details.append({
+                    'show_label': 'Show info',
+                    'hide_label': 'Hide info',
+                    'action': 'info',
+                    'data' : '<i>To buy tokens you need to find ticket office which are normally located very close to the entrance [Bad English - correct] [TO DO: Check whether ticket machines have English interface] [TO DO: Add photo of ticket office]</i>'
+                    })
+        if step.hint != None:
+            details.append({
+                    'show_label': 'Show info',
+                    'hide_label': 'Hide info',
+                    'action': 'info',
+                    'data' : '<i>' + step.hint + '</i>'
+                    })
+        steps_to.append({'instruction': step.direction,
+                 'start_time': utils.time_to_string(step_start_time),
+                 'hint' : hint,
+                 'details' : details})
         step_start_time = utils.time_add_mins(step_start_time, step.duration)
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0

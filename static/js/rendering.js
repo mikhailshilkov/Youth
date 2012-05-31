@@ -13,7 +13,8 @@ function loadItinerary() {
             for (var j in view[i].steps) {
                 step = view[i].steps[j];
                 if (step.details != null)
-                    step.details.step_index = j;
+                    for (var k in step.details)
+                    step.details[k].step_index = j.toString() + '_' + k.toString();
             }
         
         var template = Templates.filter('#itinerary').html();

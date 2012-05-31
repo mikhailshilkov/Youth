@@ -22,7 +22,8 @@ class Route(object):
 # Class that represents a Route Step
 class RouteStep(object):
     def __init__(self, direction = None, duration = None, addinfo = None, 
-                 transport = None, start_location = None, end_location = None, has_map = False):
+                 transport = None, start_location = None, end_location = None, 
+                 has_map = False, hint = None):
         self.direction = direction
         self.duration = duration
         self.addinfo = addinfo
@@ -30,6 +31,7 @@ class RouteStep(object):
         self.end_location = end_location
         self.transport = transport
         self.has_map = has_map
+        self.hint = hint
         
     def is_subway(self):
         return self.transport != None and self.transport.is_subway()

@@ -81,18 +81,29 @@ function setupHomeInputs() {
     $("#datepicker").datepicker('setDate', new Date().setDate(new Date().getDate() + 1));
 }
 
-function showDetails(index, action, route) {
-    $("#details_collapsed_" + index.toString()).toggle();
-    var id = "#details_expanded_" + index.toString();
+function hideDetails(index) {
+    $("#details_showbutton_" + index.toString()).show();
+    $("#details_hidebutton_" + index.toString()).hide();
+    $("#details_pane_" + index.toString()).hide();
+}
+
+function showDetails(index, action, data) {
+    $("#details_showbutton_" + index.toString()).hide();
+    $("#details_hidebutton_" + index.toString()).show();
+    var id = "#details_pane_" + index.toString();
     $(id).toggle();
 
-    if(action == 'map' && !initialized[index]) {
+    if(!initialized[index]) {
         initialized[index] = true;
-        var mapPane = $(id + " .details");
-        mapPane.css('width', '100%');
-        mapPane.css('height', '300px');
-
-        showDetailsMap(mapPane, eval('(' + route + ')'));
+        var detailsPane = $(id + " .details");
+        detailsPane.css('width', '100%');
+        if (action == 'map') {
+            detailsPane.css('height', '300px');
+            showDetailsMap(detailsPane, eval('(' + data + ')'));
+        }
+        else if (action == 'info') {
+            detailsPane.html(data);
+        }        
     }
 }
 
@@ -211,6 +222,7 @@ function goTo(transport) {
     hidePopup();
     Context.transport = transport;
     loadItinerary();
+    initialized = new Object(); // reset initialized
 }
 
 function alignPopups() {
