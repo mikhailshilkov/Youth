@@ -5,6 +5,7 @@ import datetime
 from youth import bot
 from youth import itinerary
 from youth import hotel
+from youth import attraction
 from youth import maps
 from youth import stuff
 from youth import utils
@@ -112,7 +113,33 @@ def delete_hotel(request):
     # get request parameters        
     name = request.get('name')
     hotel.delete(name)        
+
+def do_attraction(request, response):
+    # get request parameters        
+    view_mode = request.get('out', 'html')
+    term = request.get('term', '')
     
+    # produce data        
+    data = attraction.get(term)
+    
+    # populate the requested view
+    if view_mode == 'json':
+        view.to_json(data, response)
+    else:
+        view.to_html(data, 'attraction', response)
+        
+def post_attraction(request):
+    # get request parameters        
+    name = request.get('name')
+    lat = float(request.get('lat'))
+    lng = float(request.get('lng'))
+    attraction.add(name, lat, lng)
+    
+def delete_attraction(request):
+    # get request parameters        
+    name = request.get('name')
+    attraction.delete(name) 
+        
 def do_transit(request, response):
     # get request parameters
     from_location = request.get('from', '59.945085,30.292699')

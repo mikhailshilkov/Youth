@@ -1,0 +1,15 @@
+{% extends "master/master.html" %}
+
+{% block title %}Attractions{% endblock %}
+
+{% block content %}
+<table>
+	{% for attraction in data %}
+	<tr>
+		<td>{{attraction.name}}</td>
+		<td>{{attraction.latitude}}</td>
+		<td>{{attraction.longitude}}</td>
+	</tr>
+	{% endfor %}
+</table>
+{% endblock %}

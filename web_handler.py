@@ -16,6 +16,8 @@ class MainHandler(webapp.RequestHandler):
             controller.do_itinerary_options(self.request, self.response)
         elif self.request.path == '/hotel':
             controller.do_hotel(self.request, self.response)
+        elif self.request.path == '/attraction':
+            controller.do_attraction(self.request, self.response)
         elif self.request.path == '/transit':
             controller.do_transit(self.request, self.response)
         elif self.request.path == '/train':
@@ -28,10 +30,14 @@ class MainHandler(webapp.RequestHandler):
     def post(self):
         if self.request.path == '/hotel':
             controller.post_hotel(self.request)
+        elif self.request.path == '/attraction':
+            controller.post_attraction(self.request)
             
     def delete(self):
         if self.request.path == '/hotel':
             controller.delete_hotel(self.request)
+        elif self.request.path == '/attraction':
+            controller.delete_attraction(self.request)
 
 application = webapp.WSGIApplication([('.*', MainHandler)], debug=True)
 
