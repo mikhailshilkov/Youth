@@ -21,6 +21,29 @@ def get_start_time(request):
         start_time = datetime.time(hour=10, minute=0)
     return start_time
 
+def do_directions(request, response):
+    # get request parameters
+    start_time = get_start_time(request)
+    from_address = request.get('address', '')
+    from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
+    attraction = request.get('attraction', '')
+    to_location = request.get('to', '59.945085-30.292699').replace('-', ',')
+    view_mode = request.get('out', 'html')
+    try:
+        date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
+    except:
+        date = datetime.date.today() + datetime.timedelta(days=1)
+
+    # produce data        
+    data = itinerary.get_directions(from_address, from_location, attraction, to_location, date, start_time)              
+    
+    # populate the requested view
+    if view_mode == 'json':
+        view.to_json(data, response)
+    else:
+        view.to_html(data, 'directions', response)
+
+
 def do_itinerary(request, response):
     # get request parameters
     start_time = get_start_time(request)

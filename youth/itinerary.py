@@ -17,6 +17,11 @@ class Trip(object):
         return 'Expenses: ' + str(self.expenses) + ' RUR, travel time: ' + utils.duration_to_string(self.duration)
     def jsonable(self):
         return self.__dict__
+    
+def get_directions(from_name, from_location, to_name, to_location, date, start_time):
+    route = maps.get_transit_route(from_location, to_location)
+    trip = create_trip('Trip from ' + from_name + ' to ' + to_name, route, date, start_time)
+    return trip             
 
 def get_trip(from_location, date, start_time, transport):
     if transport == 'meteor':

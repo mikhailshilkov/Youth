@@ -15,7 +15,7 @@ html {
 }
 .searchpane {
     position: relative;
-    top: 130px;
+    top: 120px;
     margin: auto;
     padding: 0 223px !important;
     max-width: 572px;
@@ -168,6 +168,13 @@ html {
 }
 
 .itinerary {
+    margin: 10px;
+    max-width: 1000px;
+    padding: 10px;
+    border: solid 1px #CCCCCC;
+}
+
+.itineraryShifted {
     margin: 10px 10px 10px 250px;
     max-width: 800px;
     padding: 10px;

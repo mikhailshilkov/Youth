@@ -6,7 +6,11 @@
 <div class="searchpane">
 	<h3>Hotel name or address in St. Petersburg</h3>
 	<div class="inputbox searchbox">
-		<input type="text" id="address" name="address" />
+		<input type="text" id="hotel" name="address" />
+	</div>
+	<h3>Attraction</h3>
+	<div class="inputbox searchbox">
+		<input type="text" id="attraction" name="address" />
 	</div>
 	<h3>Departure date and time</h3>
 	<div class="datebox">
@@ -20,15 +24,17 @@
 		</div>
 	</div>
 	<div class="buttons">
-		<div class="blue button" onclick="navigateToItinerary()">
+		<div class="blue button" onclick="HomePage.search()">
 			Search
 		</div>
 	</div>
 </div>
 {% endblock %}
 
-{% block scripts %} <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+{% block scripts %} 
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
+<script type="text/javascript" src="scripts/home.js"></script>
 <script type="text/javascript" language="javascript">
-    setupHomeInputs();
+    HomePage.init();
 </script>
 {% endblock %}
