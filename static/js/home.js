@@ -87,7 +87,7 @@ HomePage = (function() {
                             var lng = latLng.lng();
                             var wellType = Math.max($.inArray('street_address', results[i].types), $.inArray('subpremise', results[i].types), $.inArray('premise', results[i].types));
                             if(lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58 && wellType >= 0) {
-                                goToDirections(address, lat, lng, attraction.name, attraction.latitude, attraction.longitude);
+                                HomePage.goToDirections(address, lat, lng, attraction.name, attraction.latitude, attraction.longitude);
                                 return;
                             }
                         }

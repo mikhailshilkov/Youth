@@ -1,20 +1,27 @@
 {% extends "master/master.html" %}
 
-{% block title %}Itinerary{% endblock %}
+{% block title %}Trip directions{% endblock %}
 
 {% block content %}
 <div class="pageheader">
 	<a href="/">Home</a>
-	<a href="/transit?from={{data.context.from_location}}" target="_blank">Route options</a>
+	<a href="/transit?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Route options</a>
 </div>
 <section class="itinerary">
 	<div class="buttons">	
 		<div class="blue button" onclick="window.print()">Print</div>
 	</div>
 	<h1>{{data.title}}</h1>
-	{% if data.summary != null%}
-		<div class="summary">{{data.summary}}</div>
-	{% endif %}
+	<div class="summary">
+		<span class="icon">
+			<img src="images/clock.png" alt="Time" />
+		</span>
+		<span class="time">{{data.time_text}}</span>
+		<span class="icon">
+			<img src="images/coins.png" alt="Time" />
+		</span>
+		<span class="price">{{data.price_text}}</span>
+	</div>
 	<hr/>
 	{% for step in data.steps %}
 	<div class="step">

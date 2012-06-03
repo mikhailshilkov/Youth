@@ -165,11 +165,12 @@ def delete_attraction(request):
         
 def do_transit(request, response):
     # get request parameters
-    from_location = request.get('from', '59.945085,30.292699')
+    from_location = request.get('from')
+    to_location = request.get('to')
     view_mode = request.get('out', 'html')
 
     # produce data        
-    data = maps.get_transit_routes(from_location, '59.86732529999999,30.261337499999968')
+    data = maps.get_transit_routes(from_location, to_location)
         
     # populate the requested view
     if view_mode == 'json':

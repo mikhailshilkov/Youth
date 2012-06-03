@@ -5,6 +5,9 @@ html, body, h1, h2, h3, h4, hr {
 div {
     display: block;
 }
+hr {
+    clear: both;
+}
 a:link {
     color: #12C;
     cursor: pointer;
@@ -201,14 +204,28 @@ html {
 }
 .itinerary .summary {
     color: #093;
-    margin-bottom: 1.1em;
+    margin-bottom: 1.1em;    
+}
+.itinerary .summary .icon {
+    float:left;
+    margin-top: -13px;
+}
+.itinerary .summary .time {
+    float:left;
+    margin-top: 5px;
+    margin-right: 1em;
+}
+.itinerary .summary .price {
+    margin-top: 5px;
+    float: left;  
+    width: 200px;
 }
 .itinerary .step {
     position: relative;
     margin: .8em 0 1.3em 0;
     clear: both;
 }
-.itinerary .step::after {
+.itinerary .summary::after, .itinerary .step::after {
     content: '.';
     display: block;
     height: 0;

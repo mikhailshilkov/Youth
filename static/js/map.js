@@ -9,11 +9,13 @@ MapHelper = {
         var coordinates = [];
         var startPoint = new google.maps.LatLng(route['start']['lat'], route['start']['lng']);
         var endPoint = new google.maps.LatLng(route['end']['lat'], route['end']['lng']);
+        var isSubway = route['type'] == 'Subway';
+        var marker = isSubway ? 'underground' : null;
         coordinates.push(startPoint);
         bounds.extend(startPoint);
-        this.addMarker(map, startPoint, 'From');
+        this.addMarker(map, startPoint, 'From', marker);
 
-        var needsDirections = route['type'] != 'Subway';
+        var needsDirections = !isSubway;
         if(route['type'] == 'Walk')// don't search directions for walks < 200 m
             needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 200;
         if(needsDirections) {
@@ -34,7 +36,7 @@ MapHelper = {
 
                     coordinates.push(endPoint);
                     bounds.extend(endPoint);
-                    MapHelper.addMarker(map, endPoint, 'To');
+                    MapHelper.addMarker(map, endPoint, 'To', null);
                     MapHelper.addPolyline(map, coordinates);
                     MapHelper.fitBounds(map, bounds);
                 }
@@ -42,17 +44,18 @@ MapHelper = {
         } else {
             coordinates.push(endPoint);
             bounds.extend(endPoint);
-            this.addMarker(map, endPoint, 'To');
+            this.addMarker(map, endPoint, 'To', marker);
             this.addPolyline(map, coordinates);
             this.fitBounds(map, bounds);
         }
 
     },
-    addMarker : function(map, point, name) {
+    addMarker : function(map, point, name, icon) {
         new google.maps.Marker({
             position : point,
             map : map,
-            title : name
+            title : name,
+            icon : icon != null ? 'images/' + icon + '.png' : null
         });
     },
     addPolyline : function(map, coordinates) {

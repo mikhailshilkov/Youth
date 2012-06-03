@@ -1,26 +1,32 @@
 #coding=utf-8
 
+from lib import translit
 from youth import utils
 from youth import maps
 from youth import bot
 
 # Class that represents a Trip
 class Trip(object):
-    def __init__(self, title, expenses, duration, steps):
+    def __init__(self, title, from_location, to_location, expenses, duration, steps):
         self.title = title
+        self.from_location = from_location
+        self.to_location = to_location
         self.expenses = expenses
         self.duration = duration
         self.steps = steps
         self.change_action = None
-        self.summary = self.get_summary()
-    def get_summary(self):
-        return 'Expenses: ' + str(self.expenses) + ' RUR, travel time: ' + utils.duration_to_string(self.duration)
+        self.time_text = self.get_time_text()
+        self.price_text = self.get_price_text()
+    def get_price_text(self):
+        return 'Expenses: ' + str(self.expenses) + ' RUR'
+    def get_time_text(self):
+        return 'Travel time: ' + utils.duration_to_string(self.duration)
     def jsonable(self):
         return self.__dict__
     
 def get_directions(from_name, from_location, to_name, to_location, date, start_time):
     route = maps.get_transit_route(from_location, to_location)
-    trip = create_trip('Trip from ' + from_name + ' to ' + to_name, route, date, start_time)
+    trip = create_trip('Trip from ' + from_name + ' to ' + to_name, from_location, to_location, route, date, start_time)
     return trip             
 
 def get_trip(from_location, date, start_time, transport):
@@ -101,7 +107,7 @@ def get_options(from_location, date, start_time):
                   'icon': 'placeholder'}
     return [option_bus, option_meteor, option_train]
 
-def create_trip(title, route, date, start_time):    
+def create_trip(title, from_location, to_location, route, date, start_time):    
     steps_to = []
     duration = 0
     expenses = 0
@@ -138,7 +144,7 @@ def create_trip(title, route, date, start_time):
                     'action': 'info',
                     'data' : '<i>' + step.hint + '</i>'
                     })
-        steps_to.append({'instruction': step.direction,
+        steps_to.append({'instruction': translit.translify(step.direction),
                  'start_time': utils.time_to_string(step_start_time),
                  'hint' : hint,
                  'details' : details})
@@ -146,7 +152,7 @@ def create_trip(title, route, date, start_time):
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
     total_duration = utils.time_get_delta_minutes(start_time, step_start_time)
-    return Trip(title, expenses, total_duration, steps_to)
+    return Trip(title, from_location, to_location, expenses, total_duration, steps_to)
 
 def clean_post_subway_walk(route):
     if route.directions[-1].is_walk() and route.directions[-2].is_subway():

@@ -115,6 +115,10 @@ def process_transit_route(transit):
                 step.transport.price = 21
             elif step.transport.type in ['Share taxi']:
                 step.transport.price = 30
+                
+            # Make trolleybus less optimistic
+            if step.transport.type == 'Trolleybus':
+                step.duration *= 1.4
             
             # Add 3/4 of service interval duration
             if not step.transport.is_subway() and step.transport.interval != None:
@@ -234,6 +238,8 @@ def parse(html, points_array, steps_array):
                 if transport_type != None and transport_type != 'Walk':
                     line_number = get_node_text(step_node.find(attrs = { "class" : "trtline" }))
                     step.service_interval = parse_service_interval(step.addinfo)
+                    if step.service_interval == None:
+                        step.service_interval = get_default_service_interval(transport_type) 
                     step.transport = Transport(transport_type, line_number, step.service_interval)                
                     if not step.transport.is_subway(): 
                         step.direction = step.direction.replace(step.transport.type, step.transport.type + ' number ' + step.transport.line_number)            
@@ -305,3 +311,12 @@ def parse_service_interval(info):
     if regex_match != None:
         return int(regex_match.group(1))
     return None
+
+def get_default_service_interval(transport_type):
+    if transport_type == 'Bus':
+        return 12
+    elif transport_type == 'Trolleybus':
+        return 15
+    elif transport_type == 'Share taxi':
+        return 10
+    return 0
