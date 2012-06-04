@@ -12,3 +12,6 @@ def to_json(data, response):
     text = utils.to_json(data)
     response.headers['Content-Type'] = 'application/json; charset=utf-8'
     response.out.write(text)
+    
+def empty(response):
+    response.out.write('None')

@@ -38,7 +38,9 @@ def do_directions(request, response):
     data = itinerary.get_directions(from_address, from_location, attraction, to_location, date, start_time)              
     
     # populate the requested view
-    if view_mode == 'json':
+    if view_mode == 'none':
+        view.empty(response);
+    elif view_mode == 'json':
         view.to_json(data, response)
     else:
         view.to_html(data, 'directions', response)

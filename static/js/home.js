@@ -3,6 +3,26 @@ HomePage = (function() {
     var attraction = null;
     var time = null;
     var date = null;
+    
+    function getUrl(from_address, from_lat, from_lng, to_address, to_lat, to_lng) {
+        return '/directions?address=' + encodeURIComponent(from_address) + '&from=' + from_lat.toString() + '-' + from_lng.toString() + 
+               '&attraction=' + encodeURIComponent(to_address) + '&to=' + to_lat.toString() + '-' + to_lng.toString() +
+               '&date=' + $.datepicker.formatDate('yy-mm-dd', date) + '&time=' + time.replace(':', '-');        
+    }
+    
+    function retrieveDateTime() {
+        date = $("#datepicker").datepicker('getDate');
+        time = Utils.formatTime($('#timepicker').val());
+    }
+    
+    function warmCache() {
+        if (hotel != null && attraction != null) {
+            retrieveDateTime();
+            url = getUrl(hotel.name, hotel.latitude, hotel.longitude, attraction.name, attraction.latitude, attraction.longitude);
+            url += '&out=none';            
+            $.ajax(url);
+        }
+    }        
 
     return {
         init : function() {
@@ -16,6 +36,7 @@ HomePage = (function() {
                 select : function(event, ui) {
                     $("#hotel").val(ui.item.name);
                     hotel = ui.item;
+                    warmCache();
                     return false;
                 }
             }).data("autocomplete")._renderItem = function(ul, item) {
@@ -32,6 +53,7 @@ HomePage = (function() {
                 select : function(event, ui) {
                     $("#attraction").val(ui.item.name);
                     attraction = ui.item;
+                    warmCache();
                     return false;
                 }
             }).data("autocomplete")._renderItem = function(ul, item) {
@@ -56,12 +78,11 @@ HomePage = (function() {
                 alert('Attraction is empty');
                 return;
             }
-            date = $("#datepicker").datepicker('getDate');
+            retrieveDateTime();
             if(date == null) {
                 alert('Wrong date');
                 return;
             }
-            time = Utils.formatTime($('#timepicker').val());
             if(!time) {
                 alert('Wrong time');
                 return;
@@ -103,9 +124,7 @@ HomePage = (function() {
             }
         },
         goToDirections : function(from_address, from_lat, from_lng, to_address, to_lat, to_lng) {
-            document.location = '/directions?address=' + encodeURIComponent(from_address) + '&from=' + from_lat.toString() + '-' + from_lng.toString() + 
-                '&attraction=' + encodeURIComponent(to_address) + '&to=' + to_lat.toString() + '-' + to_lng.toString() +
-                '&date=' + $.datepicker.formatDate('yy-mm-dd', date) + '&time=' + time.replace(':', '-');
+            document.location = getUrl(from_address, from_lat, from_lng, to_address, to_lat, to_lng);
         },
     };
 })();

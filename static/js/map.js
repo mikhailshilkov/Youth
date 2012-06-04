@@ -17,7 +17,7 @@ MapHelper = {
 
         var needsDirections = !isSubway;
         if(route['type'] == 'Walk')// don't search directions for walks < 200 m
-            needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 200;
+            needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 150;
         if(needsDirections) {
             var request = {
                 origin : startPoint,
@@ -48,7 +48,7 @@ MapHelper = {
             this.addPolyline(map, coordinates);
             this.fitBounds(map, bounds);
         }
-
+        map.checkResize();
     },
     addMarker : function(map, point, name, icon) {
         new google.maps.Marker({
