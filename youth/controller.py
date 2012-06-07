@@ -24,18 +24,33 @@ def get_start_time(request):
 def do_directions(request, response):
     # get request parameters
     start_time = get_start_time(request)
-    from_address = request.get('address', '')
-    from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
-    attraction = request.get('attraction', '')
-    to_location = request.get('to', '59.945085-30.292699').replace('-', ',')
     view_mode = request.get('out', 'html')
     try:
         date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
     except:
         date = datetime.date.today() + datetime.timedelta(days=1)
+        
+    # get hotel name, or if not found - address
+    hotel_name = request.get('hotel', '')
+    if hotel_name != '':
+        the_hotel = hotel.get(hotel_name)[0]
+        from_name = the_hotel.name
+        from_location = the_hotel.get_latlng()
+    else:
+        from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
+        from_name = request.get('address', from_location)
+        
+    attraction_name = request.get('attraction', '')
+    if attraction_name != '':
+        the_attraction = attraction.get(attraction_name)[0]
+        to_name = the_attraction.name
+        to_location = the_attraction.get_latlng()
+    else:
+        to_location = request.get('to', '59.945085-30.292699').replace('-', ',')
+        to_name = to_location    
 
     # produce data        
-    data = itinerary.get_directions(from_address, from_location, attraction, to_location, date, start_time)              
+    data = itinerary.get_directions(from_name, from_location, to_name, to_location, date, start_time)              
     
     # populate the requested view
     if view_mode == 'none':

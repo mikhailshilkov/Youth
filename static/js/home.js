@@ -4,10 +4,17 @@ HomePage = (function() {
     var time = null;
     var date = null;
     
-    function getUrl(from_address, from_lat, from_lng, to_address, to_lat, to_lng) {
-        return '/directions?address=' + encodeURIComponent(from_address) + '&from=' + from_lat.toString() + '-' + from_lng.toString() + 
-               '&attraction=' + encodeURIComponent(to_address) + '&to=' + to_lat.toString() + '-' + to_lng.toString() +
-               '&date=' + $.datepicker.formatDate('yy-mm-dd', date) + '&time=' + time.replace(':', '-');        
+    function getUrl(from_address, from_lat, from_lng) {
+        url = '/directions?';
+        if (hotel != null) {
+            var shortName = $.trim(hotel.name.replace('Hotel', '').replace('St Petersburg', ''));
+            url += 'hotel=' + encodeURIComponent(shortName);
+        }
+        else
+            url += 'address=' + encodeURIComponent(from_address) + '&from=' + from_lat.toString() + '-' + from_lng.toString();
+        url += '&attraction=' + encodeURIComponent(attraction.name) + 
+               '&date=' + $.datepicker.formatDate('yy-mm-dd', date) + '&time=' + time.replace(':', '-');
+        return url;        
     }
     
     function retrieveDateTime() {
@@ -18,7 +25,7 @@ HomePage = (function() {
     function warmCache() {
         if (hotel != null && attraction != null) {
             retrieveDateTime();
-            url = getUrl(hotel.name, hotel.latitude, hotel.longitude, attraction.name, attraction.latitude, attraction.longitude);
+            url = getUrl();
             url += '&out=none';            
             $.ajax(url);
         }
@@ -65,7 +72,9 @@ HomePage = (function() {
                 maxDate : "+6M"
             });
             $("#datepicker").datepicker("option", "dateFormat", "dd MM yy");
-            $("#datepicker").datepicker('setDate', new Date().setDate(new Date().getDate() + 1));
+            var tomorrow  = new Date();
+            tomorrow.setDate(new Date().getDate() + 1);
+            $("#datepicker").datepicker('setDate', tomorrow);
 
         },
         search : function() {
@@ -73,6 +82,9 @@ HomePage = (function() {
             if (hotelAddress == null) {
                 alert('Hotel is empty');
                 return;
+            }
+            if (hotel != null && hotelAddress != hotel.name) {
+                hotel = null;
             }
             if (attraction == null) {
                 alert('Attraction is empty');
@@ -88,8 +100,8 @@ HomePage = (function() {
                 return;
             }
 
-            if(hotel != null && hotelAddress == hotel.name)
-                this.goToDirections(hotel.name, hotel.latitude, hotel.longitude, attraction.name, attraction.latitude, attraction.longitude);
+            if(hotel != null)
+                this.goToDirections();
             else
                 this.searchByAddress(hotelAddress);
         },
@@ -108,7 +120,7 @@ HomePage = (function() {
                             var lng = latLng.lng();
                             var wellType = Math.max($.inArray('street_address', results[i].types), $.inArray('subpremise', results[i].types), $.inArray('premise', results[i].types));
                             if(lat > 59.79 && lat < 60.28 && lng > 29.93 && lng < 30.58 && wellType >= 0) {
-                                HomePage.goToDirections(address, lat, lng, attraction.name, attraction.latitude, attraction.longitude);
+                                HomePage.goToDirections(address, lat, lng);
                                 return;
                             }
                         }
@@ -123,8 +135,8 @@ HomePage = (function() {
                 });
             }
         },
-        goToDirections : function(from_address, from_lat, from_lng, to_address, to_lat, to_lng) {
-            document.location = getUrl(from_address, from_lat, from_lng, to_address, to_lat, to_lng);
+        goToDirections : function(from_address, from_lat, from_lng) {
+            document.location = getUrl(from_address, from_lat, from_lng);
         },
     };
 })();

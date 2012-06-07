@@ -34,6 +34,8 @@ class RouteStep(object):
         self.transport = transport
         self.has_map = has_map
         self.hint = hint
+        self.start_icon = None
+        self.end_icon = None
         
     def is_subway(self):
         return self.transport != None and self.transport.is_subway()
@@ -65,16 +67,23 @@ class RouteStep(object):
         return result 
     
     def get_route_json(self):
-        params = { 'type': self.transport.type if self.transport != None else 'Walk', 'start': self.start_location, 'end': self.end_location }
+        params = { 
+                  'type': self.transport.type if self.transport != None else 'Walk', 
+                  'start': self.start_location, 
+                  'end': self.end_location,
+                  'startIcon': self.start_icon,
+                  'endIcon': self.end_icon 
+                 }
         return utils.to_json(params)
         
 # Class that represents a Transport        
 class Transport(object):
-    def __init__(self, transport_type, line_number = None, interval = None, price = None):
+    def __init__(self, transport_type, line_number = None, interval = None, price = None, stops = None):
         self.type = transport_type
         self.line_number = line_number
         self.interval = interval
         self.price = price
+        self.stops = stops
         
     def is_subway(self):
         return self.type == 'Subway'
@@ -219,19 +228,25 @@ def parse(html, points_array, steps_array):
                 total_duration += step.duration
                 
                 transport_type = get_transport(step.direction)
-                if transport_type != None and transport_type != 'Walk':
+                if transport_type == None or transport_type == 'Walk':
+                    step.direction = clean_walk_direction(step.direction)
+                else:
                     line_number = get_node_text(step_node.find(attrs = { "class" : "trtline" }))
                     step.service_interval = parse_service_interval(step.addinfo)
                     if step.service_interval == None:
                         step.service_interval = get_default_service_interval(transport_type) 
-                    step.transport = Transport(transport_type, line_number, step.service_interval)                
-                    if not step.transport.is_subway(): 
-                        step.direction = step.direction.replace(step.transport.type, step.transport.type + ' number ' + step.transport.line_number)            
+                    step.transport = Transport(transport_type, line_number, step.service_interval)
+                    step.direction = step.transport.type
+                    step.transport.stops = parse_stops(step.addinfo)                
+                    if step.transport.is_subway(): 
+                        step.direction += ' line ' + step.transport.line_number
+                    else:
+                        step.direction += ' number ' + step.transport.line_number            
                 
                 if step_node.nextSibling != None:
                         arrive_node = step_node.nextSibling.find(text = re.compile('^Arrive.*'))
                         if arrive_node != None:
-                            step.direction += ' till ' + get_node_text(arrive_node.nextSibling)
+                            step.direction += ' to ' + get_node_text(arrive_node.nextSibling)
                 
             start_point = points[steps[index]['depPoint']]
             end_point = points[steps[index]['arrPoint']]
@@ -268,17 +283,28 @@ def process_transit_route(transit):
             if step.transport.type == 'Trolleybus':
                 step.duration *= 1.4
             
+            # Create manual description
+            step.addinfo = 'About ' + str(int(step.duration)) + ' mins'
+            if step.transport.stops != None:
+                step.addinfo += ', ' + str(step.transport.stops) + ' stops'
+                
             # Add 3/4 of service interval duration
             if not step.transport.is_subway() and step.transport.interval != None:
-                step.duration += step.transport.interval * 3 / 4 
+                step.duration += step.transport.interval * 3 / 4                 
+                step.addinfo += ', runs every ' + str(step.transport.interval) + ' mins'
                                         
         # Do not show the map for change walks inside subway
-        if step.transport == None and previous_step != None and next_step != None and \
-            previous_step.transport.is_subway() and next_step.transport.is_subway():
+        if step.is_walk() and previous_step != None and next_step != None and \
+            previous_step.is_subway() and next_step.is_subway():
             step.duration = 4 # subway change is 4 minutes
             step.addinfo = 'About ' + str(step.duration) + ' mins'
         else:
             step.has_map = step.start_location != None and step.end_location != None
+            
+        # Improve walk to direction 
+        if step.is_walk() and next_step != None and not next_step.is_walk():
+            stop_text = 'station' if next_step.is_subway() else 'stop'
+            step.direction = step.direction.replace('Walk to ', 'Walk to ' + next_step.transport.type.lower() + ' ' + stop_text + ' ')
             
     # Find all subways
     subways = [step for step in transit.directions if step.transport != None and step.transport.is_subway()]
@@ -336,6 +362,12 @@ def parse_service_interval(info):
         return int(regex_match.group(1))
     return None
 
+def parse_stops(info):
+    regex_match = re.search(',\s(\d+)\sstop', info)
+    if regex_match != None:
+        return int(regex_match.group(1))
+    return None
+
 def get_default_service_interval(transport_type):
     if transport_type == 'Bus':
         return 12
@@ -352,3 +384,6 @@ def estimate_distance(from_addr, to_addr):
         return geo.haversine(float(from_coord[0]), float(from_coord[1]), float(to_coord[0]), float(to_coord[1]))
     except:
         return None
+    
+def clean_walk_direction(direction):
+    return direction.replace('/M10', '')

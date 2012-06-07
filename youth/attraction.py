@@ -6,6 +6,8 @@ class Attraction(db.Model):
     name = db.StringProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
+    def get_latlng(self):
+        return str(self.latitude) + ',' + str(self.longitude)
     def jsonable(self):
         return utils.model_to_dict(self)
     

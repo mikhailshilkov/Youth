@@ -26,7 +26,7 @@ class Trip(object):
     
 def get_directions(from_name, from_location, to_name, to_location, date, start_time):
     route = maps.get_transit_route(from_location, to_location)
-    trip = create_trip('Trip from ' + from_name + ' to ' + to_name, from_location, to_location, route, date, start_time)
+    trip = create_trip(from_name, from_location, to_name, to_location, route, date, start_time)
     return trip             
 
 def get_trip(from_location, date, start_time, transport):
@@ -107,12 +107,31 @@ def get_options(from_location, date, start_time):
                   'icon': 'placeholder'}
     return [option_bus, option_meteor, option_train]
 
-def create_trip(title, from_location, to_location, route, date, start_time):    
+def create_trip(from_name, from_location, to_name, to_location, route, date, start_time):    
     steps_to = []
     duration = 0
     expenses = 0
     has_subway_info = False
     step_start_time = start_time
+    
+    # assign icons
+    route.directions[0].start_icon = 'hotel'
+    for i in range(len(route.directions)):
+        step = route.directions[i]
+        previous = route.directions[i-1] if i > 0 else None
+        if step.is_subway():
+            step.start_icon = step.end_icon = 'underground'
+            if previous != None and previous.is_walk():
+                previous.end_icon = 'underground'
+        elif step.is_land_transport():
+            step.start_icon = step.end_icon = 'bus'
+            if previous != None and previous.is_walk():
+                previous.end_icon = 'bus'
+        elif step.is_walk():
+            if previous != None:
+                step.start_icon = previous.end_icon
+    route.directions[-1].end_icon = 'airport' if to_name.find('Airport') > 0 else 'sight'
+    
     for step in route.directions: 
         if step.is_train():
             next_train = get_next_peterhot_train(date, step_start_time)
@@ -121,6 +140,7 @@ def create_trip(title, from_location, to_location, route, date, start_time):
             step.duration = next_train.get_duration()
         else:
             hint = step.addinfo
+                        
         details = []
         if step.has_map:
             details.append({
@@ -151,8 +171,11 @@ def create_trip(title, from_location, to_location, route, date, start_time):
         step_start_time = utils.time_add_mins(step_start_time, step.duration)
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
+    steps_to.append({'instruction': to_name,
+                 'start_time': utils.time_to_string(step_start_time),
+                 'hint' : ''})        
     total_duration = utils.time_get_delta_minutes(start_time, step_start_time)
-    return Trip(title, from_location, to_location, expenses, total_duration, steps_to)
+    return Trip('Trip from ' + from_name + ' to ' + to_name, from_location, to_location, expenses, total_duration, steps_to)
 
 def clean_post_subway_walk(route):
     if route.directions[-1].is_walk() and route.directions[-2].is_subway():
