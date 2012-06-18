@@ -22,6 +22,8 @@ class MainHandler(webapp.RequestHandler):
             controller.do_attraction(self.request, self.response)
         elif self.request.path == '/transit':
             controller.do_transit(self.request, self.response)
+        elif self.request.path == '/routing':
+            controller.do_routing(self.request, self.response)
         elif self.request.path == '/train':
             controller.do_train(self.request, self.response)
         elif self.request.path == '/test':
@@ -34,6 +36,8 @@ class MainHandler(webapp.RequestHandler):
             controller.post_hotel(self.request)
         elif self.request.path == '/attraction':
             controller.post_attraction(self.request)
+        elif self.request.path == '/param':
+            controller.post_param(self.request, self.response)
             
     def delete(self):
         if self.request.path == '/hotel':

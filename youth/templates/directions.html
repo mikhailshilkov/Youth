@@ -3,10 +3,6 @@
 {% block title %}Trip directions{% endblock %}
 
 {% block content %}
-<div class="pageheader">
-	<a href="/">Home</a>
-	<a href="/transit?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Route options</a>
-</div>
 <section class="itinerary">
 	<div class="buttons">	
 		<div class="blue button" onclick="window.print()">Print</div>
@@ -48,6 +44,10 @@
 		</div>
 	</div>
 	{% endfor %}
+<div>
+	<a href="/transit?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Route options</a>
+	<a href="/routing?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Manual route</a>
+</div>
 </section>
 {% endblock %}
 

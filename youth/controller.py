@@ -10,6 +10,8 @@ from youth import maps
 from youth import stuff
 from youth import utils
 from youth import view
+from youth import param
+from youth import router
 
 def do_home(request, response):
     view.to_html(None, 'home', response)
@@ -194,6 +196,21 @@ def do_transit(request, response):
         view.to_json(data, response)
     else:
         view.to_html(data, 'transit', response)    
+
+def do_routing(request, response):
+    # get request parameters
+    from_location = request.get('from')
+    to_location = request.get('to')
+    view_mode = request.get('out', 'html')
+
+    # produce data        
+    data = router.get_route(from_location, to_location)
+        
+    # populate the requested view
+    if view_mode == 'json':
+        view.to_json(data, response)
+    else:
+        view.to_html(data, 'routing', response)    
         
 def do_train(request, response):
     # get request parameters
@@ -208,6 +225,11 @@ def do_train(request, response):
         view.to_json(data, response)
     else:
         view.to_html(data, 'train', response)
+        
+def post_param(request, response):
+    name = request.get('name')
+    value = request.get('value')
+    param.add(name, value)
 
 def do_test(request, response):
     from google.appengine.tools import dev_appserver 

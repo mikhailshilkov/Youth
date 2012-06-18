@@ -16,14 +16,12 @@ html {
     font-family: Arial, Helvetica, sans-serif;
     font-size: 14px;
 }
-.searchpane {
-    position: relative;
-    top: 120px;
+.mainpane {
     margin: auto;
     padding: 0 223px !important;
-    max-width: 572px;
+    max-width: 885px;
 }
-.searchpane h3 {
+.mainpane h3 {
     color: #DD4B39;
     font-size: 1.2em;
 }
@@ -64,7 +62,7 @@ html {
 .timebox input {
     width: 6em;
 }
-.searchpane .buttons {
+.mainpane .buttons {
     clear: left;
 }
 .ui-autocomplete {

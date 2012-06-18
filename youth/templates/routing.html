@@ -1,0 +1,14 @@
+{% extends "master/master.html" %}
+
+{% block title %}Manual route{% endblock %}
+
+{% block content %}
+	<table>
+{% for station in data %}
+		<tr>
+			<td>{{station.node.name}}</td>
+			<td>{{station.distance}}</td>
+		</tr>
+{% endfor %}
+	</table>
+{% endblock %}

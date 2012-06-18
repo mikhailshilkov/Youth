@@ -9,6 +9,7 @@ from google.appengine.api import memcache
 from lib.BeautifulSoup import BeautifulSoup
 from lib import geo
 from youth import utils
+from youth import router
 
 # Class that represents a Route
 class Route(object):
@@ -145,11 +146,53 @@ def get_walking_route(origin, destination):
         step.has_map = True
         return Route([step])
 
+def get_subway_route(origin, destination):
+    route = router.get_route(origin, destination)
+
+    steps = []
+        
+    duration = 0
+    start_location = GeoPoint(route[0]['node'].lat, route[0]['node'].lng)
+    for index in range(len(route)):
+        route_step = route[index]
+        line = route_step['node'].line
+        last_station = index == len(route) - 1
+        duration += route_step['distance']
+        if last_station or route[index+1]['node'].line != line:
+            step = RouteStep()                                
+            step.direction = 'Subway line ' + str(line) + ' to ' + str(route_step['node'].name)
+            step.duration = duration / 60
+            step.addinfo = 'About ' + str(step.duration)  + ' mins'
+            step.transport = Transport('Subway')
+            step.start_location = start_location
+            step.end_location = GeoPoint(route_step['node'].lat, route_step['node'].lng) 
+            step.has_map = True
+            steps.append(step)
+            duration = 0
+            if not last_station:
+                step = RouteStep()
+                step.direction = 'Change to subway station ' + route[index+1]['node'].name + ', line ' + str(route[index+1]['node'].line) 
+                step.duration = route_step['distance'] / 60
+                step.addinfo = 'About ' + str(step.duration)  + ' mins'
+                steps.append(step)
+                start_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)
+                
+    steps[0].transport.price = 25
+    
+    start_walk = get_walking_route(origin, str(steps[0].start_location.lat) + ',' + str(steps[0].start_location.lng))
+    steps.insert(0, start_walk.directions[0])
+            
+    end_walk = get_walking_route(str(steps[-1].end_location.lat) + ',' + str(steps[-1].end_location.lng), destination)
+    steps.append(end_walk.directions[0])
+                
+    if start_walk.get_duration() + end_walk.get_duration() < 40:
+        return Route(steps)
+
 def get_transit_route(from_addr, to_addr):
     key = 'route_' + from_addr + '_' + to_addr
     data = memcache.get(key) #@UndefinedVariable
     if data != None:
-        return data
+        pass#return data
     
     distance = estimate_distance(from_addr, to_addr)
     if distance != None and distance < 2000:
@@ -157,6 +200,11 @@ def get_transit_route(from_addr, to_addr):
         if walk_route != None and walk_route.get_duration() < 30:
             memcache.add(key, walk_route, 60*60) #@UndefinedVariable
             return walk_route
+        
+    subway_route = get_subway_route(from_addr, to_addr)
+    if subway_route != None:
+        memcache.add(key, subway_route, 60*60) #@UndefinedVariable
+        return subway_route
     
     routes = get_transit_routes(from_addr, to_addr)
     route_optimal = min(routes, key=lambda x: x.get_cost())

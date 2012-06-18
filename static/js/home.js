@@ -7,7 +7,8 @@ HomePage = (function() {
     function getUrl(from_address, from_lat, from_lng) {
         url = '/directions?';
         if (hotel != null) {
-            var shortName = $.trim(hotel.name.replace('Hotel', '').replace('St Petersburg', ''));
+            //TODO: bugs with Sokos Bridge var shortName = $.trim(hotel.name.replace('Hotel', '').replace('St Petersburg', ''));
+            var shortName = $.trim(hotel.name);
             url += 'hotel=' + encodeURIComponent(shortName);
         }
         else
