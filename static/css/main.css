@@ -18,11 +18,9 @@ html {
 }
 .mainpane {
     margin: auto;
-    padding: 0 223px !important;
-    max-width: 885px;
+    width: 885px;
 }
 .mainpane h3 {
-    color: #DD4B39;
     font-size: 1.2em;
 }
 .inputbox {
@@ -43,11 +41,26 @@ html {
     font-size: 1.2em;
     margin: 3px 8px 1px 8px;
 }
+.headline {
+    margin: 1em 0em 3em 0em;
+}
+.headline h2 {
+    color: #DD4B39;
+    font-size: 3em;    
+}
+.homeform {
+    float:left;
+    margin-right: 3em;
+}
+.features {
+    font-style: italic;
+    font-size: 1.5em;
+}
 .searchbox {
-    width: 522px;
+    width: 402px;
 }
 .searchbox input {
-    width: 508px;
+    width: 388px;
 }
 .datebox {
     float: left;
@@ -74,14 +87,19 @@ html {
     padding-right: 20px;
 }
 .pageheader {
-    background-color: #222;
-    padding: .5em .7em;
+    background-color: #6FA8DC;
+    padding: 1.2em .7em;
 }
 .pageheader a, .pageheader a:active, .pageheader a:visited {
     color: white;
     text-decoration: none;
-    font-size: 1em;
+    font-size: 2em;
+    font-family: Comic Sans MS;
     margin-right: 1em;
+}
+.pageheader .pane {
+    margin: auto;
+    width: 885px;
 }
 .button {
     border-radius: 2px;

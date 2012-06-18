@@ -3,30 +3,40 @@
 {% block title %}Home{% endblock %}
 
 {% block content %}
-<div style="margin: 10px">&nbsp;</div>
-	<h3>Hotel name or address in St. Petersburg</h3>
-	<div class="inputbox searchbox">
-		<input type="text" id="hotel" name="address" />
+	<div class="headline">
+		<h2>First time in St. Petersburg?</h2>
+		<h2>Get transport directions here!</h2>
 	</div>
-	<h3>Attraction</h3>
-	<div class="inputbox searchbox">
-		<input type="text" id="attraction" name="address" />
-	</div>
-	<h3>Departure date and time</h3>
-	<div class="datebox">
-		<div class="inputbox">
-			<input type="text" id="datepicker" />
+	<form class="homeform">
+		<h3>From</h3>
+		<div class="inputbox searchbox">
+			<input type="text" id="hotel" name="address" />
 		</div>
-	</div>
-	<div class="timebox">
-		<div class="inputbox">
-			<input type="text" id="timepicker" value="09:30" />
+		<h3>To</h3>
+		<div class="inputbox searchbox">
+			<input type="text" id="attraction" name="address" />
 		</div>
-	</div>
-	<div class="buttons">
-		<div class="blue button" onclick="HomePage.search()">
-			Search
+		<h3>Date and time</h3>
+		<div class="datebox">
+			<div class="inputbox">
+				<input type="text" id="datepicker" />
+			</div>
 		</div>
+		<div class="timebox">
+			<div class="inputbox">
+				<input type="text" id="timepicker" value="09:30" />
+			</div>
+		</div>
+		<div class="buttons">
+			<div class="blue button" onclick="HomePage.search()">
+				Search
+			</div>
+		</div>
+	</form>
+	<div class="features">
+		<div>Feature 1</div>
+		<div>Feature 2</div>
+		<div>Feature 3</div>
 	</div>
 {% endblock %}
 
