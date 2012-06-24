@@ -55,6 +55,7 @@ html {
 .features {
     font-style: italic;
     font-size: 1.5em;
+    text-align: justify
 }
 .searchbox {
     width: 402px;
