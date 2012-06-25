@@ -10,13 +10,13 @@
 	<form class="homeform">
 		<h3>From</h3>
 		<div class="inputbox searchbox">
-			<input type="text" id="hotel" name="address" />
+			<input id="hotel" name="hotel" type="text" autocomplete="off" placeholder="try your hotel name or street address" />
 		</div>
-		<h3>To</h3>
+		<h3 class="to">To</h3>
 		<div class="inputbox searchbox">
-			<input type="text" id="attraction" name="address" />
+			<input id="attraction" name="attraction" type="text" autocomplete="off" placeholder="try Pulkovo Airport" />
 		</div>
-		<h3>Date and time</h3>
+		<h3 class="datetime">Date and time</h3>
 		<div class="datebox">
 			<div class="inputbox">
 				<input type="text" id="datepicker" />
@@ -28,8 +28,8 @@
 			</div>
 		</div>
 		<div class="buttons">
-			<div class="blue button" onclick="HomePage.search()">
-				Search
+			<div class="blue button bigbutton" onclick="HomePage.search()">
+				Get directions
 			</div>
 		</div>
 	</form>

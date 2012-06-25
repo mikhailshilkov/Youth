@@ -14,7 +14,10 @@ from youth import param
 from youth import router
 
 def do_home(request, response):
-    view.to_html(None, 'home', response)
+    view.to_html(None, 'home', request, response)
+    
+def do_about(request, response):
+    view.to_html(None, 'about', request, response)
     
 def get_start_time(request):
     try: 
@@ -60,7 +63,7 @@ def do_directions(request, response):
     elif view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'directions', response)
+        view.to_html(data, 'directions', request, response)
 
 
 def do_itinerary(request, response):
@@ -88,7 +91,7 @@ def do_itinerary(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'itinerary', response)
+        view.to_html(data, 'itinerary', request, response)
 
 def do_itinerary_trip(request, response):
     # get request parameters
@@ -108,7 +111,7 @@ def do_itinerary_trip(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'trip', response)
+        view.to_html(data, 'trip', request, response)
 
 def do_itinerary_options(request, response):
     # get request parameters
@@ -127,7 +130,7 @@ def do_itinerary_options(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'itineraryOptions', response)
+        view.to_html(data, 'itineraryOptions', request, response)
         
 def do_hotel(request, response):
     # get request parameters        
@@ -141,7 +144,7 @@ def do_hotel(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'hotel', response)
+        view.to_html(data, 'hotel', request, response)
         
 def post_hotel(request):
     # get request parameters        
@@ -168,7 +171,7 @@ def do_attraction(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'attraction', response)
+        view.to_html(data, 'attraction', request, response)
         
 def post_attraction(request):
     # get request parameters        
@@ -195,7 +198,7 @@ def do_transit(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'transit', response)    
+        view.to_html(data, 'transit', request, response)    
 
 def do_routing(request, response):
     # get request parameters
@@ -210,7 +213,7 @@ def do_routing(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'routing', response)    
+        view.to_html(data, 'routing', request, response)    
         
 def do_train(request, response):
     # get request parameters
@@ -224,7 +227,7 @@ def do_train(request, response):
     if view_mode == 'json':
         view.to_json(data, response)
     else:
-        view.to_html(data, 'train', response)
+        view.to_html(data, 'train', request, response)
         
 def post_param(request, response):
     name = request.get('name')

@@ -10,6 +10,8 @@ class MainHandler(webapp.RequestHandler):
             controller.do_home(self.request, self.response)
         elif self.request.path == '/directions':
             controller.do_directions(self.request, self.response)
+        elif self.request.path == '/about':
+            controller.do_about(self.request, self.response)
         elif self.request.path == '/itinerary':
             controller.do_itinerary(self.request, self.response)
         elif self.request.path == '/itinerary/trip':

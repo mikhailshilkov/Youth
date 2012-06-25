@@ -2,6 +2,12 @@ html, body, h1, h2, h3, h4, hr {
     margin: 0;
     padding: 0;
 }
+html, body {
+    height: 100%;
+}
+body {
+    background: #F7F7F7 url(/images/bg_texture.jpg) repeat scroll 0 0;
+}
 div {
     display: block;
 }
@@ -51,6 +57,20 @@ html {
 .homeform {
     float:left;
     margin-right: 3em;
+    border: solid 1px #CCCCCC;
+    background: white;
+    border: 1px solid #B3B3B3;
+    border-bottom: 1px solid #999;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1),0 1px 0 rgba(255, 255, 255, .5) inset;
+    -moz-box-shadow: 0 1px 0 rgba(0,0,0,.1),0 1px 0 rgba(255,255,255,.5) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1),0 1px 0 rgba(255, 255, 255, .5) inset;
+    padding: 20px;        
+}
+.homeform .to, .homeform .datetime {
+    margin-top: 1em;
 }
 .features {
     font-style: italic;
@@ -77,6 +97,7 @@ html {
 }
 .mainpane .buttons {
     clear: left;
+    padding-top: 1em;
 }
 .ui-autocomplete {
     max-height: 275px;
@@ -88,31 +109,64 @@ html {
 }
 .pageheader {
     background-color: #6FA8DC;
-    padding: 1.2em .7em;
 }
-.pageheader a, .pageheader a:active, .pageheader a:visited {
+.pageheader .pane {
+    margin: auto;
+    width: 885px;
+    height: 90px;
+    position: relative;
+}
+.pageheader .logo a, .pageheader .logo a:active, .pageheader .logo a:visited {
     color: white;
     text-decoration: none;
     font-size: 2em;
     font-family: Comic Sans MS;
     margin-right: 1em;
 }
-.pageheader .pane {
-    margin: auto;
-    width: 885px;
+.pageheader .logo {
+    bottom: 30px;
+    position: absolute;
+}
+.pageheader .menu {
+    bottom: 30px;
+    right: 0;
+    position: absolute;
+}
+.pageheader .menu li {
+    display: block;
+    float: left;
+}
+.pageheader .menu a {
+    border: 1px solid transparent;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    color: white;
+    font-size: 1.3em;
+    margin-left: 1em;
+    padding: 0.5em 1em;
+    text-decoration: none;
+}
+.pageheader .menu a:hover, .pageheader .menu .active a {
+    background: #CCD2E5 url(/images/gradient.png) bottom left repeat-x;
+    border-color: #B3B3B3;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    -moz-box-shadow: 0 1px 0 rgba(0,0,0,.1);
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
 }
 .button {
-    border-radius: 2px;
-    cursor: default;
-    font-size: .8em;
+    font-size: 1em;
     font-weight: bold;
     text-align: center;
-    height: 27px;
-    line-height: 27px;
+    border-radius: 2px;
     min-width: 54px;
-    outline: 0;
-    padding: 0 8px;
+    padding: 6px 15px;
     display: inline-block;
+    cursor: pointer;
+}
+.bigbutton {
+    font-size: 1.4em;  
+    padding: 12px 30px;  
 }
 .blue {
     background-color: #4D90FE;
@@ -189,8 +243,17 @@ html {
 .itinerary {
     margin: 10px;
     max-width: 1000px;
-    padding: 10px;
     border: solid 1px #CCCCCC;
+    background: white;
+    border: 1px solid #B3B3B3;
+    border-bottom: 1px solid #999;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+    -webkit-border-radius: 4px;
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .1),0 1px 0 rgba(255, 255, 255, .5) inset;
+    -moz-box-shadow: 0 1px 0 rgba(0,0,0,.1),0 1px 0 rgba(255,255,255,.5) inset;
+    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1),0 1px 0 rgba(255, 255, 255, .5) inset;
+    padding: 20px;    
 }
 
 .itineraryShifted {
@@ -330,6 +393,5 @@ html {
     margin-right: .5em;
 }
 .gmnoprint div a {
-    display: none !important;//
-    TODO: this statement might break the ToS of Google maps, to be reviewed
+    display: none !important;//TODO: this statement might break the ToS of Google maps, to be reviewed
 }

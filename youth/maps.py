@@ -150,34 +150,36 @@ def get_subway_route(origin, destination):
     route = router.get_route(origin, destination)
 
     steps = []
-        
-    duration = 0
     start_location = GeoPoint(route[0]['node'].lat, route[0]['node'].lng)
+        
+    duration = 5
+    step = RouteStep('Enter subway station ' + route[0]['node'].name,
+                     duration, 'About ' + str(duration)  + ' mins', Transport('Subway', price = 27),
+                     start_location)
+    steps.append(step)
+    
     for index in range(len(route)):
         route_step = route[index]
         line = route_step['node'].line
         last_station = index == len(route) - 1
         duration += route_step['distance']
         if last_station or route[index+1]['node'].line != line:
-            step = RouteStep()                                
-            step.direction = 'Subway line ' + str(line) + ' to ' + str(route_step['node'].name)
-            step.duration = duration / 60
-            step.addinfo = 'About ' + str(step.duration)  + ' mins'
-            step.transport = Transport('Subway')
-            step.start_location = start_location
-            step.end_location = GeoPoint(route_step['node'].lat, route_step['node'].lng) 
-            step.has_map = True
-            steps.append(step)
-            duration = 0
-            if not last_station:
-                step = RouteStep()
-                step.direction = 'Change to subway station ' + route[index+1]['node'].name + ', line ' + str(route[index+1]['node'].line) 
-                step.duration = route_step['distance'] / 60
+            if index > 0: # The change might be the first move => don't add a 0 stations way
+                step = RouteStep()                                
+                step.direction = 'Subway line ' + str(line) + ' to ' + str(route_step['node'].name)
+                step.duration = duration / 60
                 step.addinfo = 'About ' + str(step.duration)  + ' mins'
+                step.transport = Transport('Subway')
+                step.start_location = start_location
+                step.end_location = GeoPoint(route_step['node'].lat, route_step['node'].lng) 
+                step.has_map = True
                 steps.append(step)
-                start_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)
-                
-    steps[0].transport.price = 25
+                duration = 0
+            if not last_station:
+                step = RouteStep('Change to subway station ' + route[index+1]['node'].name + ', line ' + str(route[index+1]['node'].line),
+                                 route_step['distance'] / 60, 'About ' + str(step.duration)  + ' mins')
+                steps.append(step)
+                start_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)                
     
     start_walk = get_walking_route(origin, str(steps[0].start_location.lat) + ',' + str(steps[0].start_location.lng))
     steps.insert(0, start_walk.directions[0])

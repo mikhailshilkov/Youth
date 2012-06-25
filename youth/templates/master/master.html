@@ -11,7 +11,15 @@
 <body>
 	<div class="pageheader">
 		<div class="pane">
-			<a href="/">Youth Logo</a>
+			<div class="logo">
+				<a href="/">Youth Logo</a>
+			</div>
+			<div class="menu">
+				<ul>
+            		<li {% ifequal request.path "/" %}class="active"{% endifequal %}><a href="/">Home</a></li>
+            		<li {% ifequal request.path "/about" %}class="active"{% endifequal %}><a href="/about">About</a></li>
+          		</ul>								
+			</div>
 		</div>
 	</div>
 	<div class="mainpane">
