@@ -1,23 +1,42 @@
 import json
 import math
-from youth import param
+import param
+from lib import geo
 
-def get_route(from_addr, to_addr):
+def get_route(start_location, end_location):
     subway_dict = json.loads(param.get('subway'))
     graph = StationGraph()
     graph.stations = [Station(x['name'], x['lat'], x['lng'], x['line']) for x in subway_dict['stations']]
     graph.links = [StationLink(x['from_station'], x['to_station'], x['duration']) for x in subway_dict['links']]
+    return get_route_ongraph(graph, start_location, end_location)
 
-    [start_lat, start_lng] = [float(x) for x in from_addr.split(',')]
-    [end_lat, end_lng] = [float(x) for x in to_addr.split(',')]
+def get_route_ongraph(graph, start_location, end_location):
+    entrances = [x for x in graph.stations if x.name != 'Spasskaya']
+    
+    near_start = find_near(entrances, start_location.lat, start_location.lng)
+    start = Station('Start', start_location.lat, start_location.lng, None)
+    graph.stations.append(start)
+    for station in near_start:
+        graph.links.append(StationLink('Start', station.name, station.estimate_walk_time_to(start_location.lat, start_location.lng)))
 
-    start = find_nearest(graph.stations, start_lat, start_lng)
-    end = find_nearest(graph.stations, end_lat, end_lng)
+    near_end = find_near(entrances, end_location.lat, end_location.lng)
+    end = Station('End', end_location.lat, end_location.lng, None)
+    graph.stations.append(end)
+    for station in near_end:
+        graph.links.append(StationLink(station.name, 'End', station.estimate_walk_time_to(end_location.lat, end_location.lng)))
+        
     path = AStar(graph, start, end)
     return path
 
+def find_near(stations, lat, lng):
+    less_20_min = [x for x in stations if x.estimate_walk_time_to(lat, lng) < 1200]
+    if len(less_20_min) > 0:
+        return less_20_min
+    else:
+        return [find_nearest(stations, lat, lng)]
+
 def find_nearest(stations, lat, lng):
-    return min(stations, key=lambda x: x.estimate_distance_to(lat, lng))
+    return min(stations, key=lambda x: x.estimate_subway_time_to(lat, lng))
 
 def AStar(graph, start, goal):
     closedset = []    # The set of nodes already evaluated.
@@ -58,11 +77,12 @@ def reconstruct_path(came_from, current_node, distance = 0):
         result = reconstruct_path(came_from, next_node['node'], next_node['distance'])
     else:
         result = []
-    result.append({ 'node': current_node, 'distance': distance })
+    if current_node.name <> 'Start' and current_node.name <> 'End':
+        result.append({ 'node': current_node, 'distance': distance })
     return result
     
 def heuristic_cost_estimate(start, goal):
-    return goal.estimate_distance_to(start.lat, start.lng)
+    return goal.estimate_subway_time_to(start.lat, start.lng)
 
 class StationGraph(object):
     def __init__(self):
@@ -91,8 +111,11 @@ class Station(object):
         self.lng = lng
         self.line = line
         
-    def estimate_distance_to(self, lat, lng):
-        return int(math.sqrt((self.lat - lat)**2 + (self.lng - lng)**2) * 8000) # 8000 is an apprx const, doesn't mean anything 
+    def estimate_subway_time_to(self, lat, lng):
+        return int(math.sqrt((self.lat - lat)**2 + (self.lng - lng)**2) * 8000) # 8000 is an apprx const, doesn't mean anything
+    
+    def estimate_walk_time_to(self, lat, lng): 
+        return int(geo.haversine(self.lng, self.lat, lng, lat) * 60 / 80) # result in seconds
     
     def jsonable(self):
         return self.__dict__

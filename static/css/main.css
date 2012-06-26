@@ -396,3 +396,6 @@ html {
 .gmnoprint div a {
     display: none !important;//TODO: this statement might break the ToS of Google maps, to be reviewed
 }
+.about {
+    font-size: 1.2em;
+}

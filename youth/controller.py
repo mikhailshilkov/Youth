@@ -40,21 +40,23 @@ def do_directions(request, response):
     if hotel_name != '':
         the_hotel = hotel.get(hotel_name)[0]
         from_name = the_hotel.name
-        from_location = the_hotel.get_latlng()
+        from_coord = the_hotel.get_latlng()
     else:
-        from_location = request.get('from', '59.945085-30.292699').replace('-', ',')
-        from_name = request.get('address', from_location)
+        from_coord = request.get('from', '59.945085-30.292699').replace('-', ',')
+        from_name = request.get('address', from_coord)
         
     attraction_name = request.get('attraction', '')
     if attraction_name != '':
         the_attraction = attraction.get(attraction_name)[0]
         to_name = the_attraction.name
-        to_location = the_attraction.get_latlng()
+        to_coord = the_attraction.get_latlng()
     else:
-        to_location = request.get('to', '59.945085-30.292699').replace('-', ',')
-        to_name = to_location    
+        to_coord = request.get('to', '59.945085-30.292699').replace('-', ',')
+        to_name = to_coord    
 
-    # produce data        
+    # produce data            
+    from_location = maps.GeoPoint(*[float(x) for x in from_coord.split(',')])
+    to_location = maps.GeoPoint(*[float(x) for x in to_coord.split(',')])    
     data = itinerary.get_directions(from_name, from_location, to_name, to_location, date, start_time)              
     
     # populate the requested view

@@ -10,108 +10,12 @@ from lib.BeautifulSoup import BeautifulSoup
 from lib import geo
 from youth import utils
 from youth import router
-
-# Class that represents a Route
-class Route(object):
-    def __init__(self, directions):
-        self.directions = directions
-        
-    def get_duration(self):
-        return sum([step.duration for step in self.directions])
-    
-    def get_cost(self):
-        return sum([step.get_cost() for step in self.directions])
-
-# Class that represents a Route Step
-class RouteStep(object):
-    def __init__(self, direction = None, duration = None, addinfo = None, 
-                 transport = None, start_location = None, end_location = None, 
-                 has_map = False, hint = None):
-        self.direction = direction
-        self.duration = duration
-        self.addinfo = addinfo
-        self.start_location = start_location 
-        self.end_location = end_location
-        self.transport = transport
-        self.has_map = has_map
-        self.hint = hint
-        self.start_icon = None
-        self.end_icon = None
-        
-    def is_subway(self):
-        return self.transport != None and self.transport.is_subway()
-    
-    def is_walk(self):
-        return self.transport == None
-    
-    def is_land_transport(self):
-        return self.transport != None and not self.transport.is_subway()
-    
-    def is_train(self):
-        return self.transport != None and self.transport.is_train()
-        
-    def jsonable(self):
-        return self.__dict__  
-    
-    def get_cost(self):
-        result = 0
-        # add price as-is
-        if self.transport != None and self.transport.price != None:
-            result += self.transport.price
-        # add minutes * coefficient
-        coef = 3
-        if self.transport == None:
-            coef = 2.5 # walking is nice
-        elif self.is_land_transport():
-            coef = 3.5 # land transport is not reliable
-        result += self.duration * coef
-        return result 
-    
-    def get_route_json(self):
-        params = { 
-                  'type': self.transport.type if self.transport != None else 'Walk', 
-                  'start': self.start_location, 
-                  'end': self.end_location,
-                  'startIcon': self.start_icon,
-                  'endIcon': self.end_icon 
-                 }
-        return utils.to_json(params)
-        
-# Class that represents a Transport        
-class Transport(object):
-    def __init__(self, transport_type, line_number = None, interval = None, price = None, stops = None):
-        self.type = transport_type
-        self.line_number = line_number
-        self.interval = interval
-        self.price = price
-        self.stops = stops
-        
-    def is_subway(self):
-        return self.type == 'Subway'
-    
-    def is_train(self):
-        return self.type == 'Train'
-    
-    def jsonable(self):
-        return self.__dict__
-    
-# Class that represents a Geo Point
-class GeoPoint(object):
-    def __init__(self, lat, lng):
-        self.lat = lat
-        self.lng = lng
-        
-    def __str__(self):
-        return "{ 'lat': " + str(self.lat) + ", 'lng': " + str(self.lng) + "}"
-    
-    def jsonable(self):
-        return self.__dict__
         
 
-def get_walking_route(origin, destination):
+def get_walking_route(start_location, end_location):
     params = { 
-              'origin': origin,
-              'destination': destination, 
+              'origin': start_location.to_url_param(),
+              'destination': end_location.to_url_param(), 
               'sensor' : 'false', 
               'mode': 'walking'
               }
@@ -127,17 +31,13 @@ def get_walking_route(origin, destination):
         instructions = []
         duration = 0
         distance = 0
-        start_location = None
         for leg in route['routes'][0]['legs']:
             for leg_step in leg['steps']:
-                instructions.append(utils.remove_html_tags(leg_step['html_instructions']))
+                instructions.append(clean_walk_direction(utils.remove_html_tags(leg_step['html_instructions'])))
                 duration += int(leg_step['duration']['value'])
                 distance += int(leg_step['distance']['value'])
-                if start_location == None:
-                    start_location = GeoPoint(leg_step['start_location']['lat'], leg_step['start_location']['lng'])
-                end_location = GeoPoint(leg_step['end_location']['lat'], leg_step['end_location']['lng'])
         step = RouteStep()                            
-        step.direction = ', '.join(instructions)
+        step.direction = ', '.join(instructions).replace('M10','')
         step.duration = duration / 60
         step.addinfo = 'About ' + str(step.duration)  + ' mins, ' + str(distance) + ' m'
         step.transport = None # walk                
@@ -145,17 +45,17 @@ def get_walking_route(origin, destination):
         step.end_location = end_location
         step.has_map = True
         return Route([step])
-
-def get_subway_route(origin, destination):
-    route = router.get_route(origin, destination)
-
+    
+def get_subway_route(start_location, end_location):
+    route = router.get_route(start_location, end_location)
+    
     steps = []
-    start_location = GeoPoint(route[0]['node'].lat, route[0]['node'].lng)
+    subway_location = GeoPoint(route[0]['node'].lat, route[0]['node'].lng)
         
     duration = 5
-    step = RouteStep('Enter subway station ' + route[0]['node'].name,
-                     duration, 'About ' + str(duration)  + ' mins', Transport('Subway', price = 27),
-                     start_location)
+    step = RouteStep('Buy the tokens if needed and enter subway station ' + route[0]['node'].name,
+                     duration, 'About ' + str(duration)  + ' mins, 27 RUR', Transport('Subway', price = 27),
+                     subway_location)
     steps.append(step)
     
     for index in range(len(route)):
@@ -170,7 +70,7 @@ def get_subway_route(origin, destination):
                 step.duration = duration / 60
                 step.addinfo = 'About ' + str(step.duration)  + ' mins'
                 step.transport = Transport('Subway')
-                step.start_location = start_location
+                step.start_location = subway_location
                 step.end_location = GeoPoint(route_step['node'].lat, route_step['node'].lng) 
                 step.has_map = True
                 steps.append(step)
@@ -179,43 +79,43 @@ def get_subway_route(origin, destination):
                 step = RouteStep('Change to subway station ' + route[index+1]['node'].name + ', line ' + str(route[index+1]['node'].line),
                                  route_step['distance'] / 60, 'About ' + str(step.duration)  + ' mins')
                 steps.append(step)
-                start_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)                
+                subway_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)                
     
-    start_walk = get_walking_route(origin, str(steps[0].start_location.lat) + ',' + str(steps[0].start_location.lng))
+    start_walk = get_walking_route(start_location, steps[0].start_location)
     steps.insert(0, start_walk.directions[0])
             
-    end_walk = get_walking_route(str(steps[-1].end_location.lat) + ',' + str(steps[-1].end_location.lng), destination)
+    end_walk = get_walking_route(steps[-1].end_location, end_location)
     steps.append(end_walk.directions[0])
                 
     if start_walk.get_duration() + end_walk.get_duration() < 40:
         return Route(steps)
 
-def get_transit_route(from_addr, to_addr):
-    key = 'route_' + from_addr + '_' + to_addr
+def get_transit_route(start_location, end_location):
+    key = 'route_' + start_location.to_url_param() + '_' + end_location.to_url_param()
     data = memcache.get(key) #@UndefinedVariable
     if data != None:
         pass#return data
     
-    distance = estimate_distance(from_addr, to_addr)
+    distance = estimate_distance(start_location, end_location)
     if distance != None and distance < 2000:
-        walk_route = get_walking_route(from_addr, to_addr)
+        walk_route = get_walking_route(start_location, end_location)
         if walk_route != None and walk_route.get_duration() < 30:
             memcache.add(key, walk_route, 60*60) #@UndefinedVariable
             return walk_route
         
-    subway_route = get_subway_route(from_addr, to_addr)
+    subway_route = get_subway_route(start_location, end_location)
     if subway_route != None:
         memcache.add(key, subway_route, 60*60) #@UndefinedVariable
         return subway_route
     
-    routes = get_transit_routes(from_addr, to_addr)
+    routes = get_transit_routes(start_location, end_location)
     route_optimal = min(routes, key=lambda x: x.get_cost())
     memcache.add(key, route_optimal, 60*60) #@UndefinedVariable
     return route_optimal    
 
-def get_transit_routes(from_addr, to_addr):
+def get_transit_routes(start_location, end_location):
     # Make request to Google Transit
-    url = "http://maps.google.com/?saddr=" + urllib.quote(from_addr) + "&daddr=" + urllib.quote(to_addr) + "&dirflg=r&output=json&time=10:00am"
+    url = "http://maps.google.com/?saddr=" + start_location.to_url_param() + "&daddr=" + end_location.to_url_param() + "&dirflg=r&output=json&time=10:00am"
     result = urlfetch.fetch(url)
     response = result.content
     
@@ -427,13 +327,110 @@ def get_default_service_interval(transport_type):
         return 10
     return 0
 
-def estimate_distance(from_addr, to_addr):
-    try:
-        from_coord = from_addr.split(',')
-        to_coord = to_addr.split(',')
-        return geo.haversine(float(from_coord[0]), float(from_coord[1]), float(to_coord[0]), float(to_coord[1]))
-    except:
-        return None
+def estimate_distance(start_location, end_location):
+    return geo.haversine(start_location.lng, start_location.lat, end_location.lng, end_location.lat)
     
 def clean_walk_direction(direction):
-    return direction.replace('/M10', '')
+    return direction.replace('/M10', '').replace('/М10', '').replace('Destination will be on the right', '').replace('Destination will be on the left', '')
+
+
+
+
+# Class that represents a Route
+class Route(object):
+    def __init__(self, directions):
+        self.directions = directions
+        
+    def get_duration(self):
+        return sum([step.duration for step in self.directions])
+    
+    def get_cost(self):
+        return sum([step.get_cost() for step in self.directions])
+
+# Class that represents a Route Step
+class RouteStep(object):
+    def __init__(self, direction = None, duration = None, addinfo = None, 
+                 transport = None, start_location = None, end_location = None, 
+                 has_map = False, hint = None):
+        self.direction = direction
+        self.duration = duration
+        self.addinfo = addinfo
+        self.start_location = start_location 
+        self.end_location = end_location
+        self.transport = transport
+        self.has_map = has_map
+        self.hint = hint
+        self.start_icon = None
+        self.end_icon = None
+        
+    def is_subway(self):
+        return self.transport != None and self.transport.is_subway()
+    
+    def is_walk(self):
+        return self.transport == None
+    
+    def is_land_transport(self):
+        return self.transport != None and not self.transport.is_subway()
+    
+    def is_train(self):
+        return self.transport != None and self.transport.is_train()
+        
+    def jsonable(self):
+        return self.__dict__  
+    
+    def get_cost(self):
+        result = 0
+        # add price as-is
+        if self.transport != None and self.transport.price != None:
+            result += self.transport.price
+        # add minutes * coefficient
+        coef = 3
+        if self.transport == None:
+            coef = 2.5 # walking is nice
+        elif self.is_land_transport():
+            coef = 3.5 # land transport is not reliable
+        result += self.duration * coef
+        return result 
+    
+    def get_route_json(self):
+        params = { 
+                  'type': self.transport.type if self.transport != None else 'Walk', 
+                  'start': self.start_location, 
+                  'end': self.end_location,
+                  'startIcon': self.start_icon,
+                  'endIcon': self.end_icon 
+                 }
+        return utils.to_json(params)
+        
+# Class that represents a Transport        
+class Transport(object):
+    def __init__(self, transport_type, line_number = None, interval = None, price = None, stops = None):
+        self.type = transport_type
+        self.line_number = line_number
+        self.interval = interval
+        self.price = price
+        self.stops = stops
+        
+    def is_subway(self):
+        return self.type == 'Subway'
+    
+    def is_train(self):
+        return self.type == 'Train'
+    
+    def jsonable(self):
+        return self.__dict__
+    
+# Class that represents a Geo Point
+class GeoPoint(object):
+    def __init__(self, lat, lng):
+        self.lat = lat
+        self.lng = lng
+        
+    def to_url_param(self):
+        return str(self.lat) + ',' + str(self.lng)
+        
+    def __str__(self):
+        return "{ 'lat': " + str(self.lat) + ", 'lng': " + str(self.lng) + "}"
+    
+    def jsonable(self):
+        return self.__dict__
