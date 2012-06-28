@@ -21,7 +21,7 @@ def do_about(request, response):
     
 def get_start_time(request):
     try: 
-        start_time = datetime.datetime.strptime(request.get('time', '10-00'), '%H-%M').time()
+        start_time = datetime.datetime.strptime(request.get('time', '09-30'), '%H-%M').time()
     except:
         start_time = datetime.time(hour=10, minute=0)
     return start_time
@@ -189,8 +189,8 @@ def delete_attraction(request):
         
 def do_transit(request, response):
     # get request parameters
-    from_location = request.get('from')
-    to_location = request.get('to')
+    from_location = maps.GeoPoint(*[float(x) for x in request.get('from').split(',')])
+    to_location = maps.GeoPoint(*[float(x) for x in request.get('to').split(',')])    
     view_mode = request.get('out', 'html')
 
     # produce data        
@@ -204,8 +204,8 @@ def do_transit(request, response):
 
 def do_routing(request, response):
     # get request parameters
-    from_location = request.get('from')
-    to_location = request.get('to')
+    from_location = maps.GeoPoint(*[float(x) for x in request.get('from').split(',')])
+    to_location = maps.GeoPoint(*[float(x) for x in request.get('to').split(',')])    
     view_mode = request.get('out', 'html')
 
     # produce data        

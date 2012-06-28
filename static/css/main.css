@@ -399,3 +399,18 @@ html {
 .about {
     font-size: 1.2em;
 }
+.subwayline1 {
+    color: red;
+}
+.subwayline2 {
+    color: blue;
+}
+.subwayline3 {
+    color: green;
+}
+.subwayline4 {
+    color: yellow;
+}
+.subwayline5 {
+    color: purple;
+}

@@ -26,7 +26,7 @@
 			<div class="hint">{{step.hint}}</div>
 		</div>
 		<div class="instuction">
-			<div class="text">{{step.instruction}}</div>
+			<div class="text">{{step.instruction|safe}}</div>
             {% for detail in step.details %}			
 				<div id="details_showbutton_{{forloop.counter}}_{{forloop.parentloop.counter}}" class="gray button" onclick="DirectionsPage.showDetails('{{forloop.counter}}_{{forloop.parentloop.counter}}', '{{detail.action}}', '{{detail.data}}')">
 					{{detail.show_label}}						

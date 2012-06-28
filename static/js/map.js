@@ -12,7 +12,7 @@ MapHelper = {
         var isSubway = route['type'] == 'Subway';
         coordinates.push(startPoint);
         bounds.extend(startPoint);
-        this.addMarker(map, startPoint, 'From', route['startIcon']);
+        this.addMarker(map, startPoint, route['startName'], route['startIcon']);
 
         var needsDirections = !isSubway;
         if(route['type'] == 'Walk')// don't search directions for walks < 200 m
@@ -35,7 +35,7 @@ MapHelper = {
 
                     coordinates.push(endPoint);
                     bounds.extend(endPoint);
-                    MapHelper.addMarker(map, endPoint, 'To', route['endIcon']);
+                    MapHelper.addMarker(map, endPoint, route['endName'], route['endIcon']);
                     MapHelper.addPolyline(map, coordinates);
                     MapHelper.fitBounds(map, bounds);
                 }
@@ -43,7 +43,7 @@ MapHelper = {
         } else {
             coordinates.push(endPoint);
             bounds.extend(endPoint);
-            this.addMarker(map, endPoint, 'To', route['endIcon']);
+            this.addMarker(map, endPoint, route['endName'], route['endIcon']);
             this.addPolyline(map, coordinates);
             this.fitBounds(map, bounds);
         }

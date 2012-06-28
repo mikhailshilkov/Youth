@@ -8,6 +8,7 @@ from google.appengine.api import urlfetch
 from google.appengine.api import memcache
 from lib.BeautifulSoup import BeautifulSoup
 from lib import geo
+from lib import translit
 from youth import utils
 from youth import router
         
@@ -39,7 +40,7 @@ def get_walking_route(start_location, end_location):
         step = RouteStep()                            
         step.direction = ', '.join(instructions).replace('M10','')
         step.duration = duration / 60
-        step.addinfo = 'About ' + str(step.duration)  + ' mins, ' + str(distance) + ' m'
+        step.addinfo = utils.duration_to_string(step.duration)  + ', ' + utils.distance_to_string(distance)
         step.transport = None # walk                
         step.start_location = start_location
         step.end_location = end_location
@@ -52,34 +53,41 @@ def get_subway_route(start_location, end_location):
     steps = []
     subway_location = GeoPoint(route[0]['node'].lat, route[0]['node'].lng)
         
-    duration = 5
-    step = RouteStep('Buy the tokens if needed and enter subway station ' + route[0]['node'].name,
-                     duration, 'About ' + str(duration)  + ' mins, 27 RUR', Transport('Subway', price = 27),
+    step = RouteStep('Buy the tokens if needed and enter subway station ' + utils.subway_color(route[0]['node'].name, route[0]['node'].line),
+                     5, utils.duration_to_string(5) + ', ' + utils.price_to_string(27), Transport('Subway', price = 27),
                      subway_location)
     steps.append(step)
     
+    stops = 0
+    duration = 0
     for index in range(len(route)):
         route_step = route[index]
         line = route_step['node'].line
         last_station = index == len(route) - 1
-        duration += route_step['distance']
+        station_duration = route_step['distance'] / 60
+        duration += station_duration
         if last_station or route[index+1]['node'].line != line:
             if index > 0: # The change might be the first move => don't add a 0 stations way
                 step = RouteStep()                                
-                step.direction = 'Subway line ' + str(line) + ' to ' + str(route_step['node'].name)
-                step.duration = duration / 60
-                step.addinfo = 'About ' + str(step.duration)  + ' mins'
+                step.direction = 'Subway ' + utils.subway_color('line ' + str(line), line) + ' to ' + utils.subway_color(str(route_step['node'].name), line)
+                step.duration = duration
+                step.addinfo = utils.duration_to_string(step.duration)  + ', ' + str(stops) + ' stops'
                 step.transport = Transport('Subway')
                 step.start_location = subway_location
                 step.end_location = GeoPoint(route_step['node'].lat, route_step['node'].lng) 
                 step.has_map = True
                 steps.append(step)
                 duration = 0
+                stops = 0
             if not last_station:
-                step = RouteStep('Change to subway station ' + route[index+1]['node'].name + ', line ' + str(route[index+1]['node'].line),
-                                 route_step['distance'] / 60, 'About ' + str(step.duration)  + ' mins')
+                to_line = route[index+1]['node'].line
+                to_text = utils.subway_color('line ' + str(to_line), to_line) + ' station ' + utils.subway_color(route[index+1]['node'].name, to_line) 
+                step = RouteStep('Change to ' + to_text,
+                                 route_step['distance'] / 60, utils.duration_to_string(station_duration))
                 steps.append(step)
-                subway_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)                
+                subway_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)
+        else:
+            stops += 1                
     
     start_walk = get_walking_route(start_location, steps[0].start_location)
     steps.insert(0, start_walk.directions[0])
@@ -222,7 +230,7 @@ def process_transit_route(transit):
             if step.transport.is_subway() and first_subway:
                 step.transport.price = 25
                 previous_step.duration += 5
-                previous_step.addinfo = 'About ' + str(previous_step.duration) + ' mins' 
+                previous_step.addinfo = 'About ' + utils.duration_to_string(previous_step.duration) 
                 first_subway = False
             elif step.transport.type in ['Bus', 'Trolleybus', 'Tram']:
                 step.transport.price = 21
@@ -234,20 +242,20 @@ def process_transit_route(transit):
                 step.duration *= 1.4
             
             # Create manual description
-            step.addinfo = 'About ' + str(int(step.duration)) + ' mins'
+            step.addinfo = 'About ' + utils.duration_to_string(int(step.duration))
             if step.transport.stops != None:
                 step.addinfo += ', ' + str(step.transport.stops) + ' stops'
                 
             # Add 3/4 of service interval duration
             if not step.transport.is_subway() and step.transport.interval != None:
                 step.duration += step.transport.interval * 3 / 4                 
-                step.addinfo += ', runs every ' + str(step.transport.interval) + ' mins'
+                step.addinfo += ', runs every ' + utils.duration_to_string(step.transport.interval)
                                         
         # Do not show the map for change walks inside subway
         if step.is_walk() and previous_step != None and next_step != None and \
             previous_step.is_subway() and next_step.is_subway():
             step.duration = 4 # subway change is 4 minutes
-            step.addinfo = 'About ' + str(step.duration) + ' mins'
+            step.addinfo = 'About ' + utils.duration_to_string(step.duration)
         else:
             step.has_map = step.start_location != None and step.end_location != None
             
@@ -331,7 +339,7 @@ def estimate_distance(start_location, end_location):
     return geo.haversine(start_location.lng, start_location.lat, end_location.lng, end_location.lat)
     
 def clean_walk_direction(direction):
-    return direction.replace('/M10', '').replace('/М10', '').replace('Destination will be on the right', '').replace('Destination will be on the left', '')
+    return translit.translify(direction).replace('/M10', '').replace('Destination will be on the right', '').replace('Destination will be on the left', '')
 
 
 
@@ -362,6 +370,8 @@ class RouteStep(object):
         self.hint = hint
         self.start_icon = None
         self.end_icon = None
+        self.start_name = ''
+        self.end_name = ''
         
     def is_subway(self):
         return self.transport != None and self.transport.is_subway()
@@ -398,7 +408,9 @@ class RouteStep(object):
                   'start': self.start_location, 
                   'end': self.end_location,
                   'startIcon': self.start_icon,
-                  'endIcon': self.end_icon 
+                  'endIcon': self.end_icon,
+                  'startName': self.start_name,
+                  'endName': self.end_name
                  }
         return utils.to_json(params)
         

@@ -26,6 +26,21 @@ def duration_to_string(duration):
         return '1 min'
     else:
         return str(duration) + ' mins'
+    
+def distance_to_string(meters):
+    if meters > 1000:
+        return '%.1f km' % (meters / 1000)
+    elif meters > 300:
+        return '%s m' % int(round(meters, -2))
+    elif meters > 100:
+        return '%s m' % int(round(meters, -1))
+    return str(meters) + ' m'
+
+def price_to_string(rub):
+    return '%s RUB' % rub
+
+def subway_color(text, line):
+    return '<span class="subwayline%s">' % line + text + '</span>'
 
 def time_add_mins(tm, mins):
     fulldate = datetime.datetime(1,1,1,tm.hour,tm.minute,tm.second)

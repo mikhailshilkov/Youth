@@ -12,7 +12,9 @@ HomePage = (function() {
             url += 'hotel=' + encodeURIComponent(shortName);
         } else
             url += 'address=' + encodeURIComponent(from_address) + '&from=' + from_lat.toString() + '-' + from_lng.toString();
-        url += '&attraction=' + encodeURIComponent(attraction.name) + '&date=' + $.datepicker.formatDate('yy-mm-dd', date) + '&time=' + time.replace(':', '-');
+        url += '&attraction=' + encodeURIComponent(attraction.name) + '&date=' + $.datepicker.formatDate('yy-mm-dd', date)
+        if (time != '09:30')
+            url += '&time=' + time.replace(':', '-');
         return url;
     }
 
