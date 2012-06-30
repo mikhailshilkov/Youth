@@ -12,16 +12,8 @@ class MainHandler(webapp.RequestHandler):
             controller.do_directions(self.request, self.response)
         elif self.request.path == '/about':
             controller.do_about(self.request, self.response)
-        elif self.request.path == '/itinerary':
-            controller.do_itinerary(self.request, self.response)
-        elif self.request.path == '/itinerary/trip':
-            controller.do_itinerary_trip(self.request, self.response)
-        elif self.request.path == '/itinerary/options':
-            controller.do_itinerary_options(self.request, self.response)
-        elif self.request.path == '/hotel':
-            controller.do_hotel(self.request, self.response)
-        elif self.request.path == '/attraction':
-            controller.do_attraction(self.request, self.response)
+        elif self.request.path == '/place':
+            controller.do_place(self.request, self.response)
         elif self.request.path == '/transit':
             controller.do_transit(self.request, self.response)
         elif self.request.path == '/routing':

@@ -81,7 +81,11 @@ html {
     width: 402px;
 }
 .searchbox input {
-    width: 388px;
+    width: 368px;
+    float: left;
+}
+.searchbox img {
+    margin-top: 5px;
 }
 .datebox {
     float: left;
