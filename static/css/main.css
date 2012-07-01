@@ -48,7 +48,7 @@ html {
     margin: 3px 8px 1px 8px;
 }
 .headline {
-    margin: 1em 0em 3em 0em;
+    margin: 1em 0em 2em 0em;
 }
 .headline h2 {
     color: #DD4B39;
@@ -100,7 +100,7 @@ html {
 .timebox input {
     width: 6em;
 }
-.mainpane .buttons {
+.homeform .buttons {
     clear: left;
     padding-top: 1em;
 }
@@ -113,7 +113,7 @@ html {
     padding-right: 20px;
 }
 .pageheader {
-    background-color: #6FA8DC;
+    background-color: #5F98CC;
 }
 .pageheader .pane {
     margin: auto;
@@ -129,11 +129,11 @@ html {
     margin-right: 1em;
 }
 .pageheader .logo {
-    bottom: 30px;
+    bottom: 15px;
     position: absolute;
 }
 .pageheader .menu {
-    bottom: 30px;
+    bottom: 35px;
     right: 0;
     position: absolute;
 }
@@ -153,11 +153,8 @@ html {
     text-decoration: none;
 }
 .pageheader .menu a:hover, .pageheader .menu .active a {
-    background: #CCD2E5 url(/images/gradient.png) bottom left repeat-x;
-    border-color: #B3B3B3;
-    box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
-    -moz-box-shadow: 0 1px 0 rgba(0,0,0,.1);
-    -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+    background: #6FA8DC;
+    border: 1px solid transparent;
 }
 .button {
     font-size: 1em;
@@ -246,7 +243,7 @@ html {
 }
 
 .itinerary {
-    margin: 10px;
+    margin: 1em 0;
     max-width: 1000px;
     border: solid 1px #CCCCCC;
     background: white;
