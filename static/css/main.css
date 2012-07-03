@@ -84,8 +84,9 @@ html {
     width: 368px;
     float: left;
 }
-.searchbox img {
+.searchbox img, .timebox img {
     margin-top: 5px;
+    margin-right: 2px;
 }
 .datebox {
     float: left;
@@ -404,14 +405,14 @@ html {
     color: red;
 }
 .subwayline2 {
-    color: blue;
+    color: #0C4295;
 }
 .subwayline3 {
-    color: green;
+    color: #00751C;
 }
 .subwayline4 {
-    color: yellow;
+    color: #CE3800;
 }
 .subwayline5 {
-    color: purple;
+    color: #4D0255;
 }

@@ -24,12 +24,12 @@ class Trip(object):
     def jsonable(self):
         return self.__dict__
     
-def get_directions(from_name, from_location, to_name, to_location, date, start_time):
+def get_directions(from_place, from_location, to_place, to_location, date, start_time):
     route = maps.get_transit_route(from_location, to_location)
-    trip = create_trip(from_name, from_location, to_name, to_location, route, date, start_time)
+    trip = create_trip(from_place, from_location, to_place, to_location, route, date, start_time)
     return trip                   
 
-def create_trip(from_name, from_location, to_name, to_location, route, date, start_time):    
+def create_trip(from_place, from_location, to_place, to_location, route, date, start_time):    
     steps_to = []
     duration = 0
     expenses = 0
@@ -37,8 +37,6 @@ def create_trip(from_name, from_location, to_name, to_location, route, date, sta
     step_start_time = start_time
     
     # assign icons
-    route.directions[0].start_icon = 'hotel'
-    route.directions[0].start_name = from_name
     for i in range(len(route.directions)):
         step = route.directions[i]
         previous = route.directions[i-1] if i > 0 else None
@@ -58,8 +56,10 @@ def create_trip(from_name, from_location, to_name, to_location, route, date, sta
             if previous != None:
                 step.start_icon = previous.end_icon
                 step.start_name = previous.end_name
-    route.directions[-1].end_icon = 'airport' if to_name.find('Airport') > 0 else 'sight'
-    route.directions[-1].end_name = to_name
+    route.directions[0].start_icon = from_place.place_type
+    route.directions[0].start_name = from_place.name
+    route.directions[-1].end_icon = to_place.place_type
+    route.directions[-1].end_name = to_place.name
     
     for step in route.directions: 
         if step.is_train():
@@ -100,11 +100,11 @@ def create_trip(from_name, from_location, to_name, to_location, route, date, sta
         step_start_time = utils.time_add_mins(step_start_time, step.duration)
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
-    steps_to.append({'instruction': to_name,
+    steps_to.append({'instruction': to_place.name,
                  'start_time': utils.time_to_string(step_start_time),
                  'hint' : ''})        
     total_duration = utils.time_get_delta_minutes(start_time, step_start_time)
-    return Trip('Trip from ' + from_name + ' to ' + to_name, from_location.to_url_param(), to_location.to_url_param(), expenses, total_duration, steps_to)
+    return Trip('Trip from ' + from_place.name + ' to ' + to_place.name, from_location.to_url_param(), to_location.to_url_param(), expenses, total_duration, steps_to)
 
 def clean_post_subway_walk(route):
     if route.directions[-1].is_walk() and route.directions[-2].is_subway():

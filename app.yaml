@@ -19,5 +19,9 @@ handlers:
 - url: /templates
   static_dir: static/templates
 
+- url: /favicon.ico
+  static_files: static/img/favicon.ico
+  upload: static/img/favicon.ico
+
 - url: /.*
   script: web_handler.py

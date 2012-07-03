@@ -36,6 +36,8 @@ HomePage = (function() {
     function retrieveDateTime() {
         date = $("#datepicker").datepicker('getDate');
         time = Utils.formatTime($('#timepicker').val());
+        
+        setStatus('time', time ? 'empty' : 'invalid');        
     }
 
     function warmCache() {
@@ -85,21 +87,34 @@ HomePage = (function() {
             return;
             
         var term = $('#' + name).val();
-        searchByAddress(term,
-            function(lat, lng) {
-                if (point.poi == null) {
+        $.ajax('place?out=json&term=' + term).success(function(data) {
+            var places = eval(data);
+            if (places.length > 0) {
+                if (point.poi == null) {                    
                     point.status = STATUS_VALID;
-                    point.address = term;
-                    point.coord = [lat, lng];
+                    point.poi = places[0];
+                    $('#' + name).val(places[0].name);
                     updateStatuses();
-                }
-            },
-            function() {
-                if (point.poi == null) {
-                    point.status = STATUS_INVALID;
-                    updateStatuses();
-                }
-            });
+                }                
+            }
+            else {
+                searchByAddress(term,
+                    function(lat, lng) {
+                        if (point.poi == null) {
+                            point.status = STATUS_VALID;
+                            point.address = term;
+                            point.coord = [lat, lng];
+                            updateStatuses();
+                        }
+                    },
+                    function() {
+                        if (point.poi == null) {
+                            point.status = STATUS_INVALID;
+                            updateStatuses();
+                        }
+                    });
+            }
+        });
     }
     
     function setStatus(name, status) {
@@ -173,6 +188,7 @@ HomePage = (function() {
             tomorrow.setDate(new Date().getDate() + 1);
             $("#datepicker").datepicker('setDate', tomorrow);
 
+            $("#timepicker").blur(function() { retrieveDateTime(); })
         },
         search : function() {
             if ($('#from').val() == '' || from.status == STATUS_INVALID) {
@@ -192,11 +208,11 @@ HomePage = (function() {
 
             retrieveDateTime();
             if(date == null) {
-                alert('Wrong date');
+                $('#datepicker').focus().parent().effect('pulsate');
                 return;
             }
             if(!time) {
-                alert('Wrong time');
+                $('#timepicker').focus().parent().effect('pulsate');
                 return;
             }
 

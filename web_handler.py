@@ -23,6 +23,7 @@ class MainHandler(webapp.RequestHandler):
         elif self.request.path == '/test':
             controller.do_test(self.request, self.response)
         else:
+            self.error(404)
             controller.do_notfound(self.request, self.response)
             
     def post(self):

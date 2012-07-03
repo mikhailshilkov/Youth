@@ -7,7 +7,6 @@ from youth import itinerary
 from youth import place
 from youth import maps
 from youth import stuff
-from youth import utils
 from youth import view
 from youth import param
 from youth import router
@@ -28,11 +27,11 @@ def do_directions(request, response):
         date = datetime.date.today() + datetime.timedelta(days=1)
         
     # get from and to (hotel name, attraction name or if not found - address)
-    [from_name, from_location] = get_place(request, 'from', 'fll')
-    [to_name, to_location] = get_place(request, 'to', 'tll')
+    [from_place, from_location] = get_place(request, 'from', 'fll')
+    [to_place, to_location] = get_place(request, 'to', 'tll')
 
     # produce data            
-    data = itinerary.get_directions(from_name, from_location, to_name, to_location, date, start_time)              
+    data = itinerary.get_directions(from_place, from_location, to_place, to_location, date, start_time)              
     
     # populate the requested view
     if view_mode == 'none':
@@ -136,7 +135,7 @@ def do_test(request, response):
     response.out.write(stuff.test())
     
 def do_notfound(request, response):
-    response.out.write('Page not found') #TODO: return a nice HTML with link to homepage
+    view.to_html(None, 'notfound', request, response)
     
 def get_start_time(request):
     try: 
@@ -150,7 +149,7 @@ def get_place(request, name_param, coord_param):
     if name != '':
         places = place.get(name)
         if len(places) > 0:
-            return [places[0].name, maps.GeoPoint(places[0].latitude, places[0].longitude)]
+            return [places[0], maps.GeoPoint(places[0].latitude, places[0].longitude)]
         
     coord = request.get(coord_param, '').replace('-', ',')
     if coord != '':

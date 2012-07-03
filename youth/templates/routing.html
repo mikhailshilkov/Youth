@@ -1,14 +1,19 @@
 {% extends "master/master.html" %}
 
-{% block title %}Manual route{% endblock %}
+{% block title %}<title>Manual route</title>{% endblock %}
 
 {% block content %}
 	<table>
-{% for station in data %}
+{% for leg in data %}
+	<tr>
+		<td colspan="2"><b>{{leg.transport}}</b></td>
+	</tr>
+	{% for step in leg.steps %}
 		<tr>
-			<td>{{station.node.name}}</td>
-			<td>{{station.distance}}</td>
+			<td>{{step.station.name}}</td>
+			<td>{{step.distance}}</td>
 		</tr>
+	{% endfor %}
 {% endfor %}
 	</table>
 {% endblock %}

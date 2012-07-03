@@ -49,51 +49,70 @@ def get_walking_route(start_location, end_location):
     
 def get_subway_route(start_location, end_location):
     route = router.get_route(start_location, end_location)
+    if route == None:
+        return None
     
     steps = []
-    subway_location = GeoPoint(route[0]['node'].lat, route[0]['node'].lng)
-        
-    step = RouteStep('Buy the tokens if needed and enter subway station ' + utils.subway_color(route[0]['node'].name, route[0]['node'].line),
-                     5, utils.duration_to_string(5) + ', ' + utils.price_to_string(27), Transport('Subway', price = 27),
-                     subway_location)
-    steps.append(step)
-    
-    stops = 0
-    duration = 0
-    for index in range(len(route)):
-        route_step = route[index]
-        line = route_step['node'].line
-        last_station = index == len(route) - 1
-        station_duration = route_step['distance'] / 60
-        duration += station_duration
-        if last_station or route[index+1]['node'].line != line:
-            if index > 0: # The change might be the first move => don't add a 0 stations way
+    first_subway = True
+            
+    for index, leg in enumerate(route):
+        if leg.transport == 'Subway':        
+            if index > 0:
+                if first_subway:
+                    to_text = 'Walk to subway station ' + utils.subway_color(leg.steps[0].station.name, leg.line)
+                    walk_time = max(int((leg.steps[0].distance + 30) / 60), 3) 
+                    step = RouteStep(to_text, walk_time, utils.duration_to_string(walk_time),
+                                     None, steps[-1].end_location, 
+                                     GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng), True)
+                else:
+                    to_text = 'Change to ' + utils.subway_color('line ' + str(leg.line), leg.line) + ' station ' + utils.subway_color(leg.steps[0].station.name, leg.line)
+                    change_time = max(int((leg.steps[0].distance + 30) / 60), 3) 
+                    step = RouteStep(to_text, change_time, utils.duration_to_string(change_time))
+                steps.append(step)
+                
+            if first_subway:
+                step = RouteStep('Buy the tokens if needed and enter subway station ' + utils.subway_color(leg.steps[0].station.name, leg.line),
+                 5, utils.duration_to_string(5) + ', ' + utils.price_to_string(27), Transport('Subway', price = 27),
+                 GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng)) #start location is needed for start walk
+                steps.append(step)
+                first_subway = False                
+            
+            if len(leg.steps) > 1: # The change might be the first move => don't add a 0 steps way 
                 step = RouteStep()                                
-                step.direction = 'Subway ' + utils.subway_color('line ' + str(line), line) + ' to ' + utils.subway_color(str(route_step['node'].name), line)
-                step.duration = duration
-                step.addinfo = utils.duration_to_string(step.duration)  + ', ' + str(stops) + ' stops'
-                step.transport = Transport('Subway')
-                step.start_location = subway_location
-                step.end_location = GeoPoint(route_step['node'].lat, route_step['node'].lng) 
+                step.direction = 'Subway ' + utils.subway_color('line ' + str(leg.line), leg.line) + ' to ' + utils.subway_color(leg.steps[-1].station.name, leg.line)
+                step.duration = int((sum([x.distance for x in leg.steps[1:]]) + 30) / 60)
+                step.addinfo = utils.duration_to_string(step.duration)  + ', ' + str(len(leg.steps) - 1) + ' stops'
+                step.transport = Transport(leg.transport)
+                step.start_location = GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng)
+                step.end_location = GeoPoint(leg.steps[-1].station.lat, leg.steps[-1].station.lng)
                 step.has_map = True
                 steps.append(step)
-                duration = 0
-                stops = 0
-            if not last_station:
-                to_line = route[index+1]['node'].line
-                to_text = utils.subway_color('line ' + str(to_line), to_line) + ' station ' + utils.subway_color(route[index+1]['node'].name, to_line) 
-                step = RouteStep('Change to ' + to_text,
-                                 route_step['distance'] / 60, utils.duration_to_string(station_duration))
-                steps.append(step)
-                subway_location = GeoPoint(route[index+1]['node'].lat, route[index+1]['node'].lng)
         else:
-            stops += 1                
-    
+            if index > 0:
+                to_text = 'Walk to ' + str(leg.transport).lower() + ' stop ' + leg.steps[0].station.name
+                walk_time = max(int((leg.steps[0].distance + 30) / 60), 3) 
+                step = RouteStep(to_text, walk_time, utils.duration_to_string(walk_time),
+                                 None, steps[-1].end_location, 
+                                 GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng), True)
+                steps.append(step)
+                
+            step = RouteStep()                                
+            step.direction = leg.transport + ' ' + str(leg.line) + ' to ' + utils.subway_color(leg.steps[-1].station.name, leg.line)
+            step.duration = sum([x.distance for x in leg.steps[1:]]) / 60
+            step.addinfo = utils.duration_to_string(step.duration) + ', ' + utils.price_to_string(23)
+            step.transport = Transport(leg.transport, price = 23)
+            step.start_location = GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng)
+            step.end_location = GeoPoint(leg.steps[-1].station.lat, leg.steps[-1].station.lng)
+            step.has_map = True
+            steps.append(step)
+                              
     start_walk = get_walking_route(start_location, steps[0].start_location)
-    steps.insert(0, start_walk.directions[0])
+    if start_walk.get_duration() > 0:
+        steps.insert(0, start_walk.directions[0])
             
     end_walk = get_walking_route(steps[-1].end_location, end_location)
-    steps.append(end_walk.directions[0])
+    if end_walk.get_duration() > 0:
+        steps.append(end_walk.directions[0])
                 
     if start_walk.get_duration() + end_walk.get_duration() < 40:
         return Route(steps)
@@ -197,14 +216,17 @@ def parse(html, points_array, steps_array):
                     step.direction = step.transport.type
                     step.transport.stops = parse_stops(step.addinfo)                
                     if step.transport.is_subway(): 
-                        step.direction += ' line ' + step.transport.line_number
+                        step.direction += utils.subway_color(' line ' + str(step.transport.line_number), step.transport.line_number);
                     else:
                         step.direction += ' number ' + step.transport.line_number            
                 
                 if step_node.nextSibling != None:
                         arrive_node = step_node.nextSibling.find(text = re.compile('^Arrive.*'))
                         if arrive_node != None:
-                            step.direction += ' to ' + get_node_text(arrive_node.nextSibling)
+                            if step.transport.is_subway():
+                                step.direction += ' to ' + utils.subway_color(get_node_text(arrive_node.nextSibling), step.transport.line_number);
+                            else:
+                                step.direction += ' to ' + get_node_text(arrive_node.nextSibling);
                 
             start_point = points[steps[index]['depPoint']]
             end_point = points[steps[index]['arrPoint']]

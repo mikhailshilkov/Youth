@@ -7,7 +7,11 @@ def get(term):
     places = memcache.get(key) #@UndefinedVariable
     if places == None:
         attractions = [x for x in db.GqlQuery("SELECT * FROM Attraction LIMIT 1000")]
+        for x in attractions:
+            x.place_type = 'airport' if x.name.find('Airport') > 0 else 'sight'
         hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
+        for x in hotels:
+            x.place_type = 'hotel'
         places = attractions + hotels 
         memcache.add(key, places, 24*60*60) #@UndefinedVariable
         

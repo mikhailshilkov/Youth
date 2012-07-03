@@ -6,22 +6,22 @@ from lib import geo
 def get_route(start_location, end_location):
     subway_dict = json.loads(param.get('subway'))
     graph = StationGraph()
-    graph.stations = [Station(x['name'], x['lat'], x['lng'], x['line']) for x in subway_dict['stations']]
+    graph.steps = [Station(x['name'], x['lat'], x['lng'], x['transport'], x['line']) for x in subway_dict['stations']]
     graph.links = [StationLink(x['from_station'], x['to_station'], x['duration']) for x in subway_dict['links']]
     return get_route_ongraph(graph, start_location, end_location)
 
 def get_route_ongraph(graph, start_location, end_location):
-    entrances = [x for x in graph.stations if x.name != 'Spasskaya']
+    entrances = [x for x in graph.steps if x.name != 'Spasskaya']
     
     near_start = find_near(entrances, start_location.lat, start_location.lng)
-    start = Station('Start', start_location.lat, start_location.lng, None)
-    graph.stations.append(start)
+    start = Station('Start', start_location.lat, start_location.lng, None, None)
+    graph.steps.append(start)
     for station in near_start:
         graph.links.append(StationLink('Start', station.name, station.estimate_walk_time_to(start_location.lat, start_location.lng)))
 
     near_end = find_near(entrances, end_location.lat, end_location.lng)
-    end = Station('End', end_location.lat, end_location.lng, None)
-    graph.stations.append(end)
+    end = Station('End', end_location.lat, end_location.lng, None, None)
+    graph.steps.append(end)
     for station in near_end:
         graph.links.append(StationLink(station.name, 'End', station.estimate_walk_time_to(end_location.lat, end_location.lng)))
         
@@ -52,7 +52,8 @@ def AStar(graph, start, goal):
     while len(openset) > 0:
         current = min(openset, key=lambda x: f_score[x]) #the node in openset having the lowest f_score[] value
         if current == goal:
-            return reconstruct_path(came_from, goal)
+            path = reconstruct_path(came_from, goal)
+            return group_by_transport(path)
  
         openset.remove(current)
         closedset.append(current)
@@ -65,7 +66,7 @@ def AStar(graph, start, goal):
  
             if neighbor not in openset or tentative_g_score < g_score[neighbor]: 
                 openset.append(neighbor)
-                came_from[neighbor] = { 'node': current, 'distance': distance } 
+                came_from[neighbor] = RouteStep(current, distance) 
                 g_score[neighbor] = tentative_g_score
                 f_score[neighbor] = g_score[neighbor] + heuristic_cost_estimate(neighbor, goal)
  
@@ -74,11 +75,30 @@ def AStar(graph, start, goal):
 def reconstruct_path(came_from, current_node, distance = 0):    
     if current_node in came_from:
         next_node = came_from[current_node]
-        result = reconstruct_path(came_from, next_node['node'], next_node['distance'])
+        result = reconstruct_path(came_from, next_node.station, next_node.distance)
     else:
         result = []
     if current_node.name <> 'Start' and current_node.name <> 'End':
-        result.append({ 'node': current_node, 'distance': distance })
+        result.append(RouteStep(current_node, distance))
+    return result
+
+def group_by_transport(path):
+    result = []
+    current_leg = None
+
+    #first, shift all durations, so that they mean 'way to station', not from
+    for index in reversed(range(len(path))):
+        if index == 0:
+            path[index].distance = 0
+        else:
+            path[index].distance = path[index - 1].distance
+    
+    for step in path:
+        if current_leg == None or step.station.transport != current_leg.steps[-1].station.transport \
+            or step.station.line != current_leg.steps[-1].station.line:
+            current_leg = RouteLeg(step.station.transport, step.station.line)
+            result.append(current_leg)
+        current_leg.steps.append(step)
     return result
     
 def heuristic_cost_estimate(start, goal):
@@ -86,11 +106,15 @@ def heuristic_cost_estimate(start, goal):
 
 class StationGraph(object):
     def __init__(self):
-        self.stations = []
+        self.steps = []
         self.links = []
         
     def by_name(self, name):
-        return [x for x in self.stations if x.name == name][0] 
+        result = [x for x in self.steps if x.name == name]
+        if len(result) > 0:
+            return result[0]
+        else:
+            raise Exception('Station ' + name + ' not found')
         
     def get_neighbor_nodes(self, node):
         links = [self.by_name(x.to_station) for x in self.links if x.from_station == node.name]
@@ -105,10 +129,11 @@ class StationGraph(object):
 
                 
 class Station(object):
-    def __init__(self, name, lat, lng, line):
+    def __init__(self, name, lat, lng, transport, line):
         self.name = name
         self.lat = lat
         self.lng = lng
+        self.transport = transport
         self.line = line
         
     def estimate_subway_time_to(self, lat, lng):
@@ -128,3 +153,14 @@ class StationLink(object):
         
     def jsonable(self):
         return self.__dict__
+    
+class RouteStep(object):
+    def __init__(self, station, distance):
+        self.station = station
+        self.distance = distance
+        
+class RouteLeg(object):
+    def __init__(self, transport, line):
+        self.steps = []
+        self.transport = transport
+        self.line = line

@@ -1,6 +1,9 @@
 {% extends "master/master.html" %}
 
-{% block title %}Home{% endblock %}
+{% block title %}
+<title>Public transport transit in St. Petersburg | TripBenefit.com</title>
+<meta name="description" content="Get transport directions for tourist in St. Petersburg, Russia" />
+{% endblock %}
 
 {% block content %}
 	<div class="headline">
@@ -27,6 +30,7 @@
 		<div class="timebox">
 			<div class="inputbox">
 				<input type="text" id="timepicker" value="09:30" />
+				<img id="time_status" src="/images/empty.png" width="16" height="16" alt="Valid" />
 			</div>
 		</div>
 		<div class="buttons">
