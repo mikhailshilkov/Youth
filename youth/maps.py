@@ -71,9 +71,9 @@ def get_subway_route(start_location, end_location):
                 steps.append(step)
                 
             if first_subway:
-                step = RouteStep('Buy the tokens if needed and enter subway station ' + utils.subway_color(leg.steps[0].station.name, leg.line),
+                step = RouteStep('Enter subway station ' + utils.subway_color(leg.steps[0].station.name, leg.line) + ' (buy the tokens if needed)',
                  5, utils.duration_to_string(5) + ', ' + utils.price_to_string(27), Transport('Subway', price = 27),
-                 GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng)) #start location is needed for start walk
+                 GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng)) #start location is needed for start walk                
                 steps.append(step)
                 first_subway = False                
             
@@ -81,6 +81,9 @@ def get_subway_route(start_location, end_location):
                 step = RouteStep()                                
                 step.direction = 'Subway ' + utils.subway_color('line ' + str(leg.line), leg.line) + ' to ' + utils.subway_color(leg.steps[-1].station.name, leg.line)
                 step.duration = int((sum([x.distance for x in leg.steps[1:]]) + 30) / 60)
+                if index == len(route) - 1 or route[index+1].transport != 'Subway':
+                    step.direction += ', leave the subway'
+                    step.duration += 4
                 step.addinfo = utils.duration_to_string(step.duration)  + ', ' + str(len(leg.steps) - 1) + ' stops'
                 step.transport = Transport(leg.transport)
                 step.start_location = GeoPoint(leg.steps[0].station.lat, leg.steps[0].station.lng)
@@ -108,7 +111,9 @@ def get_subway_route(start_location, end_location):
                               
     start_walk = get_walking_route(start_location, steps[0].start_location)
     if start_walk.get_duration() > 0:
-        steps.insert(0, start_walk.directions[0])
+        step = start_walk.directions[0]
+        step.direction = 'Walk to ' + route[0].transport.lower() + ' station ' + utils.subway_color(route[0].steps[0].station.name, route[0].line) + ': ' + step.direction 
+        steps.insert(0, step)
             
     end_walk = get_walking_route(steps[-1].end_location, end_location)
     if end_walk.get_duration() > 0:

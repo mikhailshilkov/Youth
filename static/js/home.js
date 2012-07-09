@@ -37,7 +37,7 @@ HomePage = (function() {
         date = $("#datepicker").datepicker('getDate');
         time = Utils.formatTime($('#timepicker').val());
         
-        setStatus('time', time ? 'empty' : 'invalid');        
+        setStatus('time', time ? 'valid' : 'invalid');        
     }
 
     function warmCache() {
@@ -87,6 +87,9 @@ HomePage = (function() {
             return;
             
         var term = $('#' + name).val();
+        if (term == '')
+            return;
+            
         $.ajax('place?out=json&term=' + term).success(function(data) {
             var places = eval(data);
             if (places.length > 0) {

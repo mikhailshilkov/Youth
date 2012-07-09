@@ -84,7 +84,7 @@ html {
     width: 368px;
     float: left;
 }
-.searchbox img, .timebox img {
+.searchbox img, .timebox img, .datebox img {
     margin-top: 5px;
     margin-right: 2px;
 }

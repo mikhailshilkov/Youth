@@ -64,3 +64,8 @@ class Attraction(db.Model):
         return str(self.latitude) + ',' + str(self.longitude)
     def jsonable(self):
         return utils.model_to_dict(self)
+    
+class Address(object):
+    def __init__(self, name):
+        self.name = name
+        self.place_type = 'address'

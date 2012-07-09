@@ -153,4 +153,4 @@ def get_place(request, name_param, coord_param):
         
     coord = request.get(coord_param, '').replace('-', ',')
     if coord != '':
-        return [name if name != '' else coord, maps.GeoPoint(*[float(x) for x in coord.split(',')])]
+        return [place.Address(name if name != '' else coord), maps.GeoPoint(*[float(x) for x in coord.split(',')])]
