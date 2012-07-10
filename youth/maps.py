@@ -134,13 +134,15 @@ def get_transit_route(start_location, end_location):
         if walk_route != None and walk_route.get_duration() < 30:
             memcache.add(key, walk_route, 60*60) #@UndefinedVariable
             return walk_route
-        
+      
     subway_route = get_subway_route(start_location, end_location)
-    if subway_route != None:
+    if subway_route != None and distance > 5000:
         memcache.add(key, subway_route, 60*60) #@UndefinedVariable
         return subway_route
     
     routes = get_transit_routes(start_location, end_location)
+    if subway_route != None:
+        routes.append(subway_route)
     route_optimal = min(routes, key=lambda x: x.get_cost())
     memcache.add(key, route_optimal, 60*60) #@UndefinedVariable
     return route_optimal    
