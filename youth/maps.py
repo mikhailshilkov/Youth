@@ -126,7 +126,7 @@ def get_transit_route(start_location, end_location):
     key = 'route_' + start_location.to_url_param() + '_' + end_location.to_url_param()
     data = memcache.get(key) #@UndefinedVariable
     if data != None:
-        pass#return data
+        return data
     
     distance = estimate_distance(start_location, end_location)
     if distance != None and distance < 2000:
