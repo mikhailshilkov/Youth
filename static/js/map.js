@@ -13,7 +13,7 @@ MapHelper = {
         coordinates.push(startPoint);
         bounds.extend(startPoint);
         this.addMarker(map, startPoint, route['startName'], route['startIcon']);
-
+        
         var needsDirections = !isSubway;
         if(route['type'] == 'Walk')// don't search directions for walks < 200 m
             needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 150;

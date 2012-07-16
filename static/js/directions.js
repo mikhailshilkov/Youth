@@ -2,6 +2,8 @@ DirectionsPage = {
     initialized: new Object(),
     
     showDetails : function(index, action, data) {
+        _gaq.push(['_trackEvent', 'DirectionsPage.showDetails', 'clicked']);
+        
         $("#details_showbutton_" + index.toString()).hide();
         $("#details_hidebutton_" + index.toString()).show();
         var id = "#details_pane_" + index.toString();
@@ -13,7 +15,7 @@ DirectionsPage = {
             detailsPane.css('width', '100%');
             if(action == 'map') {
                 detailsPane.css('height', '300px');
-                MapHelper.show(detailsPane, eval('(' + data + ')'));
+                MapHelper.show(detailsPane, data);
             } else if(action == 'info') {
                 detailsPane.html(data);
             }

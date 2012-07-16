@@ -194,6 +194,8 @@ HomePage = (function() {
             $("#timepicker").blur(function() { retrieveDateTime(); })
         },
         search : function() {
+            _gaq.push(['_trackEvent', 'HomePage.search', 'clicked']);
+            
             if ($('#from').val() == '' || from.status == STATUS_INVALID) {
                 $('#from').focus().parent().effect('pulsate');
                 return;

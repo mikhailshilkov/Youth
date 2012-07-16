@@ -30,7 +30,7 @@
 		<div class="instuction">
 			<div class="text">{{step.instruction|safe}}</div>
             {% for detail in step.details %}			
-				<div id="details_showbutton_{{forloop.counter}}_{{forloop.parentloop.counter}}" class="gray button" onclick="DirectionsPage.showDetails('{{forloop.counter}}_{{forloop.parentloop.counter}}', '{{detail.action}}', '{{detail.data}}')">
+				<div id="details_showbutton_{{forloop.counter}}_{{forloop.parentloop.counter}}" class="gray button" onclick="DirectionsPage.showDetails('{{forloop.counter}}_{{forloop.parentloop.counter}}', '{{detail.action}}', {{detail.data}})">
 					{{detail.show_label}}						
 				</div>
 				<div id="details_hidebutton_{{forloop.counter}}_{{forloop.parentloop.counter}}" class="gray button" onclick="DirectionsPage.hideDetails('{{forloop.counter}}_{{forloop.parentloop.counter}}')" style="display:none">
@@ -46,7 +46,7 @@
 		</div>
 	</div>
 	{% endfor %}
-<div>
+<div class="invisible">
 	<a href="/transit?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Route options</a>
 	<a href="/routing?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Manual route</a>
 </div>

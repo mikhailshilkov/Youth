@@ -78,10 +78,10 @@ html {
     text-align: justify;
 }
 .searchbox {
-    width: 402px;
+    width: 545px;
 }
 .searchbox input {
-    width: 368px;
+    width: 511px;
     float: left;
 }
 .searchbox img, .timebox img, .datebox img {
@@ -114,7 +114,7 @@ html {
     padding-right: 20px;
 }
 .pageheader {
-    background-color: #5F98CC;
+    background-color: #72ade9;
 }
 .pageheader .pane {
     margin: auto;
@@ -154,8 +154,7 @@ html {
     text-decoration: none;
 }
 .pageheader .menu a:hover, .pageheader .menu .active a {
-    background: #6FA8DC;
-    border: 1px solid transparent;
+    color: #FCE226;
 }
 .button {
     font-size: 1em;
@@ -396,7 +395,7 @@ html {
     margin-right: .5em;
 }
 .gmnoprint div a {
-    display: none !important;//TODO: this statement might break the ToS of Google maps, to be reviewed
+    display: none !important;/*TODO: this statement might break the ToS of Google maps, to be reviewed*/
 }
 .about {
     font-size: 1.2em;
@@ -416,3 +415,12 @@ html {
 .subwayline5 {
     color: #4D0255;
 }
+/* Firefox should have a grey placeholder, this must be after the other input
+ * definitions because it must override the color set there.
+ */
+input:-moz-placeholder, textarea:-moz-placeholder {
+    color: #a9a9a9;
+}
+.invisible a, .invisible a:visited, .invisible a:hover, .invisible a:active {
+    color: white;
+} 

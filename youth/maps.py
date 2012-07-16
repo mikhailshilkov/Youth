@@ -228,12 +228,12 @@ def parse(html, points_array, steps_array):
                         step.direction += ' number ' + step.transport.line_number            
                 
                 if step_node.nextSibling != None:
-                        arrive_node = step_node.nextSibling.find(text = re.compile('^Arrive.*'))
-                        if arrive_node != None:
-                            if step.transport.is_subway():
-                                step.direction += ' to ' + utils.subway_color(get_node_text(arrive_node.nextSibling), step.transport.line_number);
-                            else:
-                                step.direction += ' to ' + get_node_text(arrive_node.nextSibling);
+                    arrive_node = step_node.nextSibling.find(text = re.compile('^Arrive.*'))
+                    if arrive_node != None:
+                        if step.transport.is_subway():
+                            step.direction += ' to ' + utils.subway_color(get_node_text(arrive_node.nextSibling), step.transport.line_number);
+                        else:
+                            step.direction += ' to ' + get_node_text(arrive_node.nextSibling);
                 
             start_point = points[steps[index]['depPoint']]
             end_point = points[steps[index]['arrPoint']]
@@ -324,6 +324,8 @@ def get_transport(direction):
         return 'Subway'
     elif direction.find('Tram') >= 0:
         return 'Tram'
+    elif direction.find('Train') >= 0:
+        return 'Train'
     
     return 'Walk'
     
