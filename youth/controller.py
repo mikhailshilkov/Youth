@@ -21,6 +21,7 @@ def do_directions(request, response):
     # get request parameters
     start_time = get_start_time(request)
     view_mode = request.get('out', 'html')
+    engine = request.get('e', 'o')
     try:
         date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
     except:
@@ -31,7 +32,7 @@ def do_directions(request, response):
     [to_place, to_location] = get_place(request, 'to', 'tll')
 
     # produce data            
-    data = itinerary.get_directions(from_place, from_location, to_place, to_location, date, start_time)              
+    data = itinerary.get_directions(from_place, from_location, to_place, to_location, date, start_time, engine)              
     
     # populate the requested view
     if view_mode == 'none':
@@ -87,7 +88,8 @@ def do_transit(request, response):
     view_mode = request.get('out', 'html')
 
     # produce data        
-    data = maps.get_transit_routes(from_location, to_location)
+    #data = maps.get_transit_routes(from_location, to_location)
+    data = maps.get_rusavtobus_routes(from_location, to_location)
         
     # populate the requested view
     if view_mode == 'json':

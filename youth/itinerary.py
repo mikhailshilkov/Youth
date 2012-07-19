@@ -24,8 +24,8 @@ class Trip(object):
     def jsonable(self):
         return self.__dict__
     
-def get_directions(from_place, from_location, to_place, to_location, date, start_time):
-    route = maps.get_transit_route(from_location, to_location)
+def get_directions(from_place, from_location, to_place, to_location, date, start_time, engine):
+    route = maps.get_transit_route(from_location, to_location, engine)
     trip = create_trip(from_place, from_location, to_place, to_location, route, date, start_time)
     return trip                   
 
@@ -45,7 +45,7 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
             step.start_name = step.end_name = 'Underground station'
             if previous != None and previous.is_walk():
                 previous.end_icon = 'underground'
-                previous.end_name = 'Underground station'
+                previous.end_name = 'Subway station'
         elif step.is_land_transport():
             step.start_icon = step.end_icon = 'bus'
             step.start_name = step.end_name = 'Bus stop'
@@ -84,7 +84,15 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                     'show_label': 'Learn about tokens',
                     'hide_label': 'Hide info',
                     'action': 'info',
-                    'data' : '<i>To buy tokens you need to find ticket office which are normally located very close to the entrance [Bad English - correct] [TO DO: Check whether ticket machines have English interface] [TO DO: Add photo of ticket office]</i>'
+                    'data' : "'You need to buy tokens to enter to the metro:<br/>" + \
+                             "<img src=\"/images/token1.jpg\" alt=\"Subway token\" height=\"120\" /><br/>" +\
+                             "We would recommend you to buy them in token machine or at the ticket-office. Token machine works very simple way. You should place 100 rubles (one cash note) in the machine and it returns 3 tokens and a change (19 rubles). In the ticket office you can just provide required amount of money and show how many tokens you need. One token costs 27 rubles.<br/>" + \
+                             "<img src=\"/images/token2.jpg\" alt=\"Token machine\" height=\"242\" /><img src=\"/images/token3.jpg\" alt=\"Ticket office\" height=\"242\" /><br/>" +\
+                             "You can also buy a travel card if you need to use metro pretty frequently. You can buy 10 trips with 7 days limit on usage, 20 trips on 15 days, 40 or 50 trips on 30 days. It’s a bit cheaper than buy tokens. For example, 10 trips cost 230 rubles, 20 – 430 rubles, 40 and 50 const 830 and 1025 correspondingly. Additionally you should pay 30 ruble deposit to get plastic card. You can get money back if you return the card when you don’t need it. You do not need any document to get such card. To avoid verbal communication with operator you can just print and provide them the piece of paper with the following text:<br/>" + \
+                             "<b>Пожалуйста, сделайте мне новую БСК на 10 поездок на 7 дней.</b><br/>" + \
+                             "You can update numbers with one of combinations described below.<br/>" + \
+                             "Be careful: you need to have a personal card for every traveler if you go together. You can not use the same travel card – after the usage travel card is blocked for 10 minutes.<br/>" + \
+                             "<img src=\"/images/token4.jpg\" alt=\"Subway card\" height=\"120\" />'"
                     })
         if step.hint != None:
             details.append({

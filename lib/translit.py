@@ -130,6 +130,9 @@ EN_ALPHABET = [x[1] for x in TRANSTABLE] #: English alphabet that we can detrans
 ALPHABET = RU_ALPHABET + EN_ALPHABET #: Alphabet that we can (de)transliterate
 
 def translify(in_string):
+    if in_string == None:
+        return None
+    
     """
     Translify russian text
 

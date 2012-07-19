@@ -40,7 +40,7 @@ def test():
     #return html
     #return points
     #return points_string
-    return routes
+    return html
     
     route_points = []
     origin = '59.841864,30.318321'
