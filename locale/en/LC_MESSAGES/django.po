@@ -1,0 +1,225 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2012-08-02 10:11+0400\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: .\youth\itinerary.py:21
+msgid "Expenses"
+msgstr "Expenses"
+
+#: .\youth\itinerary.py:23
+msgid "Travel time"
+msgstr "Travel time"
+
+#: .\youth\itinerary.py:76
+msgid "Show the map"
+msgstr "Show the map"
+
+#: .\youth\itinerary.py:77
+msgid "Hide the map"
+msgstr "Hide the map"
+
+#: .\youth\itinerary.py:84
+msgid "Learn about tokens"
+msgstr "Learn about tokens"
+
+#: .\youth\itinerary.py:85
+msgid "Hide info"
+msgstr "Hide info"
+
+#: .\youth\itinerary.py:115
+msgid "Trip from"
+msgstr "Trip from"
+
+#: .\youth\itinerary.py:115 .\youth\maps.py:378 .\youth\maps.py:380
+msgid "to"
+msgstr "to"
+
+#: .\youth\maps.py:56 .\youth\maps.py:385
+msgid "Walk to"
+msgstr "Walk to"
+
+#: .\youth\maps.py:172
+msgid "Kirovsko-Viborgskaya"
+msgstr "Kirovsko-Viborgskaya"
+
+#: .\youth\maps.py:174
+msgid "Moskovsko-Petrogradskaya"
+msgstr "Moskovsko-Petrogradskaya"
+
+#: .\youth\maps.py:176
+msgid "Nevsko-Vasileostrovskaya"
+msgstr "Nevsko-Vasileostrovskaya"
+
+#: .\youth\maps.py:178
+msgid "Pravoberezhnaya"
+msgstr "Pravoberezhnaya"
+
+#: .\youth\maps.py:180
+msgid "Frunzensko-Primorskaya"
+msgstr "Frunzensko-Primorskaya"
+
+#: .\youth\maps.py:275 .\youth\maps.py:325 .\youth\maps.py:377
+msgid "line"
+msgstr "line"
+
+#: .\youth\maps.py:277
+msgid "number"
+msgstr "number"
+
+#: .\youth\maps.py:322
+msgid "Enter subway station"
+msgstr "Enter subway station"
+
+#: .\youth\maps.py:322
+msgid "buy the tokens if needed"
+msgstr "buy the tokens if needed"
+
+#: .\youth\maps.py:325
+msgid "Change to"
+msgstr "Change to"
+
+#: .\youth\maps.py:325 .\youth\maps.py:384
+msgid "station"
+msgstr "station"
+
+#: .\youth\maps.py:384 .\youth\utils.py:49
+msgid "stop"
+msgstr "stop"
+
+#: .\youth\maps.py:393
+msgid "leave the subway"
+msgstr "leave the subway"
+
+#: .\youth\maps.py:478
+msgid "/M10"
+msgstr "/M10"
+
+#: .\youth\maps.py:478
+msgid "/M18"
+msgstr "/M18"
+
+#: .\youth\utils.py:27
+msgid "hours"
+msgstr "hours"
+
+#: .\youth\utils.py:29
+msgid "hour"
+msgstr "hour"
+
+#: .\youth\utils.py:31
+msgid "min"
+msgstr "min"
+
+#: .\youth\utils.py:33
+msgid "mins"
+msgstr "mins"
+
+#: .\youth\utils.py:37
+msgid "km"
+msgstr "km"
+
+#: .\youth\utils.py:39 .\youth\utils.py:41 .\youth\utils.py:42
+msgid "m"
+msgstr "m"
+
+#: .\youth\utils.py:45
+msgid "RUB"
+msgstr "rub"
+
+#: .\youth\utils.py:51
+msgid "stops234"
+msgstr "stops"
+
+#: .\youth\utils.py:53
+msgid "stops"
+msgstr "stops"
+
+#: .\youth\common\translatefilter.py:16
+msgid "Home"
+msgstr "Home"
+
+#: .\youth\common\translatefilter.py:17
+msgid "About"
+msgstr "About"
+
+#: .\youth\common\translatefilter.py:18
+msgid "First time in St. Petersburg"
+msgstr "First time in St. Petersburg"
+
+#: .\youth\common\translatefilter.py:19
+msgid "Get transport directions here"
+msgstr "Get transport directions here"
+
+#: .\youth\common\translatefilter.py:20
+msgid "From"
+msgstr "From"
+
+#: .\youth\common\translatefilter.py:21
+msgid "To"
+msgstr "To"
+
+#: .\youth\common\translatefilter.py:22
+msgid "Print"
+msgstr "Print"
+
+#: .\youth\common\translatefilter.py:23
+msgid "Date and time"
+msgstr "Date and time"
+
+#: .\youth\common\translatefilter.py:24
+msgid "Get directions"
+msgstr "Get directions"
+
+#: .\youth\common\translatefilter.py:25
+msgid "try your hotel name or street address"
+msgstr "try your hotel name or street address"
+
+#: .\youth\common\translatefilter.py:26
+msgid "try State Hermitage"
+msgstr "try State Hermitage"
+
+#: .\youth\common\translatefilter.py:27
+msgid "Public transport transit in St. Petersburg"
+msgstr "Public transport transit in St. Petersburg"
+
+#: .\youth\common\translatefilter.py:28
+msgid "Get transport directions for tourist in St. Petersburg, Russia"
+msgstr "Get transport directions for tourist in St. Petersburg, Russia"
+
+#: .\youth\common\translatefilter.py:31
+msgid "Bus"
+msgstr "Bus"
+
+#: .\youth\common\translatefilter.py:32
+msgid "Share taxi"
+msgstr "Share taxi"
+
+#: .\youth\common\translatefilter.py:33
+msgid "Trolleybus"
+msgstr "Trolleybus"
+
+#: .\youth\common\translatefilter.py:34
+msgid "Subway"
+msgstr "Subway"
+
+#: .\youth\common\translatefilter.py:35
+msgid "Tram"
+msgstr "Tram"
+
+#: .\youth\common\translatefilter.py:36
+msgid "Train"
+msgstr "Train"

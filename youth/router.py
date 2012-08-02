@@ -6,7 +6,7 @@ from lib import geo
 def get_route(start_location, end_location):
     subway_dict = json.loads(param.get('subway'))
     graph = StationGraph()
-    graph.steps = [Station(x['name'], x['lat'], x['lng'], x['transport'], x['line']) for x in subway_dict['stations']]
+    graph.steps = [Station(x['name'], x['name_rus'], x['lat'], x['lng'], x['transport'], x['line']) for x in subway_dict['stations']]
     graph.links = [StationLink(x['from_station'], x['to_station'], x['duration']) for x in subway_dict['links']]
     return get_route_ongraph(graph, start_location, end_location)
 
@@ -14,13 +14,13 @@ def get_route_ongraph(graph, start_location, end_location):
     entrances = [x for x in graph.steps if x.name != 'Spasskaya']
     
     near_start = find_near(entrances, start_location.lat, start_location.lng)
-    start = Station('Start', start_location.lat, start_location.lng, None, None)
+    start = Station('Start', 'Start', start_location.lat, start_location.lng, None, None)
     graph.steps.append(start)
     for station in near_start:
         graph.links.append(StationLink('Start', station.name, station.estimate_walk_time_to(start_location.lat, start_location.lng)))
 
     near_end = find_near(entrances, end_location.lat, end_location.lng)
-    end = Station('End', end_location.lat, end_location.lng, None, None)
+    end = Station('End', 'End', end_location.lat, end_location.lng, None, None)
     graph.steps.append(end)
     for station in near_end:
         graph.links.append(StationLink(station.name, 'End', station.estimate_walk_time_to(end_location.lat, end_location.lng)))
@@ -129,8 +129,9 @@ class StationGraph(object):
 
                 
 class Station(object):
-    def __init__(self, name, lat, lng, transport, line):
+    def __init__(self, name, name_rus, lat, lng, transport, line):
         self.name = name
+        self.name_rus = name_rus
         self.lat = lat
         self.lng = lng
         self.transport = transport

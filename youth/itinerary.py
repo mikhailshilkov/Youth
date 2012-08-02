@@ -1,6 +1,6 @@
 #coding=utf-8
 
-from lib import translit
+from django.utils.translation import ugettext as _
 from youth import utils
 from youth import maps
 from youth import bot
@@ -18,9 +18,9 @@ class Trip(object):
         self.time_text = self.get_time_text()
         self.price_text = self.get_price_text()
     def get_price_text(self):
-        return 'Expenses: ' + utils.price_to_string(self.expenses)
+        return _('Expenses') + ': ' + utils.price_to_string(self.expenses)
     def get_time_text(self):
-        return 'Travel time: ' + utils.duration_to_string(self.duration)
+        return _('Travel time') + ': ' + utils.duration_to_string(self.duration)
     def jsonable(self):
         return self.__dict__
     
@@ -57,9 +57,9 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                 step.start_icon = previous.end_icon
                 step.start_name = previous.end_name
     route.directions[0].start_icon = from_place.place_type
-    route.directions[0].start_name = from_place.name
+    route.directions[0].start_name = from_place.name_local
     route.directions[-1].end_icon = to_place.place_type
-    route.directions[-1].end_name = to_place.name
+    route.directions[-1].end_name = to_place.name_local
     
     for step in route.directions: 
         if step.is_train():
@@ -73,16 +73,16 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
         details = []
         if step.has_map:
             details.append({
-                    'show_label': 'Show the map',
-                    'hide_label': 'Hide the map',
+                    'show_label': _('Show the map'),
+                    'hide_label': _('Hide the map'),
                     'action': 'map',
                     'data' : step.get_route_json()
                     })
         if step.is_subway() and not has_subway_info:
             has_subway_info = True
             details.append({
-                    'show_label': 'Learn about tokens',
-                    'hide_label': 'Hide info',
+                    'show_label': _('Learn about tokens'),
+                    'hide_label': _('Hide info'),
                     'action': 'info',
                     'data' : "'You need to buy tokens to enter to the metro:<br/>" + \
                              "<img src=\"/images/token1.jpg\" alt=\"Subway token\" height=\"120\" /><br/>" +\
@@ -101,18 +101,18 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                     'action': 'info',
                     'data' : '<i>' + step.hint + '</i>'
                     })
-        steps_to.append({'instruction': translit.translify(step.direction),
+        steps_to.append({'instruction': step.direction,
                  'start_time': utils.time_to_string(step_start_time),
                  'hint' : hint,
                  'details' : details})
         step_start_time = utils.time_add_mins(step_start_time, step.duration)
         duration += step.duration
         expenses += step.transport.price if step.transport != None and step.transport.price != None else 0
-    steps_to.append({'instruction': to_place.name,
+    steps_to.append({'instruction': to_place.name_local,
                  'start_time': utils.time_to_string(step_start_time),
                  'hint' : ''})        
     total_duration = utils.time_get_delta_minutes(start_time, step_start_time)
-    return Trip('Trip from ' + from_place.name + ' to ' + to_place.name, from_location.to_url_param(), to_location.to_url_param(), expenses, total_duration, steps_to)
+    return Trip(_('Trip from') + ' ' + from_place.name_local + ' ' + _('to') + ' ' + to_place.name_local, from_location.to_url_param(), to_location.to_url_param(), expenses, total_duration, steps_to)
 
 def clean_post_subway_walk(route):
     if route.directions[-1].is_walk() and route.directions[-2].is_subway():

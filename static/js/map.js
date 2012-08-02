@@ -85,7 +85,7 @@ MapHelper = {
             position : point,
             map : map,
             title : name,
-            icon : icon != null && icon != '' ? 'images/' + icon + '.png' : null
+            icon : icon != null && icon != '' ? '/images/' + icon + '.png' : null
         });
     },
     addPolyline : function(map, coordinates) {

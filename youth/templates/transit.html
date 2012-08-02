@@ -1,10 +1,12 @@
 {% extends "master/master.html" %}
 
-{% block title %}Transit options{% endblock %}
+{% block title %}
+<title>Transit options</title>
+{% endblock %}
 
 {% block content %}
 {% for route in data %}
-	<h2>Option {{forloop.counter}}</h2>
+	<h2>Option {{forloop.counter}}</h2> by {{route.engine}}
 	<table>
 		<tr>
 			<td><h4>Duration: {{route.get_duration}} min</h4></td>
@@ -26,7 +28,7 @@
 		<tr>
 			<td>{{step.duration}} min</td>
 			<td>{{step.initial_duration}} min</td>
-			<td>{{step.service_interval}} min</td>
+			<td>{{step.transport.interval}} min</td>
 			<td>{{step.addinfo}}</td>
 			<td>{{step.direction}}</td>
 			<td>{{step.start_location}}</td>

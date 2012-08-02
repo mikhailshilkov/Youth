@@ -59,10 +59,11 @@ def do_place(request, response):
 def post_hotel(request):
     # get request parameters        
     name = request.get('name')
+    name_rus = request.get('nameRus')
     address = request.get('address')
     lat = float(request.get('lat'))
     lng = float(request.get('lng'))
-    place.add_hotel(name, address, lat, lng)
+    place.add_hotel(name, name_rus, address, lat, lng)
     
 def delete_hotel(request):
     # get request parameters        
@@ -72,9 +73,10 @@ def delete_hotel(request):
 def post_attraction(request):
     # get request parameters        
     name = request.get('name')
+    name_rus = request.get('nameRus')
     lat = float(request.get('lat'))
     lng = float(request.get('lng'))
-    place.add_attraction(name, lat, lng)
+    place.add_attraction(name, name_rus, lat, lng)
     
 def delete_attraction(request):
     # get request parameters        
@@ -89,7 +91,7 @@ def do_transit(request, response):
 
     # produce data        
     #data = maps.get_transit_routes(from_location, to_location)
-    data = maps.get_rusavtobus_routes(from_location, to_location)
+    data = maps.get_rusavtobus_routes(from_location, to_location) + maps.get_google_routes(from_location, to_location) 
         
     # populate the requested view
     if view_mode == 'json':

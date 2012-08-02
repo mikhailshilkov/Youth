@@ -4,6 +4,11 @@ import re
 import json
 
 from google.appengine.ext import db
+from django.utils import translation
+from django.utils.translation import ugettext as _
+
+def get_language():
+    return translation.get_language()
 
 def date_to_string(tm):
     return tm.strftime('%d %B %Y')
@@ -19,25 +24,33 @@ def time_serialize(tm):
 
 def duration_to_string(duration):
     if duration > 120:
-        return str(duration / 60) + ' hours ' + duration_to_string(duration % 60)
+        return str(duration / 60) + ' ' + _('hours')+ ' ' + duration_to_string(duration % 60)
     elif duration > 60:
-        return '1 hour ' + duration_to_string(duration % 60)
+        return '1 ' +  _('hour') + ' ' + duration_to_string(duration % 60)
     elif duration == 1:
-        return '1 min'
+        return '1 ' + _('min')
     else:
-        return str(duration) + ' mins'
+        return str(duration) + ' ' + _('mins')
     
 def distance_to_string(meters):
     if meters > 1000:
-        return '%.1f km' % (meters / 1000)
+        return '%.1f ' % (meters / 1000) + _('km')
     elif meters > 300:
-        return '%s m' % int(round(meters, -2))
+        return '%s ' % int(round(meters, -2)) + _('m')
     elif meters > 100:
-        return '%s m' % int(round(meters, -1))
-    return str(meters) + ' m'
+        return '%s ' % int(round(meters, -1)) + _('m')
+    return str(meters) + ' ' + _('m')
 
 def price_to_string(rub):
-    return '%s RUB' % rub
+    return '%s ' % rub + _('RUB')
+
+def stops_to_string(stops):
+    if stops == 1:
+        return '1 ' + _('stop') 
+    elif stops <= 4:
+        return str(stops) + ' ' + _('stops234')
+    else:
+        return str(stops) + ' ' + _('stops')
 
 def subway_color(text, line):
     return '<span class="subwayline%s">' % line + text + '</span>'
@@ -52,8 +65,9 @@ def time_get_delta_minutes(start, end):
     return delta.seconds / 60
 
 def remove_html_tags(data):
+    div = re.compile(r'<div.*?>')
     p = re.compile(r'<.*?>')
-    return p.sub('', data)
+    return p.sub('', div.sub(', ', data))
 
 def decode_unicode_references(data):
     return re.sub("&#(\d+)(;|(?=\s))", decode_unicode_references_callback, data)

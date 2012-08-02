@@ -1,27 +1,27 @@
 {% extends "master/master.html" %}
 
 {% block title %}
-<title>Public transport transit in St. Petersburg | TripBenefit.com</title>
-<meta name="description" content="Get transport directions for tourist in St. Petersburg, Russia" />
+<title>{{"Public transport transit in St. Petersburg"|translate}} | TripBenefit.com</title>
+<meta name="description" content="{{'Get transport directions for tourist in St. Petersburg, Russia'|translate}}" />
 {% endblock %}
 
 {% block content %}
 	<div class="headline">
-		<h2>First time in St. Petersburg?</h2>
-		<h2>Get transport directions here!</h2>
+		<h2>{{"First time in St. Petersburg"|translate}}?</h2>
+		<h2>{{"Get transport directions here"|translate}}!</h2>
 	</div>
 	<form class="homeform">
-		<h3>From</h3>
+		<h3>{{"From"|translate}}</h3>
 		<div class="inputbox searchbox">
-			<input id="from" name="from" type="text" autocomplete="off" placeholder="try your hotel name or street address" />
+			<input id="from" name="from" type="text" autocomplete="off" placeholder='{{"try your hotel name or street address"|translate}}' />
 			<img id="from_status" src="/images/empty.png" width="16" height="16" alt="From status" />
 		</div>
-		<h3 class="to">To</h3>
+		<h3 class="to">{{"To"|translate}}</h3>
 		<div class="inputbox searchbox">
-			<input id="to" name="to" type="text" autocomplete="off" placeholder="try State Hermitage" />
+			<input id="to" name="to" type="text" autocomplete="off" placeholder='{{"try State Hermitage"|translate}}' />
 			<img id="to_status" src="/images/empty.png" width="16" height="16" alt="To status" />
 		</div>
-		<h3 class="datetime">Date and time</h3>
+		<h3 class="datetime">{{"Date and time"|translate}}</h3>
 		<div class="datebox">
 			<div class="inputbox">
 				<input type="text" id="datepicker" />
@@ -36,7 +36,7 @@
 		</div>
 		<div class="buttons">
 			<div class="blue button bigbutton" onclick="HomePage.search()">
-				Get directions
+				{{"Get directions"|translate}}
 			</div>
 		</div>
 	</form>
@@ -46,8 +46,8 @@
 
 {% block scripts %} 
 <script type="text/javascript" src="https://maps.google.com/maps/api/js?sensor=false"></script>
-<script type="text/javascript" src="scripts/home.js"></script>
+<script type="text/javascript" src="/scripts/home.js"></script>
 <script type="text/javascript" language="javascript">
-    HomePage.init();
+    HomePage.init('{{"LANGUAGE"|translate}}');
 </script>
 {% endblock %}
