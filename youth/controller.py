@@ -10,12 +10,14 @@ from youth import stuff
 from youth import view
 from youth import param
 from youth import router
+from youth import utils
+from youth import rater
 
 def do_home(request, response):
     view.to_html(None, 'home', request, response)
     
 def do_about(request, response):
-    view.to_html(None, 'about', request, response)
+    view.to_html(None, 'about' if utils.get_language() != 'ru' else 'about_ru', request, response)
     
 def do_directions(request, response):
     # get request parameters
@@ -41,6 +43,17 @@ def do_directions(request, response):
         view.to_json(data, response)
     else:
         view.to_html(data, 'directions', request, response)
+
+def do_hotels(request, response):
+    ratings = rater.get_all()
+    data = { 'ratings': ratings }
+    view.to_html(data, 'hotels', request, response)
+        
+def do_hotel(request, response, name):
+    hotel = place.get(name)[0]
+    ratings = rater.get(hotel)
+    data = { 'hotel': hotel, 'ratings': ratings }
+    view.to_html(data, 'hotel', request, response)
         
 def do_place(request, response):
     # get request parameters        
@@ -147,14 +160,8 @@ def get_start_time(request):
     except:
         start_time = datetime.time(hour=10, minute=0)
     return start_time
-
+    
 def get_place(request, name_param, coord_param):
     name = request.get(name_param, '')
-    if name != '':
-        places = place.get(name)
-        if len(places) > 0:
-            return [places[0], maps.GeoPoint(places[0].latitude, places[0].longitude)]
-        
     coord = request.get(coord_param, '').replace('-', ',')
-    if coord != '':
-        return [place.Address(name if name != '' else coord), maps.GeoPoint(*[float(x) for x in coord.split(',')])]
+    return place.get_by_name(name, coord)

@@ -33,7 +33,9 @@
 			<div class="menu">
 				<ul>
             		<li {% ifequal active_page 'home' %}class="active"{% endifequal %}><a href="/{{'LANGUAGE'|translate}}">{{"Home"|translate}}</a></li>
+            		<li {% ifequal active_page 'hotels' %}class="active"{% endifequal %}><a href="/{{'LANGUAGE'|translate}}/hotels">{{"Hotels"|translate}}</a></li>
             		<li {% ifequal active_page 'about' %}class="active"{% endifequal %}><a href="/{{'LANGUAGE'|translate}}/about">{{"About"|translate}}</a></li>
+            		<li class="language">{% autoescape off %}{{switch_language_page}}{% endautoescape %}</li>
           		</ul>								
 			</div>
 		</div>

@@ -2,12 +2,23 @@ import json
 import math
 import param
 from lib import geo
+from google.appengine.api import memcache
 
-def get_route(start_location, end_location):
+def load_graph():
+    key = 'router_graph'
+    data = memcache.get(key) #@UndefinedVariable
+    if data != None:
+        return data
+
     subway_dict = json.loads(param.get('subway'))
     graph = StationGraph()
     graph.steps = [Station(x['name'], x['name_rus'], x['lat'], x['lng'], x['transport'], x['line']) for x in subway_dict['stations']]
     graph.links = [StationLink(x['from_station'], x['to_station'], x['duration']) for x in subway_dict['links']]
+    memcache.add(key, graph, 60*60) #@UndefinedVariable
+    return graph
+
+def get_route(start_location, end_location):
+    graph = load_graph()
     return get_route_ongraph(graph, start_location, end_location)
 
 def get_route_ongraph(graph, start_location, end_location):
@@ -37,6 +48,12 @@ def find_near(stations, lat, lng):
 
 def find_nearest(stations, lat, lng):
     return min(stations, key=lambda x: x.estimate_subway_time_to(lat, lng))
+
+def resolve_name(name, transport, location):
+    graph = load_graph()
+    stations = [x for x in graph.steps if x.transport == transport and geo.haversine(location.lng, location.lat, x.lng, x.lat) < 500]
+    if len(stations) > 0:
+        return stations[0]
 
 def AStar(graph, start, goal):
     closedset = []    # The set of nodes already evaluated.

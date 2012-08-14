@@ -23,23 +23,25 @@ def time_serialize(tm):
     return tm.strftime('%H-%M')
 
 def duration_to_string(duration):
-    if duration > 120:
-        return str(duration / 60) + ' ' + _('hours')+ ' ' + duration_to_string(duration % 60)
+    dur_int = int(round(duration))
+    if dur_int > 120:
+        return str(dur_int / 60) + ' ' + _('hours')+ ' ' + duration_to_string(dur_int % 60)
     elif duration > 60:
-        return '1 ' +  _('hour') + ' ' + duration_to_string(duration % 60)
-    elif duration == 1:
+        return '1 ' +  _('hour') + ' ' + duration_to_string(dur_int % 60)
+    elif duration <= 1:
         return '1 ' + _('min')
     else:
-        return str(duration) + ' ' + _('mins')
+        return str(dur_int) + ' ' + _('mins')
     
 def distance_to_string(meters):
-    if meters > 1000:
-        return '%.1f ' % (meters / 1000) + _('km')
+    met_int = int(round(meters))
+    if met_int >= 950:
+        return '%.1f ' % (float(meters) / 1000) + _('km')
     elif meters > 300:
         return '%s ' % int(round(meters, -2)) + _('m')
     elif meters > 100:
         return '%s ' % int(round(meters, -1)) + _('m')
-    return str(meters) + ' ' + _('m')
+    return str(met_int) + ' ' + _('m')
 
 def price_to_string(rub):
     return '%s ' % rub + _('RUB')

@@ -10,6 +10,7 @@ settings._target = None
 
 from django.utils import translation
 import webapp2
+import urllib2
 
 AVAILABLE_LOCALES = ['en', 'ru']
 
@@ -49,7 +50,7 @@ class MainHandler(webapp2.RequestHandler):
             language = 'ru'
         if language != None:
             translation.activate(language)
-        path = self.request.path.replace('/en','').replace('/ru','')
+        path = urllib2.unquote(self.request.path.replace('/en','').replace('/ru',''))
         
         if path == '' or path == '/':
             controller.do_home(self.request, self.response)
@@ -65,6 +66,10 @@ class MainHandler(webapp2.RequestHandler):
             controller.do_routing(self.request, self.response)
         elif path == '/train':
             controller.do_train(self.request, self.response)
+        elif path == '/hotels':
+            controller.do_hotels(self.request, self.response)
+        elif path.startswith('/hotel/'):
+            controller.do_hotel(self.request, self.response, path.replace('/hotel/', ''))
         elif path == '/test':
             controller.do_test(self.request, self.response)
         else:

@@ -4,15 +4,17 @@ from django.utils.translation import ugettext as _
 from youth import utils
 from youth import maps
 from youth import bot
+from youth import router
 
 # Class that represents a Trip
 class Trip(object):
-    def __init__(self, title, from_location, to_location, expenses, duration, steps):
+    def __init__(self, title, from_location, to_location, expenses, duration, metric, steps):
         self.title = title
         self.from_location = from_location
         self.to_location = to_location
         self.expenses = expenses
         self.duration = duration
+        self.metric = metric
         self.steps = steps
         self.change_action = None
         self.time_text = self.get_time_text()
@@ -37,6 +39,8 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
     step_start_time = start_time
     
     # assign icons
+    route.directions[0].start_icon = from_place.place_type
+    route.directions[0].start_name = from_place.name_local
     for i in range(len(route.directions)):
         step = route.directions[i]
         previous = route.directions[i-1] if i > 0 else None
@@ -46,6 +50,26 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
             if previous != None and previous.is_walk():
                 previous.end_icon = 'underground'
                 previous.end_name = 'Subway station'
+        elif step.is_train():
+            step.start_icon = step.end_icon = 'train'
+            if previous != None and previous.is_walk():
+                previous.end_icon = 'train'
+            near_trains = get_nearest_trains(step, date, step_start_time)
+            if near_trains != None:
+                [prev_train, next_train] = near_trains 
+                delta_prev = utils.time_get_delta_minutes(prev_train.departure, step_start_time)
+                delta_next = utils.time_get_delta_minutes(step_start_time, next_train.departure)
+                if delta_prev < delta_next * 2:
+                    extra_wait_time = -delta_prev
+                    train = prev_train
+                else: 
+                    extra_wait_time = delta_next
+                    train = next_train
+                start_time = utils.time_add_mins(start_time, extra_wait_time)
+                steps_to.append({'instruction': 'You should leave at %s to fit train timetable' % utils.time_to_string(start_time),
+                                 'start_time': ' ',
+                                 'hint' : ''})
+                step.duration = train.get_duration()
         elif step.is_land_transport():
             step.start_icon = step.end_icon = 'bus'
             step.start_name = step.end_name = 'Bus stop'
@@ -56,19 +80,22 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
             if previous != None:
                 step.start_icon = previous.end_icon
                 step.start_name = previous.end_name
-    route.directions[0].start_icon = from_place.place_type
-    route.directions[0].start_name = from_place.name_local
+        step_start_time = utils.time_add_mins(step_start_time, step.duration)
     route.directions[-1].end_icon = to_place.place_type
     route.directions[-1].end_name = to_place.name_local
     
-    for step in route.directions: 
+    step_start_time = start_time
+    for i in range(len(route.directions)):
+        step = route.directions[i]
+        previous = route.directions[i-1] if i > 0 else None
+        hint = step.get_default_addinfo()
         if step.is_train():
-            next_train = get_next_peterhot_train(date, step_start_time)
-            step_start_time = next_train.departure
-            hint = 'Train at ' + utils.time_to_string(next_train.departure)
-            step.duration = next_train.get_duration()
-        else:
-            hint = step.addinfo
+            steps_to[-1]['details'].append({
+                'show_label': _('Learn about train tickets'),
+                'hide_label': _('Hide info'),
+                'action': 'info',
+                'data' : "'" + _("Train tickets info HTML") + "'"
+                })
                         
         details = []
         if step.has_map:
@@ -84,15 +111,7 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                     'show_label': _('Learn about tokens'),
                     'hide_label': _('Hide info'),
                     'action': 'info',
-                    'data' : "'You need to buy tokens to enter to the metro:<br/>" + \
-                             "<img src=\"/images/token1.jpg\" alt=\"Subway token\" height=\"120\" /><br/>" +\
-                             "We would recommend you to buy them in token machine or at the ticket-office. Token machine works very simple way. You should place 100 rubles (one cash note) in the machine and it returns 3 tokens and a change (19 rubles). In the ticket office you can just provide required amount of money and show how many tokens you need. One token costs 27 rubles.<br/>" + \
-                             "<img src=\"/images/token2.jpg\" alt=\"Token machine\" height=\"242\" /><img src=\"/images/token3.jpg\" alt=\"Ticket office\" height=\"242\" /><br/>" +\
-                             "You can also buy a travel card if you need to use metro pretty frequently. You can buy 10 trips with 7 days limit on usage, 20 trips on 15 days, 40 or 50 trips on 30 days. It’s a bit cheaper than buy tokens. For example, 10 trips cost 230 rubles, 20 – 430 rubles, 40 and 50 const 830 and 1025 correspondingly. Additionally you should pay 30 ruble deposit to get plastic card. You can get money back if you return the card when you don’t need it. You do not need any document to get such card. To avoid verbal communication with operator you can just print and provide them the piece of paper with the following text:<br/>" + \
-                             "<b>Пожалуйста, сделайте мне новую БСК на 10 поездок на 7 дней.</b><br/>" + \
-                             "You can update numbers with one of combinations described below.<br/>" + \
-                             "Be careful: you need to have a personal card for every traveler if you go together. You can not use the same travel card – after the usage travel card is blocked for 10 minutes.<br/>" + \
-                             "<img src=\"/images/token4.jpg\" alt=\"Subway card\" height=\"120\" />'"
+                    'data' : "'" + _("Tokens info HTML") + "'"
                     })
         if step.hint != None:
             details.append({
@@ -112,12 +131,17 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                  'start_time': utils.time_to_string(step_start_time),
                  'hint' : ''})        
     total_duration = utils.time_get_delta_minutes(start_time, step_start_time)
-    return Trip(_('Trip from') + ' ' + from_place.name_local + ' ' + _('to') + ' ' + to_place.name_local, from_location.to_url_param(), to_location.to_url_param(), expenses, total_duration, steps_to)
+    return Trip(_('Trip from') + ' ' + from_place.name_local + ' ' + _('to') + ' ' + to_place.name_local, from_location.to_url_param(), to_location.to_url_param(), expenses, total_duration, route.get_cost(), steps_to)
 
 def clean_post_subway_walk(route):
     if route.directions[-1].is_walk() and route.directions[-2].is_subway():
         route.directions.pop()
         
-def get_next_peterhot_train(date, time_after):    
-    timetable = bot.fetch_trains('Санкт-Петербург', 'Новый Петергоф', date)    
-    return [x for x in timetable if x.departure > time_after][0]
+def get_nearest_trains(step, date, time_after):
+    if step.transport != None and step.transport.start_code != None and step.transport.end_code != None:
+        timetable = bot.fetch_trains(step.transport.start_code, step.transport.end_code, date)
+        if timetable != None:    
+            result = []
+            result.append([x for x in timetable if x.departure < time_after][-1])
+            result.append([x for x in timetable if x.departure >= time_after][0])
+            return result

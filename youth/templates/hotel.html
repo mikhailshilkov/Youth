@@ -1,16 +1,26 @@
 {% extends "master/master.html" %}
 
-{% block title %}Hotels{% endblock %}
+{% block title %}
+<title>{{data.hotel.name}} | TripBenefit.com</title>
+{% endblock %}
 
 {% block content %}
-<table>
-	{% for hotel in data %}
-	<tr>
-		<td>{{hotel.name}}</td>
-		<td>{{hotel.latitude}}</td>
-		<td>{{hotel.longitude}}</td>
-		<td>{{hotel.address}}</td>
-	</tr>
+<section class="itinerary">
+	<div class="buttons">	
+		<div class="blue button" onclick="window.print()">{{"Print"|translate}}</div>
+	</div>
+	<h1>{{data.hotel.name_local}}</h1>
+	<div class="summary">
+		<span class="time">{{data.hotel.address}}</span>
+	</div>
+	<hr/>
+	{% for entry in data.ratings %}
+	<div class="step">
+		<div><b>{{entry.place_name_local}}</b></div>
+		<div>{{entry.duration_text}}</div>
+		<div>{{entry.expenses_text}}</div>
+		<a href='/{{'LANGUAGE'|translate}}/directions?from={{data.hotel.name}}&to={{entry.place_name_local}}'>View route</a>
+	</div>
 	{% endfor %}
-</table>
+</section>
 {% endblock %}

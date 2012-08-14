@@ -9,12 +9,12 @@ MapHelper = {
         var coordinates = [];
         var startPoint = new google.maps.LatLng(route['start']['lat'], route['start']['lng']);
         var endPoint = new google.maps.LatLng(route['end']['lat'], route['end']['lng']);
-        var isSubway = route['type'] == 'Subway';
+        var isSubwayOrTrain = route['type'] == 'Subway' || route['type'] == 'Train';
         coordinates.push(startPoint);
         bounds.extend(startPoint);
         this.addMarker(map, startPoint, route['startName'], route['startIcon']);
         
-        var needsDirections = !isSubway;
+        var needsDirections = !isSubwayOrTrain;
         if(route['type'] == 'Walk')// don't search directions for walks < 200 m
             needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 150;
         if(needsDirections) {

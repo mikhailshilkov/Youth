@@ -43,14 +43,15 @@ def get_walking_step(start_location, end_location, end_name = None):
                     distance += int(leg_step['distance']['value'])
             step = RouteStep()                            
             step.direction = ', '.join(instructions)
-            step.duration = int(duration / 60)                        
+            step.duration = int(duration / 60)      
+            step.distance = distance                  
     else:
         logging.warn('Walking route failed: ' + str(result.status_code))
         
     if step == None: #google failed
         step = RouteStep()
-        distance = estimate_distance(start_location, end_location) * 1.4
-        step.duration = distance / 80
+        step.distance = estimate_distance(start_location, end_location) * 1.4
+        step.duration = int(step.distance / 80 + 0.5)
         
     if end_name != None:
         walk_text = _('Walk to') + ' ' + end_name
@@ -58,16 +59,17 @@ def get_walking_step(start_location, end_location, end_name = None):
             step.direction = walk_text + ': ' + step.direction
         else:
             step.direction = walk_text
+    elif step.direction == None:
+        step.direction = _('Walk') + ' ' + utils.distance_to_string(step.distance)
 
-    step.addinfo = utils.duration_to_string(step.duration)  + ', ' + utils.distance_to_string(distance)
     step.transport = None # walk                
     step.start_location = start_location
     step.end_location = end_location
     step.has_map = True
     return step
 
-def get_walking_route(start_location, end_location, language):
-    step = get_walking_step(start_location, end_location, None, language)
+def get_walking_route(start_location, end_location):
+    step = get_walking_step(start_location, end_location, None)
     if step != None:
         return Route([step])
     
@@ -95,10 +97,10 @@ def get_subway_route(start_location, end_location):
     if route.get_walk_duration() < 40:
         return route
 
-def get_transit_route(start_location, end_location, engine):
+def get_transit_route(start_location, end_location, engine = 'o'):
     language = utils.get_language()
     key = 'route_' + start_location.to_url_param() + '_' + end_location.to_url_param() + '_' + engine + '_' + language
-    data = None#memcache.get(key) #@UndefinedVariable
+    data = memcache.get(key) #@UndefinedVariable
     if data != None:
         return data
     
@@ -182,8 +184,7 @@ def get_rusavtobus_routes(start_location, end_location):
                     else:
                         raise Exception('Unknown subway line ' + line_name)
                 else:
-                    line_numbers = [y[1] for y in [x.split(':') for x in step_element.attrib['wn'].split(';')] if y[0] == transport_code][0].replace(',', ' or')                
-                step.addinfo = 'no info'
+                    line_numbers = [y[1] for y in [x.split(':') for x in step_element.attrib['wn'].split(';')] if y[0] == transport_code][0].replace(',', ' ' + _('or') + ' ')                
                 step.duration = int(step_element.attrib['t'])
                 step.start_location = GeoPoint(float(from_element.attrib['lat']), float(from_element.attrib['lng']))
                 step.end_location = GeoPoint(float(to_element.attrib['lat']), float(to_element.attrib['lng']))
@@ -296,13 +297,9 @@ def parse(html, points_array, steps_array):
     return routes
 
 def process_transit_route(start_location, end_location, route):
-    # Add start and end walks
-    first_step = route.directions[0]
-    start_walk = get_walking_step(start_location, first_step.start_location,
-                                  utils.subway_color(first_step.start_name, first_step.transport.line_number))
-    if start_walk.duration > 0:
-        route.directions.insert(0, start_walk)
-            
+    language = utils.get_language()
+    
+    # Add end walk
     end_walk = get_walking_step(route.directions[-1].end_location, end_location)
     if end_walk.duration > 0:
         route.directions.append(end_walk)
@@ -315,9 +312,33 @@ def process_transit_route(start_location, end_location, route):
         next_step = route.directions[index + 1] if index < len(route.directions) - 1 else None
         
         if step.transport != None:
-            # Calculate step expenses
+            if not step.transport.is_subway() or first_subway:
+                from_location = previous_step.end_location if previous_step != None else start_location 
+                tostop_walk = get_walking_step(from_location, step.start_location,
+                                               _(step.transport.type).lower() + ' ' + _('stop') + ' ' + step.start_name)
+                route.directions.insert(index, tostop_walk)
+                index += 1
+            
+            if step.transport.is_train():
+                station = router.resolve_name(step.start_name, 'Train', step.start_location)
+                if station != None:
+                    step.start_name = station.name_rus if language == 'ru' else station.name
+                    step.transport.start_code = station.name_rus
+                    step.start_location.lat = station.lat
+                    step.start_location.lng = station.lng
+                station = router.resolve_name(step.end_name, 'Train', step.end_location)
+                if station != None:
+                    step.end_name = station.name_rus if language == 'ru' else station.name
+                    step.transport.end_code = station.name_rus
+                    step.end_location.lat = station.lat
+                    step.end_location.lng = station.lng
+                new_step = RouteStep(_('Buy the train tickets to') + ' ' + step.end_name + ', ' + _('wait for the train'),
+                                       15, utils.duration_to_string(15) + ', ' + utils.price_to_string(step.transport.price), Transport('Train', price = step.transport.price))                
+                route.directions.insert(index, new_step)
+                index += 1
+                step.transport.price = None
+            
             if step.transport.is_subway():
-                #raise Exception(step.start_name)        
                 if first_subway:
                     new_step = RouteStep(_('Enter subway station') + ' ' + utils.subway_color(step.start_name, step.transport.line_number) + ' (' + _('buy the tokens if needed') + ')',
                                            5, utils.duration_to_string(5) + ', ' + utils.price_to_string(27), Transport('Subway', price = 27))                
@@ -331,14 +352,7 @@ def process_transit_route(start_location, end_location, route):
                 if step.transport.stops == 0:
                     route.directions.remove(step)
                     continue
-            else:
-                if index > 0:
-                    tostop_walk = get_walking_step(previous_step.end_location, step.start_location,
-                                                   step.transport.type.lower() + ' stop ' + step.start_name)
-                    if tostop_walk.duration > 0:
-                        route.directions.insert(index, tostop_walk)
-                        index += 1
-                    
+                                
             # Set price for land transport 
             if step.transport.type in ['Bus', 'Trolleybus', 'Tram']:
                 step.transport.price = 23
@@ -348,19 +362,11 @@ def process_transit_route(start_location, end_location, route):
             # Make trolleybus less optimistic
             if step.transport.type == 'Trolleybus':
                 step.duration *= 1.4
-            
-            # Create manual description
-            step.addinfo = utils.duration_to_string(int(step.duration))
-            if step.transport.price != None:
-                step.addinfo += ', ' + utils.price_to_string(step.transport.price)
-            if step.transport.stops != None:
-                step.addinfo += ', ' + utils.stops_to_string(step.transport.stops)
-                
+                            
             # Add 3/4 of service interval duration
             if not step.transport.is_subway():
                 if step.transport.interval != None:
                     step.duration += step.transport.interval * 3 / 4                 
-                    step.addinfo += ', runs every ' + utils.duration_to_string(step.transport.interval)
                 else:
                     step.duration += get_default_service_interval(step.transport) * 3 / 4
                                         
@@ -368,14 +374,15 @@ def process_transit_route(start_location, end_location, route):
         if step.is_walk() and previous_step != None and next_step != None and \
             previous_step.is_subway() and next_step.is_subway():
             step.duration = 4 # subway change is 4 minutes
-            step.addinfo = utils.duration_to_string(step.duration)
         else:
             step.has_map = step.start_location != None and step.end_location != None
             
         if step.transport != None:
             if step.is_subway():
-                step.direction = _(step.transport.type) + utils.subway_color(' ' + _('line') + ' ' + step.transport.line_number, step.transport.line_number) + \
+                step.direction = _(step.transport.type) + ': ' + utils.subway_color(_('line') + ' ' + step.transport.line_number, step.transport.line_number) + \
                                  ' ' + _('to') + ' ' + utils.subway_color(step.end_name, step.transport.line_number)
+            elif step.transport.is_train():
+                step.direction = _(step.transport.type) + ' ' + _('to') + ' ' + step.end_name
             else:
                 step.direction = _(step.transport.type) + ' ' + step.transport.line_number + ' ' + _('to') + ' ' + step.end_name 
             
@@ -502,6 +509,7 @@ class RouteStep(object):
                  has_map = False, hint = None):
         self.direction = direction
         self.duration = duration
+        self.distance = None
         self.addinfo = addinfo
         self.start_location = start_location 
         self.end_location = end_location
@@ -537,7 +545,7 @@ class RouteStep(object):
         coef = 3
         if self.transport == None:
             coef = 2.5 # walking is nice
-        elif self.is_land_transport():
+        elif self.is_land_transport() and not self.is_train():
             coef = 3.5 # land transport is not reliable
         result += self.duration * coef
         return result 
@@ -553,6 +561,18 @@ class RouteStep(object):
                   'endName': self.end_name
                  }
         return utils.to_json(params)
+    
+    def get_default_addinfo(self):
+        addinfo = utils.duration_to_string(int(self.duration))
+        if self.distance != None:
+            addinfo += ', ' + utils.distance_to_string(self.distance)
+        if self.transport != None and self.transport.price != None:
+            addinfo += ', ' + utils.price_to_string(self.transport.price)
+        if self.transport != None and self.transport.stops != None:
+            addinfo += ', ' + utils.stops_to_string(self.transport.stops)
+        if self.transport != None and self.transport.interval != None:
+            addinfo += ', ' + _('runs every') + ' ' + utils.duration_to_string(self.transport.interval)
+        return addinfo
         
 # Class that represents a Transport        
 class Transport(object):
@@ -562,6 +582,8 @@ class Transport(object):
         self.interval = interval
         self.price = price
         self.stops = stops
+        self.start_code = None
+        self.end_code = None
         
     def is_subway(self):
         return self.type == 'Subway'

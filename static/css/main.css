@@ -156,6 +156,9 @@ html {
 .pageheader .menu a:hover, .pageheader .menu .active a {
     color: #FCE226;
 }
+.pageheader .menu .language a, .pageheader .menu .language a:hover, .pageheader .menu .language a:visited {
+    color: #183293;
+}
 .button {
     font-size: 1em;
     font-weight: bold;

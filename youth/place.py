@@ -1,6 +1,7 @@
 from google.appengine.ext import db
 from google.appengine.api import memcache
 from youth import utils
+from youth import maps
     
 def get(term):
     language = utils.get_language()
@@ -25,12 +26,24 @@ def get(term):
         memcache.add(key, places, 24*60*60) #@UndefinedVariable
         
     if term != None and term != '':
-        result = [x for x in places if x.name_local.lower().startswith(term.lower())]
+        result = [x for x in places if (x.name != None and x.name.lower().startswith(term.lower()))
+                                    or (x.name_rus != None and x.name_rus.lower().startswith(term.lower()))]
         if len(result) < 10:
-            result.extend([x for x in places if x.name_local.lower().find(term.lower()) > 0])
+            result.extend([x for x in places if (x.name != None and x.name.lower().find(term.lower()) > 0) 
+                                             or (x.name_rus != None and x.name_rus.lower().find(term.lower()) > 0)])
         return result
     else:
         return places
+    
+def get_by_name(name, coord = ''):
+    if name != '':
+        places = get(name)
+        if len(places) > 0:
+            return [places[0], maps.GeoPoint(places[0].latitude, places[0].longitude)]        
+    if coord != '':
+        return [Address(name if name != '' else coord), maps.GeoPoint(*[float(x) for x in coord.split(',')])]
+    
+    return [None, None]    
 
 def add_hotel(name, name_rus, address, lat, lng):
     new_hotel = Hotel(key_name=name)
@@ -63,6 +76,8 @@ class Hotel(db.Model):
     address = db.StringProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
+    def get_point(self):
+        return maps.GeoPoint(self.latitude, self.longitude)
     def get_latlng(self):
         return str(self.latitude) + ',' + str(self.longitude) 
     def jsonable(self):
@@ -87,4 +102,5 @@ class Attraction(db.Model):
 class Address(object):
     def __init__(self, name):
         self.name = name
+        self.name_local = name
         self.place_type = 'address'

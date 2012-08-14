@@ -26,6 +26,7 @@ def html_dic():
     _("try State Hermitage")
     _("Public transport transit in St. Petersburg")
     _("Get transport directions for tourist in St. Petersburg, Russia")
+    _("Hotels")
     
 def other_dic():
     _('Bus')

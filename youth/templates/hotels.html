@@ -1,0 +1,22 @@
+{% extends "master/master.html" %}
+
+{% block title %}
+<title>{{"Hotels"|translate}} | TripBenefit.com</title>
+{% endblock %}
+
+{% block content %}
+<section class="itinerary">
+	<div class="buttons">	
+		<div class="blue button" onclick="window.print()">{{"Print"|translate}}</div>
+	</div>
+	<h1>{{"Hotels"|translate}}</h1>
+	<hr/>
+	{% for entry in data.ratings %}
+	<div class="step">
+		<div><b><a href="/{{'LANGUAGE'|translate}}/hotel/{{entry.hotel_name}}">{{entry.hotel_name}}</a></b></div>
+		<div>{{entry.duration_string}}</div>
+		<div>{{entry.expenses_string}}</div>
+	</div>
+	{% endfor %}
+</section>
+{% endblock %}

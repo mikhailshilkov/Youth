@@ -20,8 +20,8 @@ def fetch_trains(place_from, place_to, date):
     if data != None:
         return data
       
-    params = {'fromName': place_from,
-              'toName': place_to,
+    params = {'fromName': unicode(place_from).encode('utf-8'),
+              'toName': unicode(place_to).encode('utf-8'),
               'when': utils.date_serialize(date),
               'search_type': 'suburban'}
     url = 'http://m.rasp.yandex.ru/search?' + urllib.urlencode(params)
