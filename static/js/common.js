@@ -17,5 +17,10 @@ Utils = {
             vars[hash[0]] = hash[1];
         }
         return vars;
+    },
+    scrollTo : function(elementSelector) {
+        $('html, body').animate({
+            scrollTop: $(elementSelector).offset().top
+        }, 700);
     }
 }

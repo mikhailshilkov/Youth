@@ -5,18 +5,20 @@
 {% endblock %}
 
 {% block content %}
-<section class="itinerary">
-	<div class="buttons">	
-		<div class="blue button" onclick="window.print()">{{"Print"|translate}}</div>
+<section class="hotels">
+	<h1>{{"Rating of St. Petersburg hotel locations"|translate}}</h1>
+	<div class="sectionheader">
+		<h2>Total travel time to important Points of Interest</h2>
 	</div>
-	<h1>{{"Hotels"|translate}}</h1>
-	<hr/>
-	{% for entry in data.ratings %}
-	<div class="step">
-		<div><b><a href="/{{'LANGUAGE'|translate}}/hotel/{{entry.hotel_name}}">{{entry.hotel_name}}</a></b></div>
-		<div>{{entry.duration_string}}</div>
-		<div>{{entry.expenses_string}}</div>
+	<div class="hotellist">
+		{% for entry in data.ratings %}
+		<div class="hotelentry {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+			<div class="rank">{{forloop.counter}}</div>
+			<div class="name"><a href="/{{'LANGUAGE'|translate}}/hotel/{{entry.hotel_name}}">{{entry.hotel_name}}</a></div>
+			<div class="duration">{{entry.duration_string}}</div>
+			<div class="price">{{entry.expenses_string}}</div>
+		</div>
+		{% endfor %}
 	</div>
-	{% endfor %}
 </section>
 {% endblock %}

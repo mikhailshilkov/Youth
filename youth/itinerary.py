@@ -4,7 +4,6 @@ from django.utils.translation import ugettext as _
 from youth import utils
 from youth import maps
 from youth import bot
-from youth import router
 
 # Class that represents a Trip
 class Trip(object):
@@ -26,8 +25,8 @@ class Trip(object):
     def jsonable(self):
         return self.__dict__
     
-def get_directions(from_place, from_location, to_place, to_location, date, start_time, engine):
-    route = maps.get_transit_route(from_location, to_location, engine)
+def get_directions(from_place, from_location, to_place, to_location, date, start_time, engine, force = ''):
+    route = maps.get_transit_route(from_location, to_location, engine, force)
     trip = create_trip(from_place, from_location, to_place, to_location, route, date, start_time)
     return trip                   
 
@@ -66,7 +65,7 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                     extra_wait_time = delta_next
                     train = next_train
                 start_time = utils.time_add_mins(start_time, extra_wait_time)
-                steps_to.append({'instruction': 'You should leave at %s to fit train timetable' % utils.time_to_string(start_time),
+                steps_to.append({'instruction': _('You should leave at %s to fit train timetable') % utils.time_to_string(start_time),
                                  'start_time': ' ',
                                  'hint' : ''})
                 step.duration = train.get_duration()
@@ -89,15 +88,15 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
         step = route.directions[i]
         previous = route.directions[i-1] if i > 0 else None
         hint = step.get_default_addinfo()
-        if step.is_train():
-            steps_to[-1]['details'].append({
+        details = []
+        if step.is_train() and not step.has_map:
+            details.append({
                 'show_label': _('Learn about train tickets'),
                 'hide_label': _('Hide info'),
                 'action': 'info',
                 'data' : "'" + _("Train tickets info HTML") + "'"
                 })
                         
-        details = []
         if step.has_map:
             details.append({
                     'show_label': _('Show the map'),

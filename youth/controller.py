@@ -24,6 +24,7 @@ def do_directions(request, response):
     start_time = get_start_time(request)
     view_mode = request.get('out', 'html')
     engine = request.get('e', 'o')
+    force = request.get('f', '')
     try:
         date = datetime.datetime.strptime(request.get('date', ''), '%Y-%m-%d')
     except:
@@ -34,7 +35,7 @@ def do_directions(request, response):
     [to_place, to_location] = get_place(request, 'to', 'tll')
 
     # produce data            
-    data = itinerary.get_directions(from_place, from_location, to_place, to_location, date, start_time, engine)              
+    data = itinerary.get_directions(from_place, from_location, to_place, to_location, date, start_time, engine, force)              
     
     # populate the requested view
     if view_mode == 'none':
@@ -73,10 +74,15 @@ def post_hotel(request):
     # get request parameters        
     name = request.get('name')
     name_rus = request.get('nameRus')
+    file_name = request.get('fileName')
+    rating = float(request.get('rating'))
+    image_id = request.get('imageId')
     address = request.get('address')
+    min_rate = float(request.get('minRate')) if request.get('minRate') != '' else None 
     lat = float(request.get('lat'))
     lng = float(request.get('lng'))
-    place.add_hotel(name, name_rus, address, lat, lng)
+    hotel_type = request.get('type')
+    place.add_hotel(name, name_rus, file_name, rating, image_id, address, min_rate, lat, lng, hotel_type)
     
 def delete_hotel(request):
     # get request parameters        
@@ -150,6 +156,12 @@ def do_test(request, response):
     from google.appengine.tools import dev_appserver 
     dev_appserver.TearDownStubs()
     response.out.write(stuff.test())
+    
+def do_cleanup(request, response):
+    hotels = place.cleanup()
+    for x in hotels:
+        rater.cleanup(x)
+    response.out.write('Done')
     
 def do_notfound(request, response):
     view.to_html(None, 'notfound', request, response)

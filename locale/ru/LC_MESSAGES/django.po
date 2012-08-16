@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-11 18:16+0400\n"
+"POT-Creation-Date: 2012-08-15 10:30+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,137 +24,148 @@ msgstr "Расходы"
 msgid "Travel time"
 msgstr "Время в пути"
 
-#: .\youth\itinerary.py:83
+#: .\youth\itinerary.py:69
+#, python-format
+msgid "You should leave at %s to fit train timetable"
+msgstr "Вам следует выйти в %s, чтобы попасть в расписание поездов"
+
+#: .\youth\itinerary.py:95
 msgid "Learn about train tickets"
 msgstr "Узнать о билетах на электричку"
 
-#: .\youth\itinerary.py:84 .\youth\itinerary.py:101
+#: .\youth\itinerary.py:96 .\youth\itinerary.py:112
 msgid "Hide info"
 msgstr "Скрыть информацию"
 
-#: .\youth\itinerary.py:86
+#: .\youth\itinerary.py:98
 msgid "Train tickets info HTML"
-msgstr ""
-"Информация о билетах на электричку"
+msgstr "Информация о билетах на электричку"
 
-#: .\youth\itinerary.py:92
+#: .\youth\itinerary.py:103
 msgid "Show the map"
 msgstr "Показать карту"
 
-#: .\youth\itinerary.py:93
+#: .\youth\itinerary.py:104
 msgid "Hide the map"
 msgstr "Спрятать карту"
 
-#: .\youth\itinerary.py:100
+#: .\youth\itinerary.py:111
 msgid "Learn about tokens"
 msgstr "Как оплатить проезд"
 
-#: .\youth\itinerary.py:103
+#: .\youth\itinerary.py:114
 msgid "Tokens info HTML"
 msgstr ""
-"Для входа в метро вам нужно купить либо жетоны, либо проездную карту:<br/><img src=\"/images/token1.jpg"
-"\" alt=\"Subway token\" height=\"120\" /><img src=\"/images/token4.jpg\" alt=\"Subway card\" height=\"120\" /><br/>"
-"В случае очередей, которые обычно бывают в первых числах месяца, вы"
-"можете воспользоваться машиной по продаже жетонов. Вы помещаете в купюроприемник "
-"100 рублей, и машина возвращает вам 3 жетона и 19 рублей сдачи. Стоимость жетона 27 "
-"рублей. Машины по продаже жетонов имеются не на каждой кассе. Если их нет, вы всегда "
-"можете просто купить жетоны в кассе.<br/><img src=\"/images/token2.jpg\" alt=\"Token "
-"machine\" height=\"242\" /><img src=\"/images/token3.jpg\" alt=\"Ticket "
-"office\" height=\"242\" /><br/>Проездную карту можно купить только в кассах. Для этого вам не понадобится паспорт "
-"или другое удостоверение личности. Необходимо внести залог в 30 рублей за пластиковое "
-"основание и оплатить выбранное количество поездок. Залог можно получить назад сдав "
-"карту, когда она вам больше не нужна. На данный момент 10 поездок со сроком действия "
-"в 10 дней стоят 230 рублей, 20 поездок на 15 дней обойдутся вам в 430 рублей, 40 и 50 "
-"поездок на месяц стоят 830 и 1025 рублей соответственно.<br/>"
+"Для входа в метро вам нужно купить либо жетоны, либо проездную карту:<br/"
+"><img src=\"/images/token1.jpg\" alt=\"Subway token\" height=\"120\" /><img "
+"src=\"/images/token4.jpg\" alt=\"Subway card\" height=\"120\" /><br/>В "
+"случае очередей, которые обычно бывают в первых числах месяца, выможете "
+"воспользоваться машиной по продаже жетонов. Вы помещаете в купюроприемник "
+"100 рублей, и машина возвращает вам 3 жетона и 19 рублей сдачи. Стоимость "
+"жетона 27 рублей. Машины по продаже жетонов имеются не на каждой кассе. Если "
+"их нет, вы всегда можете просто купить жетоны в кассе.<br/><img src=\"/"
+"images/token2.jpg\" alt=\"Token machine\" height=\"242\" /><img src=\"/"
+"images/token3.jpg\" alt=\"Ticket office\" height=\"242\" /><br/>Проездную "
+"карту можно купить только в кассах. Для этого вам не понадобится паспорт или "
+"другое удостоверение личности. Необходимо внести залог в 30 рублей за "
+"пластиковое основание и оплатить выбранное количество поездок. Залог можно "
+"получить назад сдав карту, когда она вам больше не нужна. На данный момент "
+"10 поездок со сроком действия в 10 дней стоят 230 рублей, 20 поездок на 15 "
+"дней обойдутся вам в 430 рублей, 40 и 50 поездок на месяц стоят 830 и 1025 "
+"рублей соответственно.<br/>"
 
-#: .\youth\itinerary.py:123
+#: .\youth\itinerary.py:134
 msgid "Trip from"
 msgstr "Маршрут от"
 
-#: .\youth\itinerary.py:123 .\youth\maps.py:394 .\youth\maps.py:396
-#: .\youth\maps.py:398
+#: .\youth\itinerary.py:134 .\youth\maps.py:391 .\youth\maps.py:393
+#: .\youth\maps.py:395
 msgid "to"
 msgstr "до"
 
-#: .\youth\maps.py:56 .\youth\maps.py:403
+#: .\youth\maps.py:59 .\youth\maps.py:400
 msgid "Walk to"
 msgstr "Пройдите до"
 
-#: .\youth\maps.py:62
+#: .\youth\maps.py:65
 msgid "Walk"
 msgstr "Пройдите"
 
-#: .\youth\maps.py:174
+#: .\youth\maps.py:180
 msgid "Kirovsko-Viborgskaya"
 msgstr "Кировско-Выборгская"
 
-#: .\youth\maps.py:176
+#: .\youth\maps.py:182
 msgid "Moskovsko-Petrogradskaya"
 msgstr "Московско-Петроградская"
 
-#: .\youth\maps.py:178
+#: .\youth\maps.py:184
 msgid "Nevsko-Vasileostrovskaya"
 msgstr "Невско-Василеостровская"
 
-#: .\youth\maps.py:180
+#: .\youth\maps.py:186
 msgid "Pravoberezhnaya"
 msgstr "Правобережная"
 
-#: .\youth\maps.py:182
+#: .\youth\maps.py:188
 msgid "Frunzensko-Primorskaya"
 msgstr "Фрунзенско-Приморская"
 
-#: .\youth\maps.py:187
+#: .\youth\maps.py:193
 msgid "or"
 msgstr "или"
 
-#: .\youth\maps.py:277 .\youth\maps.py:346 .\youth\maps.py:393
+#: .\youth\maps.py:282 .\youth\maps.py:354 .\youth\maps.py:390
 msgid "line"
 msgstr "линия"
 
-#: .\youth\maps.py:279
+#: .\youth\maps.py:284
 msgid "number"
 msgstr "номер"
 
-#: .\youth\maps.py:335
-msgid "Buy the train tickets to"
-msgstr "Купите билеты на электричку до"
-
-#: .\youth\maps.py:335
-msgid "wait for the train"
-msgstr "дождитесь электричку"
-
-#: .\youth\maps.py:343
-msgid "Enter subway station"
-msgstr "Войдите на станцию метро"
-
-#: .\youth\maps.py:343
-msgid "buy the tokens if needed"
-msgstr "купите жетоны, если нужно"
-
-#: .\youth\maps.py:346
-msgid "Change to"
-msgstr "Пересадка на"
-
-#: .\youth\maps.py:346 .\youth\maps.py:402
-msgid "station"
-msgstr "станция"
-
-#: .\youth\maps.py:358 .\youth\maps.py:402 .\youth\utils.py:51
+#: .\youth\maps.py:338 .\youth\maps.py:399 .\youth\utils.py:50
 msgid "stop"
 msgstr "остановка"
 
-#: .\youth\maps.py:411
+#: .\youth\maps.py:343
+msgid "Buy the train tickets to"
+msgstr "Купите билеты на электричку до"
+
+#: .\youth\maps.py:343
+msgid "wait for the train"
+msgstr "дождитесь электричку"
+
+#: .\youth\maps.py:351
+msgid "Enter subway station"
+msgstr "Войдите на станцию метро"
+
+#: .\youth\maps.py:351
+msgid "buy the tokens if needed"
+msgstr "купите жетоны, если нужно"
+
+#: .\youth\maps.py:354
+msgid "Change to"
+msgstr "Пересадка на"
+
+#: .\youth\maps.py:354 .\youth\maps.py:399
+msgid "station"
+msgstr "станция"
+
+#: .\youth\maps.py:408
 msgid "leave the subway"
 msgstr "покиньте метро"
 
-#: .\youth\maps.py:496
+#: .\youth\maps.py:493
 msgid "/M10"
 msgstr "/М10"
 
-#: .\youth\maps.py:496
+#: .\youth\maps.py:493
 msgid "/M18"
 msgstr "/М18"
+
+#: .\youth\maps.py:585
+msgid "runs every"
+msgstr "ходит каждые"
 
 #: .\youth\utils.py:28
 msgid "hours"
@@ -176,19 +187,19 @@ msgstr "мин"
 msgid "km"
 msgstr "км"
 
-#: .\youth\utils.py:41 .\youth\utils.py:43 .\youth\utils.py:44
+#: .\youth\utils.py:41 .\youth\utils.py:43
 msgid "m"
 msgstr "м"
 
-#: .\youth\utils.py:47
+#: .\youth\utils.py:46
 msgid "RUB"
 msgstr "руб"
 
-#: .\youth\utils.py:53
+#: .\youth\utils.py:52
 msgid "stops234"
 msgstr "остановки"
 
-#: .\youth\utils.py:55
+#: .\youth\utils.py:54
 msgid "stops"
 msgstr "остановок"
 

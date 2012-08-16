@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-11 18:16+0400\n"
+"POT-Creation-Date: 2012-08-15 10:30+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,32 +24,36 @@ msgstr "Expenses"
 msgid "Travel time"
 msgstr "Travel time"
 
-#: .\youth\itinerary.py:83
+#: .\youth\itinerary.py:69
+#, python-format
+msgid "You should leave at %s to fit train timetable"
+msgstr "You should leave at %s to fit train timetable"
+
+#: .\youth\itinerary.py:95
 msgid "Learn about train tickets"
 msgstr "Learn about train tickets"
 
-#: .\youth\itinerary.py:84 .\youth\itinerary.py:101
+#: .\youth\itinerary.py:96 .\youth\itinerary.py:112
 msgid "Hide info"
 msgstr "Hide info"
 
-#: .\youth\itinerary.py:86
+#: .\youth\itinerary.py:98
 msgid "Train tickets info HTML"
-msgstr ""
-"Train tickets info HTML"
+msgstr "Train tickets info HTML"
 
-#: .\youth\itinerary.py:92
+#: .\youth\itinerary.py:103
 msgid "Show the map"
 msgstr "Show the map"
 
-#: .\youth\itinerary.py:93
+#: .\youth\itinerary.py:104
 msgid "Hide the map"
 msgstr "Hide the map"
 
-#: .\youth\itinerary.py:100
+#: .\youth\itinerary.py:111
 msgid "Learn about tokens"
 msgstr "Learn about tokens"
 
-#: .\youth\itinerary.py:103
+#: .\youth\itinerary.py:114
 msgid "Tokens info HTML"
 msgstr ""
 "You need to buy tokens to enter to the metro:<br/><img src=\"/images/token1."
@@ -75,94 +79,98 @@ msgstr ""
 "same travel card – after the usage travel card is blocked for 10 minutes.<br/"
 "><img src=\"/images/token4.jpg\" alt=\"Subway card\" height=\"120\" />"
 
-#: .\youth\itinerary.py:123
+#: .\youth\itinerary.py:134
 msgid "Trip from"
 msgstr "Trip from"
 
-#: .\youth\itinerary.py:123 .\youth\maps.py:394 .\youth\maps.py:396
-#: .\youth\maps.py:398
+#: .\youth\itinerary.py:134 .\youth\maps.py:391 .\youth\maps.py:393
+#: .\youth\maps.py:395
 msgid "to"
 msgstr "to"
 
-#: .\youth\maps.py:56 .\youth\maps.py:403
+#: .\youth\maps.py:59 .\youth\maps.py:400
 msgid "Walk to"
 msgstr "Walk to"
 
-#: .\youth\maps.py:62
+#: .\youth\maps.py:65
 msgid "Walk"
 msgstr "Walk"
 
-#: .\youth\maps.py:174
+#: .\youth\maps.py:180
 msgid "Kirovsko-Viborgskaya"
 msgstr "Kirovsko-Viborgskaya"
 
-#: .\youth\maps.py:176
+#: .\youth\maps.py:182
 msgid "Moskovsko-Petrogradskaya"
 msgstr "Moskovsko-Petrogradskaya"
 
-#: .\youth\maps.py:178
+#: .\youth\maps.py:184
 msgid "Nevsko-Vasileostrovskaya"
 msgstr "Nevsko-Vasileostrovskaya"
 
-#: .\youth\maps.py:180
+#: .\youth\maps.py:186
 msgid "Pravoberezhnaya"
 msgstr "Pravoberezhnaya"
 
-#: .\youth\maps.py:182
+#: .\youth\maps.py:188
 msgid "Frunzensko-Primorskaya"
 msgstr "Frunzensko-Primorskaya"
 
-#: .\youth\maps.py:187
+#: .\youth\maps.py:193
 msgid "or"
 msgstr "or"
 
-#: .\youth\maps.py:277 .\youth\maps.py:346 .\youth\maps.py:393
+#: .\youth\maps.py:282 .\youth\maps.py:354 .\youth\maps.py:390
 msgid "line"
 msgstr "line"
 
-#: .\youth\maps.py:279
+#: .\youth\maps.py:284
 msgid "number"
 msgstr "number"
 
-#: .\youth\maps.py:335
-msgid "Buy the train tickets to"
-msgstr "Buy the train tickets to"
-
-#: .\youth\maps.py:335
-msgid "wait for the train"
-msgstr "wait for the train"
-
-#: .\youth\maps.py:343
-msgid "Enter subway station"
-msgstr "Enter subway station"
-
-#: .\youth\maps.py:343
-msgid "buy the tokens if needed"
-msgstr "buy the tokens if needed"
-
-#: .\youth\maps.py:346
-msgid "Change to"
-msgstr "Change to"
-
-#: .\youth\maps.py:346 .\youth\maps.py:402
-msgid "station"
-msgstr "station"
-
-#: .\youth\maps.py:358 .\youth\maps.py:402 .\youth\utils.py:51
+#: .\youth\maps.py:338 .\youth\maps.py:399 .\youth\utils.py:50
 msgid "stop"
 msgstr "stop"
 
-#: .\youth\maps.py:411
+#: .\youth\maps.py:343
+msgid "Buy the train tickets to"
+msgstr "Buy the train tickets to"
+
+#: .\youth\maps.py:343
+msgid "wait for the train"
+msgstr "wait for the train"
+
+#: .\youth\maps.py:351
+msgid "Enter subway station"
+msgstr "Enter subway station"
+
+#: .\youth\maps.py:351
+msgid "buy the tokens if needed"
+msgstr "buy the tokens if needed"
+
+#: .\youth\maps.py:354
+msgid "Change to"
+msgstr "Change to"
+
+#: .\youth\maps.py:354 .\youth\maps.py:399
+msgid "station"
+msgstr "station"
+
+#: .\youth\maps.py:408
 msgid "leave the subway"
 msgstr "leave the subway"
 
-#: .\youth\maps.py:496
+#: .\youth\maps.py:493
 msgid "/M10"
 msgstr "/M10"
 
-#: .\youth\maps.py:496
+#: .\youth\maps.py:493
 msgid "/M18"
 msgstr "/M18"
+
+#: .\youth\maps.py:585
+msgid "runs every"
+msgstr "runs every"
 
 #: .\youth\utils.py:28
 msgid "hours"
@@ -184,19 +192,19 @@ msgstr "mins"
 msgid "km"
 msgstr "km"
 
-#: .\youth\utils.py:41 .\youth\utils.py:43 .\youth\utils.py:44
+#: .\youth\utils.py:41 .\youth\utils.py:43
 msgid "m"
 msgstr "m"
 
-#: .\youth\utils.py:47
+#: .\youth\utils.py:46
 msgid "RUB"
 msgstr "rub"
 
-#: .\youth\utils.py:53
+#: .\youth\utils.py:52
 msgid "stops234"
 msgstr "stops"
 
-#: .\youth\utils.py:55
+#: .\youth\utils.py:54
 msgid "stops"
 msgstr "stops"
 

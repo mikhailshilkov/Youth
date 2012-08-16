@@ -245,7 +245,7 @@ html {
     margin-bottom: 0.5em;
 }
 
-.itinerary {
+.itinerary, .hotels, .hotel {
     margin: 1em 0;
     max-width: 1000px;
     border: solid 1px #CCCCCC;
@@ -309,7 +309,7 @@ html {
     margin: .8em 0 1.3em 0;
     clear: both;
 }
-.itinerary .summary::after, .itinerary .step::after {
+.itinerary .summary::after, .itinerary .step::after, .hotels .hotelentry:after, .hotel .poi:after {
     content: '.';
     display: block;
     height: 0;
@@ -338,6 +338,99 @@ html {
 }
 .itinerary .step .instuction .details {
     margin-top: .3em;
+}
+.hotels h1, .hotel h1 {
+    color: #DD4B39;
+    font-size: 2em;
+    margin-bottom: 13px;
+}
+.hotel .image {
+    float: right;
+    margin: 7px 0px 0px 18px;
+}
+.hotel .info {
+    color: #093;
+    margin-bottom: 18px;
+}
+.hotel .buttons {
+    margin-bottom: 35px;    
+}
+.sectionheader {
+    background: #CAE8F0;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    padding: 10px;
+    text-shadow: 1px 1px 1px white;
+}
+.sectionheader h2 {
+    font-weight: 500;
+}
+.hotels .hotellist, .hotel .poilist {
+    margin-bottom: 35px;
+}
+.hotels .hotelentry, .hotel .poi {
+    font-size: 1.25em;
+}
+.hotels .even, .hotel .even {
+    background-color: #F1F1F1;
+}
+.hotels .hotelentry .rank {
+    float: left;
+    width: 1.5em;
+    padding: 10px;
+}
+.hotels .hotelentry .name {
+    float: left;
+    width: 28em;
+    padding: 10px;
+}
+.hotels .hotelentry .duration {
+    float: left;
+    width: 8em;
+    text-align: right;
+    padding: 10px;
+}
+.hotels .hotelentry .price {
+    float: left;
+    width: 6em;
+    text-align: right;
+    padding: 10px;
+}
+.hotel .poi .name {
+    float: left;
+    width: 21em;
+    padding: 10px;
+}
+.hotel .poi .duration {
+    float: left;
+    width: 8em;
+    text-align: right;
+    padding: 10px;
+}
+.hotel .poi .price {
+    float: left;
+    width: 3.5em;
+    text-align: right;
+    padding: 10px;
+}
+.hotel .poi .goto {
+    float: left;
+    width: 4.5em;
+    padding: 10px 10px 10px 20px;
+}
+.hotel .poi .gofrom {
+    float: left;
+    width: 5.1em;
+    padding: 10px 0px 10px 10px;
+}
+.hotel .mapcontainer {
+    padding: 15px 10px;
+}
+.hotel #hotelmap {
+    width: 100%;
+    height: 500px;
+    border: 1px solid #CAE8F0;
 }
 /* Z-index of #mask must lower than #boxes .window */
 #mask {

@@ -72,16 +72,19 @@ class MainHandler(webapp2.RequestHandler):
             controller.do_hotel(self.request, self.response, path.replace('/hotel/', ''))
         elif path == '/test':
             controller.do_test(self.request, self.response)
+        elif path == '/service/cleanup':
+            controller.do_cleanup(self.request, self.response);
         else:
             self.error(404)
             controller.do_notfound(self.request, self.response)
             
     def post(self):
-        if self.request.path == '/hotel':
+        path = urllib2.unquote(self.request.path.replace('/en','').replace('/ru',''))
+        if path == '/hotel':
             controller.post_hotel(self.request)
-        elif self.request.path == '/attraction':
+        elif path == '/attraction':
             controller.post_attraction(self.request)
-        elif self.request.path == '/param':
+        elif path == '/param':
             controller.post_param(self.request, self.response)
             
     def delete(self):

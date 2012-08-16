@@ -33,10 +33,14 @@ def fetch_trains(place_from, place_to, date):
         regex = re.compile(r'<.*?>')
         b_nodes = list_node.findAll("b")
         result = []
+        last_hour = 0
         for b_node in b_nodes:
             data = regex.split(b_node.renderContents())
             try:
                 time = [datetime.datetime.strptime(x, '%H:%M').time() for x in data]
+                if last_hour > time[0].hour: # we are on next day already
+                    break
+                last_hour = time[0].hour
                 result.append(TrainTiming(time[0], time[1]))
             except:
                 pass

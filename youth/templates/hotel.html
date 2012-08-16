@@ -5,22 +5,55 @@
 {% endblock %}
 
 {% block content %}
-<section class="itinerary">
+<section class="hotel">
+	<div class="image">
+		<img src="http://media.hotelscombined.com/HI{{data.hotel.imageId}}.jpg" alt="{{data.hotel.name_local}}" height="120" />
+	</div>
+	<h1>{{data.hotel.name_local}}</h1>	
+	<div class="info">
+		<div>{{data.hotel.type}}
+		{% for i in data.hotel.get_rating_range %}
+			<img src="/images/star-2.png" alt="star" width="14" />
+		{% endfor %}
+		with rooms from {{data.hotel.get_min_rate}}</div>
+		<div class="address">
+			{{data.hotel.address}}, St. Petersburg, Russia
+		</div>
+	</div>
 	<div class="buttons">	
-		<div class="blue button" onclick="window.print()">{{"Print"|translate}}</div>
+		<div class="gray button" onclick="Utils.scrollTo('#mapheader')">{{"Show map"|translate}}</div>
+		<div class="gray button" onclick="window.open('http://www.hotelscombined.com/Hotel/{{data.hotel.fileName}}.htm?a_aid=61901', '_blank');">{{"Check prices"|translate}}</div>
+		<div class="gray button" onclick="window.print()">{{"Print"|translate}}</div>
 	</div>
-	<h1>{{data.hotel.name_local}}</h1>
-	<div class="summary">
-		<span class="time">{{data.hotel.address}}</span>
+	<div class="sectionheader">
+		<h2>Travel time to important Points of Interest</h2>
 	</div>
-	<hr/>
-	{% for entry in data.ratings %}
-	<div class="step">
-		<div><b>{{entry.place_name_local}}</b></div>
-		<div>{{entry.duration_text}}</div>
-		<div>{{entry.expenses_text}}</div>
-		<a href='/{{'LANGUAGE'|translate}}/directions?from={{data.hotel.name}}&to={{entry.place_name_local}}'>View route</a>
+	<div class="poilist">
+		{% for entry in data.ratings %}
+		<div class="poi {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
+			<div class="name">{{entry.place_name_local}}</div>
+			<div class="duration">{{entry.duration_text}}</div>
+			<div class="price">{{entry.expenses_text}}</div>
+			<div class="goto"><a href='/{{'LANGUAGE'|translate}}/directions?from={{data.hotel.name}}&to={{entry.place_name_local}}'>Route to</a></div>
+			<div class="gofrom"><a href='/{{'LANGUAGE'|translate}}/directions?from={{entry.place_name_local}}&to={{data.hotel.name}}'>Route from</a></div>
+		</div>
+		{% endfor %}
 	</div>
-	{% endfor %}
+	<div id="mapheader" class="sectionheader">
+		<h2>Map</h2>
+	</div>
+	<div class="mapcontainer">
+		<div id="hotelmap">			
+		</div>
+	</div>
 </section>
+{% endblock %}
+
+{% block scripts %}
+<script type="text/javascript" src="https://maps.google.com/maps/api/js?libraries=geometry&sensor=false&language={{'LANGUAGE'|translate}}">
+</script>
+<script type="text/javascript" src="/scripts/map.js"></script>
+<script type="text/javascript" language="javascript">
+    MapHelper.showHotel($("#hotelmap"), '{{data.hotel.name}}', {{data.hotel.latitude}}, {{data.hotel.longitude}});
+</script>
 {% endblock %}

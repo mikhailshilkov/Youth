@@ -1,10 +1,21 @@
 MapHelper = {
-    show : function(mapPane, route) {
-        var myOptions = {
+    createMap : function(mapPane) {
+          var myOptions = {
             mapTypeId : google.maps.MapTypeId.ROADMAP,
             scaleControl : true
         };
-        var map = new google.maps.Map(mapPane.get(0), myOptions);
+        return new google.maps.Map(mapPane.get(0), myOptions);
+    },
+    showHotel : function(mapPane, name, lat, lng) {
+        var map = MapHelper.createMap(mapPane);
+        var bounds = new google.maps.LatLngBounds();
+        var point = new google.maps.LatLng(lat, lng);
+        bounds.extend(point);
+        MapHelper.fitBounds(map, bounds);
+        MapHelper.addMarker(map, point, name, 'hotel');
+    },
+    show : function(mapPane, route) {
+        var map = MapHelper.createMap(mapPane);
         var bounds = new google.maps.LatLngBounds();
         var coordinates = [];
         var startPoint = new google.maps.LatLng(route['start']['lat'], route['start']['lng']);
@@ -15,7 +26,7 @@ MapHelper = {
         this.addMarker(map, startPoint, route['startName'], route['startIcon']);
         
         var needsDirections = !isSubwayOrTrain;
-        if(route['type'] == 'Walk')// don't search directions for walks < 200 m
+        if(route['type'] == 'Walk')// don't search directions for walks < 150 m
             needsDirections = google.maps.geometry.spherical.computeDistanceBetween(startPoint, endPoint) > 150;
         if(needsDirections) {
             var request = {

@@ -18,7 +18,7 @@ def get(term):
         hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
         for x in hotels:
             x.place_type = 'hotel'
-            if language == 'ru' and x.name_rus != None:
+            if language == 'ru' and x.name_rus != None and x.name_rus != '':
                 x.name_local = x.name_rus
             else:
                 x.name_local = x.name
@@ -35,6 +35,15 @@ def get(term):
     else:
         return places
     
+def cleanup():
+    result = []
+    hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
+    for x in hotels:
+        if x.fileName == None or x.fileName == '':
+            result.append(x.name)
+            delete_hotel(x.name)
+    return result
+    
 def get_by_name(name, coord = ''):
     if name != '':
         places = get(name)
@@ -45,13 +54,18 @@ def get_by_name(name, coord = ''):
     
     return [None, None]    
 
-def add_hotel(name, name_rus, address, lat, lng):
+def add_hotel(name, name_rus, file_name, rating, image_id, address, min_rate, lat, lng, hotel_type):
     new_hotel = Hotel(key_name=name)
     new_hotel.name = name
     new_hotel.name_rus = name_rus
+    new_hotel.fileName = file_name
+    new_hotel.rating = rating
+    new_hotel.imageId = image_id
     new_hotel.address = address
+    new_hotel.minRate = min_rate
     new_hotel.latitude = lat
     new_hotel.longitude = lng
+    new_hotel.type = hotel_type     
     new_hotel.put()
     
 def delete_hotel(name):
@@ -73,13 +87,22 @@ def delete_attraction(name):
 class Hotel(db.Model):
     name = db.StringProperty()
     name_rus = db.StringProperty()
+    fileName = db.StringProperty()
+    rating = db.FloatProperty()
+    imageId = db.StringProperty()
     address = db.StringProperty()
+    minRate = db.FloatProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
+    type = db.StringProperty() 
     def get_point(self):
         return maps.GeoPoint(self.latitude, self.longitude)
     def get_latlng(self):
-        return str(self.latitude) + ',' + str(self.longitude) 
+        return str(self.latitude) + ',' + str(self.longitude)
+    def get_min_rate(self):
+        return utils.price_to_string(self.minRate) 
+    def get_rating_range(self):
+        return range(int(self.rating))
     def jsonable(self):
         prop_dict = utils.model_to_dict(self)
         prop_dict['name_local'] = self.name_local

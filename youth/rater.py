@@ -21,7 +21,7 @@ def get_all():
 def get(hotel):    
     ratings = [x for x in db.GqlQuery("SELECT * FROM RatingPart WHERE hotel_name = '" + hotel.name + "' LIMIT 1000")]
     result = []    
-    for place in ['State Hermitage', 'Peterhof: The Grand Palace', 'Peter and Paul Cathedral', "Saint Isaac's Cathedral", 'Pushkin: The Great Palace of Tsarskoye Selo', 'Pulkovo Airport', 'The State Russian Museum', 'Mariinsky Theatre']:
+    for place in ['Pulkovo Airport', 'State Hermitage', 'Peter and Paul Cathedral', "Saint Isaac's Cathedral", 'Peterhof: The Grand Palace', 'Pushkin: The Great Palace of Tsarskoye Selo', 'The State Russian Museum', 'Mariinsky Theatre']:
         result.append(get_rating(hotel, ratings, place))
     return result
 
@@ -46,6 +46,11 @@ def get_rating(hotel, ratings, place_name):
         sight_rating.metric = trip.metric
         sight_rating.put()
     return sight_rating
+
+def cleanup(hotel_name):
+    ratings = [x for x in db.GqlQuery("SELECT * FROM RatingPart WHERE hotel_name = '" + hotel_name + "' LIMIT 1000")]
+    for r in ratings:
+        db.delete(r.key)
 
 class Rating(object):
     def __init__(self, hotel_name, duration, expenses, metric):

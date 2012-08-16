@@ -16,39 +16,41 @@ from youth import router
         
 
 def get_walking_step(start_location, end_location, end_name = None):
-    language = utils.get_language()
-    params = { 
-              'origin': start_location.to_url_param(),
-              'destination': end_location.to_url_param(), 
-              'sensor' : 'false', 
-              'mode': 'walking',
-              'language' : language
-              }
-    url = 'http://maps.google.com/maps/api/directions/json?' + urllib.urlencode(params)
-    result = urlfetch.fetch(url)
-    
     step = None
-    if result.status_code == 200:
-        route = json.loads(result.content)
-        if route['status'] == 'OVER_QUERY_LIMIT':
-            logging.warn('OVER_QUERY_LIMIT while fetching walking directions')
+    direct_distance = estimate_distance(start_location, end_location)
+    if direct_distance > 150:
+        language = utils.get_language()
+        params = { 
+                  'origin': start_location.to_url_param(),
+                  'destination': end_location.to_url_param(), 
+                  'sensor' : 'false', 
+                  'mode': 'walking',
+                  'language' : language
+                  }
+        url = 'http://maps.google.com/maps/api/directions/json?' + urllib.urlencode(params)
+        result = urlfetch.fetch(url)
+    
+        if result.status_code == 200:
+            route = json.loads(result.content)
+            if route['status'] == 'OVER_QUERY_LIMIT':
+                logging.warn('OVER_QUERY_LIMIT while fetching walking directions')
+            else:
+                instructions = []
+                duration = 0
+                distance = 0
+                for leg in route['routes'][0]['legs']:
+                    for leg_step in leg['steps']:
+                        instructions.append(clean_walk_direction(utils.remove_html_tags(leg_step['html_instructions']), language))
+                        duration += int(leg_step['duration']['value'])
+                        distance += int(leg_step['distance']['value'])
+                step = RouteStep()                            
+                step.direction = ', '.join(instructions)
+                step.duration = int(duration / 60)      
+                step.distance = distance                  
         else:
-            instructions = []
-            duration = 0
-            distance = 0
-            for leg in route['routes'][0]['legs']:
-                for leg_step in leg['steps']:
-                    instructions.append(clean_walk_direction(utils.remove_html_tags(leg_step['html_instructions']), language))
-                    duration += int(leg_step['duration']['value'])
-                    distance += int(leg_step['distance']['value'])
-            step = RouteStep()                            
-            step.direction = ', '.join(instructions)
-            step.duration = int(duration / 60)      
-            step.distance = distance                  
-    else:
-        logging.warn('Walking route failed: ' + str(result.status_code))
+            logging.warn('Walking route failed: ' + str(result.status_code))
         
-    if step == None: #google failed
+    if step == None: #google not needed or failed
         step = RouteStep()
         step.distance = estimate_distance(start_location, end_location) * 1.4
         step.duration = int(step.distance / 80 + 0.5)
@@ -97,9 +99,9 @@ def get_subway_route(start_location, end_location):
     if route.get_walk_duration() < 40:
         return route
 
-def get_transit_route(start_location, end_location, engine = 'o'):
+def get_transit_route(start_location, end_location, engine = 'o', force = ''):
     language = utils.get_language()
-    key = 'route_' + start_location.to_url_param() + '_' + end_location.to_url_param() + '_' + engine + '_' + language
+    key = 'route_' + start_location.to_url_param() + '_' + end_location.to_url_param() + '_' + engine + '_' + language + '_' + force
     data = memcache.get(key) #@UndefinedVariable
     if data != None:
         return data
@@ -125,6 +127,10 @@ def get_transit_route(start_location, end_location, engine = 'o'):
         routes = get_google_routes(start_location, end_location)
     if subway_route != None:
         routes.append(subway_route)
+    if force.find('train') >= 0:
+        routes_with_train = [x for x in routes if x.has_transport('Train')]
+        if len(routes_with_train) > 0:
+            routes = routes_with_train
     route_optimal = min(routes, key=lambda x: x.get_cost())
     memcache.add(key, route_optimal, 60*60) #@UndefinedVariable
     return route_optimal 
@@ -312,13 +318,6 @@ def process_transit_route(start_location, end_location, route):
         next_step = route.directions[index + 1] if index < len(route.directions) - 1 else None
         
         if step.transport != None:
-            if not step.transport.is_subway() or first_subway:
-                from_location = previous_step.end_location if previous_step != None else start_location 
-                tostop_walk = get_walking_step(from_location, step.start_location,
-                                               _(step.transport.type).lower() + ' ' + _('stop') + ' ' + step.start_name)
-                route.directions.insert(index, tostop_walk)
-                index += 1
-            
             if step.transport.is_train():
                 station = router.resolve_name(step.start_name, 'Train', step.start_location)
                 if station != None:
@@ -332,6 +331,15 @@ def process_transit_route(start_location, end_location, route):
                     step.transport.end_code = station.name_rus
                     step.end_location.lat = station.lat
                     step.end_location.lng = station.lng
+
+            if not step.transport.is_subway() or first_subway:
+                from_location = previous_step.end_location if previous_step != None else start_location 
+                tostop_walk = get_walking_step(from_location, step.start_location,
+                                               _(step.transport.type).lower() + ' ' + _('stop') + ' ' + step.start_name)
+                route.directions.insert(index, tostop_walk)
+                index += 1
+            
+            if step.transport.is_train():
                 new_step = RouteStep(_('Buy the train tickets to') + ' ' + step.end_name + ', ' + _('wait for the train'),
                                        15, utils.duration_to_string(15) + ', ' + utils.price_to_string(step.transport.price), Transport('Train', price = step.transport.price))                
                 route.directions.insert(index, new_step)
@@ -501,6 +509,9 @@ class Route(object):
     
     def get_cost(self):
         return sum([step.get_cost() for step in self.directions])
+    
+    def has_transport(self, transport_type):
+        return len([x for x in self.directions if x.transport != None and x.transport.type == transport_type]) > 0
 
 # Class that represents a Route Step
 class RouteStep(object):

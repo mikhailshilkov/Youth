@@ -39,12 +39,11 @@ def distance_to_string(meters):
         return '%.1f ' % (float(meters) / 1000) + _('km')
     elif meters > 300:
         return '%s ' % int(round(meters, -2)) + _('m')
-    elif meters > 100:
+    else:
         return '%s ' % int(round(meters, -1)) + _('m')
-    return str(met_int) + ' ' + _('m')
 
 def price_to_string(rub):
-    return '%s ' % rub + _('RUB')
+    return '%s ' % int(rub) + _('RUB')
 
 def stops_to_string(stops):
     if stops == 1:
