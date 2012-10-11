@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /transit
+Disallow: /ru/transit
+Disallow: /en/transit
+Disallow: /routing
+Disallow: /en/routing
+Disallow: /ru/routing

@@ -5,7 +5,7 @@ import re
 from google.appengine.api import urlfetch
 from lib.BeautifulSoup import BeautifulSoup
 import json
-from youth.maps import GeoPoint
+from youth.maps.common import GeoPoint
 
 def test():
     #saddr = urllib.quote('59.94474100000001,30.294258000000013')

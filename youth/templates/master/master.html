@@ -1,48 +1,87 @@
 {% load i18n %}
 <!DOCTYPE html>
 <html lang='{{"LANGUAGE"|translate}}'>
-<head>
-    {% block title %}{% endblock %}
-	<meta name="author" content="TripBenefit.com" />
-	<meta name="language" content='{{"LANGUAGE_FULL"|translate}}'>
-	<link href="/favicon.ico" rel="icon" />    
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
-    <script type="text/javascript" src="/scripts/common.js"></script>
-    <link href="/styles/main.css" rel="stylesheet" type="text/css"/>
-	<link href="/styles/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" />
-	<script type="text/javascript">
-	  var _gaq = _gaq || [];
-	  _gaq.push(['_setAccount', 'UA-33375781-1']);
-	  _gaq.push(['_trackPageview']);
-	
-	  (function() {
-	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-	    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-	  })();	
-	</script>    
-</head>
-<body>
-	<div class="pageheader">
-		<div class="pane">
-			<div class="logo">
-				<a href="/"><img src="/images/logo.png" alt="TripBenefit.com" /></a>
+	<head>
+		{% block title %}{% endblock %}
+		<meta name="author" content="TripBenefit.com" />
+		<meta name="language" content='{{"LANGUAGE_FULL"|translate}}'>
+		<link href="/favicon.ico" rel="icon" />
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.18/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/scripts/common.js"></script>
+		<link href="/styles/main.css" rel="stylesheet" type="text/css"/>
+		<link href="/styles/jquery-ui-1.8.20.custom.css" rel="stylesheet" type="text/css" />
+		<script type="text/javascript">
+            var _gaq = _gaq || [];
+            _gaq.push(['_setAccount', 'UA-33375781-1']);
+            _gaq.push(['_trackPageview']);
+
+            (function() {
+                var ga = document.createElement('script');
+                ga.type = 'text/javascript';
+                ga.async = true;
+                ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                var s = document.getElementsByTagName('script')[0];
+                s.parentNode.insertBefore(ga, s);
+            })();
+		</script>
+	</head>
+	<body>
+		<header class="pageheader">
+			<div class="pane">
+				<div class="logo">
+					<a href="/"><img src="/images/logo.png" alt="TripBenefit.com" /></a>
+				</div>
+				<nav class="menu">
+					<ul>
+						<li {% ifequal active_page 'home' %}class="active"{% endifequal %}>
+							<a href="/{{'LANGUAGE'|translate}}/">{{"Home"|translate}}</a>
+						</li>
+						<li {% ifequal active_page 'hotels' %}class="active"{% endifequal %}>
+							<a href="/{{'LANGUAGE'|translate}}/hotels">{{"Hotels"|translate}}</a>
+						</li>
+						<li {% ifequal active_page 'about' %}class="active"{% endifequal %}>
+							<a href="/{{'LANGUAGE'|translate}}/about">{{"About"|translate}}</a>
+						</li>
+						<li class="language">
+							{% autoescape off %}{{switch_language_page}}{% endautoescape %}
+						</li>
+					</ul>
+				</nav>
 			</div>
-			<div class="menu">
-				<ul>
-            		<li {% ifequal active_page 'home' %}class="active"{% endifequal %}><a href="/{{'LANGUAGE'|translate}}">{{"Home"|translate}}</a></li>
-            		<li {% ifequal active_page 'hotels' %}class="active"{% endifequal %}><a href="/{{'LANGUAGE'|translate}}/hotels">{{"Hotels"|translate}}</a></li>
-            		<li {% ifequal active_page 'about' %}class="active"{% endifequal %}><a href="/{{'LANGUAGE'|translate}}/about">{{"About"|translate}}</a></li>
-            		<li class="language">{% autoescape off %}{{switch_language_page}}{% endautoescape %}</li>
-          		</ul>								
-			</div>
+		</header>
+		<div class="mainpane">
+			{% block content %}{% endblock %}
 		</div>
-	</div>
-	<div class="mainpane">
-    {% block content %}{% endblock %}
-	</div>
-    {% block scripts %}{% endblock %}       
-</body>
+		<footer>
+			<div class="footer-wrapper">
+				<div class="footer-contact">
+					<h4>{{"Contact"|translate}}</h4>
+					<ul>
+						<li>
+							<a href="mailto:help@tripbenefit.com">help@tripbenefit.com</a>
+						</li>
+						<li>
+							<a href="http://www.facebook.com/tripbenefit">Facebook</a>
+						</li>
+					</ul>
+				</div>
+				<div class="footer-offers">
+					<h4>{{"Special offers"|translate}}</h4>
+					<ul>
+						<li>
+							<a href="/{{'LANGUAGE'|translate}}/booking-com">{{"2% discount on Booking.com"|translate}}</a>
+						</li>
+					</ul>
+				</div>
+				<div class="copyright">
+					<p>
+						{{"Copyright"|translate}}
+					</p>
+				</div>
+			</div>
+		</footer>
+		{% block scripts %}{% endblock %}
+	</body>
 </html>

@@ -1,5 +1,5 @@
 application: peterhofguide
-version: beta
+version: live
 runtime: python27
 api_version: 1
 threadsafe: false
@@ -26,6 +26,21 @@ handlers:
 - url: /favicon.ico
   static_files: static/img/favicon.ico
   upload: static/img/favicon.ico
+
+- url: /sitemap.xml
+  static_files: static/sitemap.xml
+  upload: static/sitemap.xml
+
+- url: /gss.xsl
+  static_files: static/gss.xsl
+  upload: static/gss.xsl
+  
+- url: /robots.txt
+  static_files: static/robots.txt
+  upload: static/robots.txt
+  
+- url: /service/.*
+  script: service_handler.py
 
 - url: /.*
   script: web_handler.py

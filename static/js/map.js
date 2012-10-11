@@ -11,7 +11,7 @@ MapHelper = {
         var bounds = new google.maps.LatLngBounds();
         var point = new google.maps.LatLng(lat, lng);
         bounds.extend(point);
-        MapHelper.fitBounds(map, bounds);
+        MapHelper.fitBounds(map, bounds, 12);
         MapHelper.addMarker(map, point, name, 'hotel');
     },
     show : function(mapPane, route) {
@@ -108,11 +108,13 @@ MapHelper = {
         });
         polyline.setMap(map);
     },
-    fitBounds : function(map, bounds) {
+    fitBounds : function(map, bounds, minZoom) {
+        if (minZoom == null)
+            minZoom = 16;
         map.fitBounds(bounds);
         var listener = google.maps.event.addListener(map, "idle", function() {
-            if(map.getZoom() > 16)
-                map.setZoom(16);
+            if(map.getZoom() > minZoom)
+                map.setZoom(minZoom);
             google.maps.event.removeListener(listener);
         });
     }

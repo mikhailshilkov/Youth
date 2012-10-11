@@ -15,13 +15,7 @@ def get(term):
                 x.name_local = x.name_rus
             else:
                 x.name_local = x.name
-        hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
-        for x in hotels:
-            x.place_type = 'hotel'
-            if language == 'ru' and x.name_rus != None and x.name_rus != '':
-                x.name_local = x.name_rus
-            else:
-                x.name_local = x.name
+        hotels = get_hotels()
         places = attractions + hotels 
         memcache.add(key, places, 24*60*60) #@UndefinedVariable
         
@@ -48,13 +42,28 @@ def get_by_name(name, coord = ''):
     if name != '':
         places = get(name)
         if len(places) > 0:
-            return [places[0], maps.GeoPoint(places[0].latitude, places[0].longitude)]        
+            return [places[0], maps.common.GeoPoint(places[0].latitude, places[0].longitude)]        
     if coord != '':
-        return [Address(name if name != '' else coord), maps.GeoPoint(*[float(x) for x in coord.split(',')])]
+        return [Address(name if name != '' else coord), maps.common.GeoPoint(*[float(x) for x in coord.split(',')])]
     
-    return [None, None]    
+    return [None, None]
 
-def add_hotel(name, name_rus, file_name, rating, image_id, address, min_rate, lat, lng, hotel_type):
+def get_hotels():    
+    language = utils.get_language()
+    key = 'hotels_' + language
+    hotels = memcache.get(key) #@UndefinedVariable
+    if hotels == None:
+        hotels = [x for x in db.GqlQuery("SELECT * FROM Hotel LIMIT 1000")]
+        for x in hotels:
+            x.place_type = 'hotel'
+            if language == 'ru' and x.name_rus != None and x.name_rus != '':
+                x.name_local = x.name_rus
+            else:
+                x.name_local = x.name
+        memcache.add(key, hotels, 24*60*60) #@UndefinedVariable
+    return hotels
+
+def add_hotel(name, name_rus, file_name, rating, image_id, address, address_rus, min_rate, lat, lng, hotel_type):
     new_hotel = Hotel(key_name=name)
     new_hotel.name = name
     new_hotel.name_rus = name_rus
@@ -62,6 +71,7 @@ def add_hotel(name, name_rus, file_name, rating, image_id, address, min_rate, la
     new_hotel.rating = rating
     new_hotel.imageId = image_id
     new_hotel.address = address
+    new_hotel.address_rus = address_rus
     new_hotel.minRate = min_rate
     new_hotel.latitude = lat
     new_hotel.longitude = lng
@@ -71,7 +81,7 @@ def add_hotel(name, name_rus, file_name, rating, image_id, address, min_rate, la
 def delete_hotel(name):
     key = db.Key.from_path('Hotel', name)
     db.delete(key)
-            
+                
 def add_attraction(name, name_rus, lat, lng):
     new_attraction = Attraction(key_name=name)
     new_attraction.name = name
@@ -91,12 +101,15 @@ class Hotel(db.Model):
     rating = db.FloatProperty()
     imageId = db.StringProperty()
     address = db.StringProperty()
+    address_rus = db.StringProperty()
     minRate = db.FloatProperty()
     latitude = db.FloatProperty()
     longitude = db.FloatProperty()
-    type = db.StringProperty() 
+    type = db.StringProperty()
+    def address_local(self):
+        return self.address_rus if utils.get_language() == 'ru' else self.address 
     def get_point(self):
-        return maps.GeoPoint(self.latitude, self.longitude)
+        return maps.common.GeoPoint(self.latitude, self.longitude)
     def get_latlng(self):
         return str(self.latitude) + ',' + str(self.longitude)
     def get_min_rate(self):

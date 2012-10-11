@@ -2,7 +2,7 @@
 
 from django.utils.translation import ugettext as _
 from youth import utils
-from youth import maps
+from youth.maps import engine as mapengine
 from youth import bot
 
 # Class that represents a Trip
@@ -19,18 +19,23 @@ class Trip(object):
         self.time_text = self.get_time_text()
         self.price_text = self.get_price_text()
     def get_price_text(self):
-        return _('Expenses') + ': ' + utils.price_to_string(self.expenses)
+        if self.expenses != None:
+            return _('Expenses') + ': ' + utils.price_to_string(self.expenses)
     def get_time_text(self):
-        return _('Travel time') + ': ' + utils.duration_to_string(self.duration)
+        if self.duration != None:
+            return _('Travel time') + ': ' + utils.duration_to_string(self.duration)
     def jsonable(self):
         return self.__dict__
     
 def get_directions(from_place, from_location, to_place, to_location, date, start_time, engine, force = ''):
-    route = maps.get_transit_route(from_location, to_location, engine, force)
+    route = mapengine.get_transit_route(from_location, to_location, engine, force)
     trip = create_trip(from_place, from_location, to_place, to_location, route, date, start_time)
     return trip                   
 
-def create_trip(from_place, from_location, to_place, to_location, route, date, start_time):    
+def create_trip(from_place, from_location, to_place, to_location, route, date, start_time):
+    if route == None:
+        return Trip('Route not found', None, None, None, None, None, None)
+        
     steps_to = []
     duration = 0
     expenses = 0
@@ -99,8 +104,8 @@ def create_trip(from_place, from_location, to_place, to_location, route, date, s
                         
         if step.has_map:
             details.append({
-                    'show_label': _('Show the map'),
-                    'hide_label': _('Hide the map'),
+                    'show_label': _('Show map'),
+                    'hide_label': _('Hide map'),
                     'action': 'map',
                     'data' : step.get_route_json()
                     })

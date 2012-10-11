@@ -68,12 +68,22 @@ class MainHandler(webapp2.RequestHandler):
             controller.do_train(self.request, self.response)
         elif path == '/hotels':
             controller.do_hotels(self.request, self.response)
+        elif path == '/hotels/5star':
+            controller.do_hotels(self.request, self.response, 5)
+        elif path == '/hotels/4star':
+            controller.do_hotels(self.request, self.response, 4)
+        elif path == '/hotels/3star':
+            controller.do_hotels(self.request, self.response, 3)
+        elif path == '/hotels/2star':
+            controller.do_hotels(self.request, self.response, 2)
+        elif path == '/hotels/1star':
+            controller.do_hotels(self.request, self.response, 1)
         elif path.startswith('/hotel/'):
             controller.do_hotel(self.request, self.response, path.replace('/hotel/', ''))
+        elif path == '/booking' or path == '/booking-com':
+            controller.do_booking(self.request, self.response)
         elif path == '/test':
             controller.do_test(self.request, self.response)
-        elif path == '/service/cleanup':
-            controller.do_cleanup(self.request, self.response);
         else:
             self.error(404)
             controller.do_notfound(self.request, self.response)

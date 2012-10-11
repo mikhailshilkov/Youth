@@ -1,7 +1,10 @@
 eclipse.preferences.version=1
 encoding//lib/translit.py=utf-8
+encoding//lib/urlopener.py=utf-8
 encoding//youth/bot.py=utf-8
 encoding//youth/controller.py=utf-8
 encoding//youth/itinerary.py=utf-8
-encoding//youth/maps.py=utf-8
+encoding//youth/maps/common.py=utf-8
+encoding//youth/maps/engine.py=utf-8
+encoding//youth/maps/rusavtobus.py=utf-8
 encoding//youth/stuff.py=utf-8

@@ -48,8 +48,8 @@
 	</div>
 	{% endfor %}
 <div class="invisible">
-	<a href="/transit?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Route options</a>
-	<a href="/routing?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Manual route</a>
+	<a href="/{{'LANGUAGE'|translate}}/transit?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Route options</a>
+	<a href="/{{'LANGUAGE'|translate}}/routing?from={{data.from_location}}&to={{data.to_location}}" target="_blank">Manual route</a>
 </div>
 </section>
 {% endblock %}

@@ -7,6 +7,9 @@
 
 {% block content %}
 	<div class="headline">
+		<div class="plusonediv">
+			<div class="g-plusone" data-href="http://www.tripbenefit.com" data-size="standard" data-annotation="bubble"></div>
+		</div>
 		<h2>{{"First time in St. Petersburg"|translate}}?</h2>
 		<h2>{{"Get transport directions here"|translate}}!</h2>
 	</div>
@@ -40,7 +43,7 @@
 			</div>
 		</div>
 	</form>
-	<div class="features">
+	<div class="features">		
 	</div>
 {% endblock %}
 
@@ -49,5 +52,12 @@
 <script type="text/javascript" src="/scripts/home.js"></script>
 <script type="text/javascript" language="javascript">
     HomePage.init('{{"LANGUAGE"|translate}}');
+</script>
+<script type="text/javascript">
+  (function() {
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+  })();
 </script>
 {% endblock %}

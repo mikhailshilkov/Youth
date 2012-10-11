@@ -1,8 +1,8 @@
 import json
 import math
-import param
 from lib import geo
 from google.appengine.api import memcache
+from youth import param
 
 def load_graph():
     key = 'router_graph'
@@ -22,15 +22,19 @@ def get_route(start_location, end_location):
     return get_route_ongraph(graph, start_location, end_location)
 
 def get_route_ongraph(graph, start_location, end_location):
-    entrances = [x for x in graph.steps if x.name != 'Spasskaya']
+    entrances = [x for x in graph.steps if x.name != 'Spasskaya' and len(graph.get_neighbor_nodes(x)) > 0]
     
     near_start = find_near(entrances, start_location.lat, start_location.lng)
+    if near_start == None:
+        return None
     start = Station('Start', 'Start', start_location.lat, start_location.lng, None, None)
     graph.steps.append(start)
     for station in near_start:
         graph.links.append(StationLink('Start', station.name, station.estimate_walk_time_to(start_location.lat, start_location.lng)))
 
     near_end = find_near(entrances, end_location.lat, end_location.lng)
+    if near_end == None:
+        return None
     end = Station('End', 'End', end_location.lat, end_location.lng, None, None)
     graph.steps.append(end)
     for station in near_end:
@@ -43,8 +47,6 @@ def find_near(stations, lat, lng):
     less_20_min = [x for x in stations if x.estimate_walk_time_to(lat, lng) < 1200]
     if len(less_20_min) > 0:
         return less_20_min
-    else:
-        return [find_nearest(stations, lat, lng)]
 
 def find_nearest(stations, lat, lng):
     return min(stations, key=lambda x: x.estimate_subway_time_to(lat, lng))

@@ -1,32 +1,39 @@
 {% extends "master/master.html" %}
 
 {% block title %}
-<title>{{data.hotel.name}} | TripBenefit.com</title>
+<title>{{data.hotel.name_local}} | TripBenefit.com</title>
 {% endblock %}
 
 {% block content %}
 <section class="hotel">
+	{% if data.hotel.imageId %}
 	<div class="image">
 		<img src="http://media.hotelscombined.com/HI{{data.hotel.imageId}}.jpg" alt="{{data.hotel.name_local}}" height="120" />
 	</div>
+	{% endif %}
 	<h1>{{data.hotel.name_local}}</h1>	
 	<div class="info">
-		<div>{{data.hotel.type}}
+		<div>{{data.hotel.type|translate}}
 		{% for i in data.hotel.get_rating_range %}
-			<img src="/images/star-2.png" alt="star" width="14" />
+			<img src="/images/star-2.png" alt="star" title="*" width="14" />
 		{% endfor %}
-		with rooms from {{data.hotel.get_min_rate}}</div>
+		{% if data.hotel.get_min_rate %}
+		{{"with rooms from"|translate}} {{data.hotel.get_min_rate}}
+		{% endif %}
+		</div>
 		<div class="address">
-			{{data.hotel.address}}, St. Petersburg, Russia
+			{{data.hotel.address_local}}, {{"St. Petersburg, Russia"|translate}}
 		</div>
 	</div>
 	<div class="buttons">	
 		<div class="gray button" onclick="Utils.scrollTo('#mapheader')">{{"Show map"|translate}}</div>
-		<div class="gray button" onclick="window.open('http://www.hotelscombined.com/Hotel/{{data.hotel.fileName}}.htm?a_aid=61901', '_blank');">{{"Check prices"|translate}}</div>
+		<div class="gray button" onclick="_gaq.push(['_trackEvent', 'HotelPage.checkPrices', 'clicked']);window.open('http://www.hotelscombined.com/Hotel/{{data.hotel.fileName}}.htm?a_aid=61901', '_blank');">{{"Check prices"|translate}}</div>
 		<div class="gray button" onclick="window.print()">{{"Print"|translate}}</div>
 	</div>
 	<div class="sectionheader">
-		<h2>Travel time to important Points of Interest</h2>
+		<div class="name"><h2>{{"Point of Interest"|translate}}</h2></div>
+		<div class="duration"><h2>{{"Travel time"|translate}}</h2></div>
+		<div class="price"><h2>{{"Expenses"|translate}}</h2></div>		
 	</div>
 	<div class="poilist">
 		{% for entry in data.ratings %}
@@ -34,13 +41,13 @@
 			<div class="name">{{entry.place_name_local}}</div>
 			<div class="duration">{{entry.duration_text}}</div>
 			<div class="price">{{entry.expenses_text}}</div>
-			<div class="goto"><a href='/{{'LANGUAGE'|translate}}/directions?from={{data.hotel.name}}&to={{entry.place_name_local}}'>Route to</a></div>
-			<div class="gofrom"><a href='/{{'LANGUAGE'|translate}}/directions?from={{entry.place_name_local}}&to={{data.hotel.name}}'>Route from</a></div>
+			<div class="goto"><a href='/{{'LANGUAGE'|translate}}/directions?from={{data.hotel.name_local}}&to={{entry.place_name_local}}'>{{"Route to"|translate}}</a></div>
+			<div class="gofrom"><a href='/{{'LANGUAGE'|translate}}/directions?from={{entry.place_name_local}}&to={{data.hotel.name_local}}'>{{"Route from"|translate}}</a></div>
 		</div>
 		{% endfor %}
 	</div>
 	<div id="mapheader" class="sectionheader">
-		<h2>Map</h2>
+		<h2>{{"Map"|translate}}</h2>
 	</div>
 	<div class="mapcontainer">
 		<div id="hotelmap">			

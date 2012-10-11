@@ -1,0 +1,4 @@
+cron:
+- description: hotel rating refresh job
+  url: /service/hotelrating
+  schedule: every 2 minutes

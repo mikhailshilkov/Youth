@@ -1,12 +1,42 @@
-html, body, h1, h2, h3, h4, hr {
+html, body, h1, h2, h3, h4, hr, ul, li {
     margin: 0;
     padding: 0;
 }
 html, body {
     height: 100%;
 }
+ul, ol {
+    list-style: none;
+}
 body {
     background: #F7F7F7 url(/images/bg_texture.jpg) repeat scroll 0 0;
+}
+footer {
+    background: #72ADE9;
+    clear: both;
+    color: white;
+}
+footer h4 {
+    color: #FCE226;
+}
+footer a:link, footer a:visited, footer a:hover, footer a:active {
+    color: white;
+}
+.footer-wrapper {
+    clear: both;
+    position: relative;
+    text-align: left;
+    margin: 0 auto;
+    padding: 30px 0 20px 0;
+    width: 885px;
+}
+.footer-contact {
+    float: left;
+    margin-right: 70px;
+}
+.copyright p {
+    clear: both;
+    padding: 25px 0 0;
 }
 div {
     display: block;
@@ -25,6 +55,8 @@ html {
 .mainpane {
     margin: auto;
     width: 885px;
+    clear: both;
+    margin-bottom: 60px;
 }
 .mainpane h3 {
     font-size: 1.2em;
@@ -55,7 +87,7 @@ html {
     font-size: 3em;    
 }
 .homeform {
-    float:left;
+    width: 550px;
     margin-right: 3em;
     border: solid 1px #CCCCCC;
     background: white;
@@ -71,6 +103,10 @@ html {
 }
 .homeform .to, .homeform .datetime {
     margin-top: 1em;
+}
+.plusonediv {
+    float: right;
+    margin-right: -25px;
 }
 .features {
     font-style: italic;
@@ -245,7 +281,7 @@ html {
     margin-bottom: 0.5em;
 }
 
-.itinerary, .hotels, .hotel {
+.itinerary, .hotels, .hotel, .booking-com {
     margin: 1em 0;
     max-width: 1000px;
     border: solid 1px #CCCCCC;
@@ -309,7 +345,8 @@ html {
     margin: .8em 0 1.3em 0;
     clear: both;
 }
-.itinerary .summary::after, .itinerary .step::after, .hotels .hotelentry:after, .hotel .poi:after {
+.itinerary .summary::after, .itinerary .step::after, .hotels .starfilter:after, .hotels .hotelentry:after, 
+.hotel .poi:after, .hotel .sectionheader::after {
     content: '.';
     display: block;
     height: 0;
@@ -347,6 +384,17 @@ html {
 .hotel .image {
     float: right;
     margin: 7px 0px 0px 18px;
+}
+.hotels .starfilter {
+    margin-bottom: 25px;
+}
+.hotels .starfilter h4, .hotels .starfilter div {
+    float: left;
+    margin-right: 20px;
+}
+.hotels .info {
+    color: #093;
+    margin-bottom: 30px;
 }
 .hotel .info {
     color: #093;
@@ -397,32 +445,48 @@ html {
     text-align: right;
     padding: 10px;
 }
+.hotel .sectionheader .name {
+    float: left;
+    width: 360px;
+}
 .hotel .poi .name {
     float: left;
-    width: 21em;
+    width: 350px;
     padding: 10px;
+}
+.hotel .sectionheader .duration {
+    float: left;
+    width: 130px;
+    text-align: right;
 }
 .hotel .poi .duration {
     float: left;
-    width: 8em;
+    width: 120px;
     text-align: right;
     padding: 10px;
 }
+.hotel .sectionheader .price {
+    float: left;
+    width: 110px;
+    text-align: right;
+}
 .hotel .poi .price {
     float: left;
-    width: 3.5em;
+    width: 90px;
     text-align: right;
     padding: 10px;
 }
 .hotel .poi .goto {
     float: left;
-    width: 4.5em;
+    width: 5em;
+    text-align: right;
     padding: 10px 10px 10px 20px;
 }
 .hotel .poi .gofrom {
     float: left;
-    width: 5.1em;
-    padding: 10px 0px 10px 10px;
+    width: 4.5em;
+    text-align: right;
+    padding: 10px;
 }
 .hotel .mapcontainer {
     padding: 15px 10px;
@@ -519,4 +583,65 @@ input:-moz-placeholder, textarea:-moz-placeholder {
 }
 .invisible a, .invisible a:visited, .invisible a:hover, .invisible a:active {
     color: white;
+}
+.booking-com h1 {
+    color: #DD4B39;
+    font-size: 2em;
+    margin-bottom: .5em;
 } 
+/* ABOUT3 */
+.booking-com .intro {
+    font-size: 17.3px;
+    line-height: 150%;
+    margin-bottom: 35px;
+} 
+.booking-com .steps .title, .booking-com .faq .title, .booking-com .goto .title {
+  font-size: 22px;
+  line-height: 130%;
+  padding-bottom: 19px;
+  font-weight: normal;
+}
+.booking-com .steps .cols {
+  background: url(/images/hr1.png) no-repeat 0 100%;
+  height: 140px;
+  margin: 0 0 38px;
+  padding: 0 0 20px;
+}
+.booking-com .steps .col {
+  float: left;
+  padding: 0 0 0 55px;
+}
+.booking-com .steps .col1 {
+  background: url(/images/number1.jpg) no-repeat 0 0;
+  margin: 0 23px 0 0;
+  width: 225px;
+}
+.booking-com .steps .col2 {
+  background: url(/images/number2.jpg) no-repeat 0 0;
+  margin: 0 23px 0 0;
+  width: 225px;
+}
+.booking-com .steps .col3 {
+  background: url(/images/number3.jpg) no-repeat 0 0;
+  width: 175px;
+}
+.booking-com .steps .txt {
+  font-size: 13px;
+  line-height: 137%;
+}
+.booking-com .steps .txt h3 {
+  font-size: 15px;
+  font-weight: bold;
+  line-height: 120%;
+  padding: 0 0 6px;
+}
+.booking-com .faq .question {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+.booking-com .faq .answer {
+    margin-bottom: 15px;
+}
+.booking-com .goto .title {
+    margin-top: 40px;
+}

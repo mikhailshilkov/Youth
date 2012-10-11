@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-15 10:30+0400\n"
+"POT-Creation-Date: 2012-09-07 12:32+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,44 +16,52 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
+#: .\youth\controller.py:55
+msgid "Hotel rating title N stars"
+msgstr "Location rating of %s-star hotels in St. Petersburg"
+
+#: .\youth\controller.py:55
+msgid "Hotel rating title"
+msgstr "Rating of St. Petersburg hotel locations"
+
 #: .\youth\itinerary.py:23
 msgid "Expenses"
 msgstr "Expenses"
 
-#: .\youth\itinerary.py:25
+#: .\youth\itinerary.py:26
 msgid "Travel time"
 msgstr "Travel time"
 
-#: .\youth\itinerary.py:69
+#: .\youth\itinerary.py:73
 #, python-format
 msgid "You should leave at %s to fit train timetable"
 msgstr "You should leave at %s to fit train timetable"
 
-#: .\youth\itinerary.py:95
+#: .\youth\itinerary.py:99
 msgid "Learn about train tickets"
 msgstr "Learn about train tickets"
 
-#: .\youth\itinerary.py:96 .\youth\itinerary.py:112
+#: .\youth\itinerary.py:100 .\youth\itinerary.py:116
 msgid "Hide info"
 msgstr "Hide info"
 
-#: .\youth\itinerary.py:98
+#: .\youth\itinerary.py:102
 msgid "Train tickets info HTML"
 msgstr "Train tickets info HTML"
 
-#: .\youth\itinerary.py:103
-msgid "Show the map"
-msgstr "Show the map"
+#: .\youth\itinerary.py:107
+msgid "Show map"
+msgstr "Show map"
 
-#: .\youth\itinerary.py:104
-msgid "Hide the map"
-msgstr "Hide the map"
+#: .\youth\itinerary.py:108
+msgid "Hide map"
+msgstr "Hide map"
 
-#: .\youth\itinerary.py:111
+#: .\youth\itinerary.py:115
 msgid "Learn about tokens"
 msgstr "Learn about tokens"
 
-#: .\youth\itinerary.py:114
+#: .\youth\itinerary.py:118
 msgid "Tokens info HTML"
 msgstr ""
 "You need to buy tokens to enter to the metro:<br/><img src=\"/images/token1."
@@ -79,98 +87,14 @@ msgstr ""
 "same travel card – after the usage travel card is blocked for 10 minutes.<br/"
 "><img src=\"/images/token4.jpg\" alt=\"Subway card\" height=\"120\" />"
 
-#: .\youth\itinerary.py:134
+#: .\youth\itinerary.py:138
 msgid "Trip from"
 msgstr "Trip from"
 
-#: .\youth\itinerary.py:134 .\youth\maps.py:391 .\youth\maps.py:393
-#: .\youth\maps.py:395
+#: .\youth\itinerary.py:138 .\youth\maps\engine.py:332
+#: .\youth\maps\engine.py:334 .\youth\maps\engine.py:336
 msgid "to"
 msgstr "to"
-
-#: .\youth\maps.py:59 .\youth\maps.py:400
-msgid "Walk to"
-msgstr "Walk to"
-
-#: .\youth\maps.py:65
-msgid "Walk"
-msgstr "Walk"
-
-#: .\youth\maps.py:180
-msgid "Kirovsko-Viborgskaya"
-msgstr "Kirovsko-Viborgskaya"
-
-#: .\youth\maps.py:182
-msgid "Moskovsko-Petrogradskaya"
-msgstr "Moskovsko-Petrogradskaya"
-
-#: .\youth\maps.py:184
-msgid "Nevsko-Vasileostrovskaya"
-msgstr "Nevsko-Vasileostrovskaya"
-
-#: .\youth\maps.py:186
-msgid "Pravoberezhnaya"
-msgstr "Pravoberezhnaya"
-
-#: .\youth\maps.py:188
-msgid "Frunzensko-Primorskaya"
-msgstr "Frunzensko-Primorskaya"
-
-#: .\youth\maps.py:193
-msgid "or"
-msgstr "or"
-
-#: .\youth\maps.py:282 .\youth\maps.py:354 .\youth\maps.py:390
-msgid "line"
-msgstr "line"
-
-#: .\youth\maps.py:284
-msgid "number"
-msgstr "number"
-
-#: .\youth\maps.py:338 .\youth\maps.py:399 .\youth\utils.py:50
-msgid "stop"
-msgstr "stop"
-
-#: .\youth\maps.py:343
-msgid "Buy the train tickets to"
-msgstr "Buy the train tickets to"
-
-#: .\youth\maps.py:343
-msgid "wait for the train"
-msgstr "wait for the train"
-
-#: .\youth\maps.py:351
-msgid "Enter subway station"
-msgstr "Enter subway station"
-
-#: .\youth\maps.py:351
-msgid "buy the tokens if needed"
-msgstr "buy the tokens if needed"
-
-#: .\youth\maps.py:354
-msgid "Change to"
-msgstr "Change to"
-
-#: .\youth\maps.py:354 .\youth\maps.py:399
-msgid "station"
-msgstr "station"
-
-#: .\youth\maps.py:408
-msgid "leave the subway"
-msgstr "leave the subway"
-
-#: .\youth\maps.py:493
-msgid "/M10"
-msgstr "/M10"
-
-#: .\youth\maps.py:493
-msgid "/M18"
-msgstr "/M18"
-
-#: .\youth\maps.py:585
-msgid "runs every"
-msgstr "runs every"
 
 #: .\youth\utils.py:28
 msgid "hours"
@@ -199,6 +123,10 @@ msgstr "m"
 #: .\youth\utils.py:46
 msgid "RUB"
 msgstr "rub"
+
+#: .\youth\utils.py:50 .\youth\maps\engine.py:279 .\youth\maps\engine.py:340
+msgid "stop"
+msgstr "stop"
 
 #: .\youth\utils.py:52
 msgid "stops234"
@@ -272,26 +200,234 @@ msgstr "Get transport directions for tourist in St. Petersburg, Russia"
 msgid "Hotels"
 msgstr "Hotels"
 
+#: .\youth\common\translatefilter.py:30
+msgid "Check prices"
+msgstr "Check prices"
+
+#: .\youth\common\translatefilter.py:31
+msgid "Total travel time to important Points of Interest"
+msgstr "Total travel time to important Points of Interest"
+
 #: .\youth\common\translatefilter.py:32
+msgid "Hotel rating info"
+msgstr ""
+"The list of hotels is sorted by the total travel time to 8 most important "
+"points of interest in St. Petersburg:  Airport, State Hermitage, Peter and "
+"Paul Cathedral, Saint Isaac's Cathedral, Peterhof, Pushkin, The State "
+"Russian Museum and Mariinsky Theatre."
+
+#: .\youth\common\translatefilter.py:33
+msgid "Point of Interest"
+msgstr "Point of Interest"
+
+#: .\youth\common\translatefilter.py:34
+msgid "with rooms from"
+msgstr "with rooms from"
+
+#: .\youth\common\translatefilter.py:35
+msgid "Route to"
+msgstr "From hotel"
+
+#: .\youth\common\translatefilter.py:36
+msgid "Route from"
+msgstr "To hotel"
+
+#: .\youth\common\translatefilter.py:37
+msgid "Map"
+msgstr "Map"
+
+#: .\youth\common\translatefilter.py:38
+msgid "All"
+msgstr "All"
+
+#: .\youth\common\translatefilter.py:39
+msgid "5-star"
+msgstr "5 stars"
+
+#: .\youth\common\translatefilter.py:40
+msgid "4-star"
+msgstr "4 stars"
+
+#: .\youth\common\translatefilter.py:41
+msgid "3-star"
+msgstr "3 stars"
+
+#: .\youth\common\translatefilter.py:42
+msgid "2-star"
+msgstr "2 stars"
+
+#: .\youth\common\translatefilter.py:43
+msgid "1-star"
+msgstr "1 star"
+
+#: .\youth\common\translatefilter.py:44
+msgid "Filter by stars"
+msgstr "Filter by stars"
+
+#: .\youth\common\translatefilter.py:45
+msgid "Contact"
+msgstr "Contact"
+
+#: .\youth\common\translatefilter.py:46
+msgid "Special offers"
+msgstr "Special offers"
+
+#: .\youth\common\translatefilter.py:47
+msgid "Copyright"
+msgstr ""
+"Made in St. Petersburg, Russia © Copyright 2012 www.TripBenefit.com. All "
+"rights reserved."
+
+#: .\youth\common\translatefilter.py:48
+#, python-format
+msgid "2% discount on Booking.com"
+msgstr "2% discount on Booking.com"
+
+#: .\youth\common\translatefilter.py:49
+msgid "St. Petersburg, Russia"
+msgstr "St. Petersburg, Russia"
+
+#: .\youth\common\translatefilter.py:52
 msgid "Bus"
 msgstr "Bus"
 
-#: .\youth\common\translatefilter.py:33
+#: .\youth\common\translatefilter.py:53
 msgid "Share taxi"
 msgstr "Share taxi"
 
-#: .\youth\common\translatefilter.py:34
+#: .\youth\common\translatefilter.py:54
 msgid "Trolleybus"
 msgstr "Trolleybus"
 
-#: .\youth\common\translatefilter.py:35
+#: .\youth\common\translatefilter.py:55
 msgid "Subway"
 msgstr "Subway"
 
-#: .\youth\common\translatefilter.py:36
+#: .\youth\common\translatefilter.py:56
 msgid "Tram"
 msgstr "Tram"
 
-#: .\youth\common\translatefilter.py:37
+#: .\youth\common\translatefilter.py:57
 msgid "Train"
 msgstr "Train"
+
+#: .\youth\common\translatefilter.py:58
+msgid "Hotel"
+msgstr "Hotel"
+
+#: .\youth\common\translatefilter.py:59
+msgid "Motel"
+msgstr "Motel"
+
+#: .\youth\common\translatefilter.py:60
+msgid "Inn"
+msgstr "Inn"
+
+#: .\youth\common\translatefilter.py:61
+msgid "Bed & Breakfast"
+msgstr "Bed & Breakfast"
+
+#: .\youth\common\translatefilter.py:62
+msgid "Vacation Rental"
+msgstr "Vacation Rental"
+
+#: .\youth\common\translatefilter.py:63
+msgid "Hostel"
+msgstr "Hostel"
+
+#: .\youth\common\translatefilter.py:64
+msgid "Retreat"
+msgstr "Retreat"
+
+#: .\youth\common\translatefilter.py:65
+msgid "Resort"
+msgstr "Resort"
+
+#: .\youth\common\translatefilter.py:66
+msgid "Other"
+msgstr "Other"
+
+#: .\youth\common\translatefilter.py:67
+msgid "Apartment"
+msgstr "Apartment"
+
+#: .\youth\maps\common.py:93
+msgid "runs every"
+msgstr "runs every"
+
+#: .\youth\maps\engine.py:63 .\youth\maps\engine.py:341
+msgid "Walk to"
+msgstr "Walk to"
+
+#: .\youth\maps\engine.py:69
+msgid "Walk"
+msgstr "Walk"
+
+#: .\youth\maps\engine.py:223 .\youth\maps\engine.py:295
+#: .\youth\maps\engine.py:331
+msgid "line"
+msgstr "line"
+
+#: .\youth\maps\engine.py:225
+msgid "number"
+msgstr "number"
+
+#: .\youth\maps\engine.py:284
+msgid "Buy the train tickets to"
+msgstr "Buy the train tickets to"
+
+#: .\youth\maps\engine.py:284
+msgid "wait for the train"
+msgstr "wait for the train"
+
+#: .\youth\maps\engine.py:292
+msgid "Enter subway station"
+msgstr "Enter subway station"
+
+#: .\youth\maps\engine.py:292
+msgid "buy the tokens if needed"
+msgstr "buy the tokens if needed"
+
+#: .\youth\maps\engine.py:295
+msgid "Change to"
+msgstr "Change to"
+
+#: .\youth\maps\engine.py:295 .\youth\maps\engine.py:340
+msgid "station"
+msgstr "station"
+
+#: .\youth\maps\engine.py:349
+msgid "leave the subway"
+msgstr "leave the subway"
+
+#: .\youth\maps\engine.py:435
+msgid "/M10"
+msgstr "/M10"
+
+#: .\youth\maps\engine.py:435
+msgid "/M18"
+msgstr "/M18"
+
+#: .\youth\maps\rusavtobus.py:49
+msgid "Kirovsko-Viborgskaya"
+msgstr "Kirovsko-Viborgskaya"
+
+#: .\youth\maps\rusavtobus.py:51
+msgid "Moskovsko-Petrogradskaya"
+msgstr "Moskovsko-Petrogradskaya"
+
+#: .\youth\maps\rusavtobus.py:53
+msgid "Nevsko-Vasileostrovskaya"
+msgstr "Nevsko-Vasileostrovskaya"
+
+#: .\youth\maps\rusavtobus.py:55
+msgid "Pravoberezhnaya"
+msgstr "Pravoberezhnaya"
+
+#: .\youth\maps\rusavtobus.py:57
+msgid "Frunzensko-Primorskaya"
+msgstr "Frunzensko-Primorskaya"
+
+#: .\youth\maps\rusavtobus.py:62
+msgid "or"
+msgstr "or"

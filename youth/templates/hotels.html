@@ -1,20 +1,32 @@
 {% extends "master/master.html" %}
 
 {% block title %}
-<title>{{"Hotels"|translate}} | TripBenefit.com</title>
+<title>{{data.title}} | TripBenefit.com</title>
 {% endblock %}
 
 {% block content %}
 <section class="hotels">
-	<h1>{{"Rating of St. Petersburg hotel locations"|translate}}</h1>
+	<h1>{{data.title}}</h1>
+	<div class="starfilter">
+		<h4>{{"Filter by stars"|translate}}:</h4>
+		<div><a href="/{{'LANGUAGE'|translate}}/hotels">{{"All"|translate}}</a></div>
+		<div><a href="/{{'LANGUAGE'|translate}}/hotels/5star">{{"5-star"|translate}}</a></div>
+		<div><a href="/{{'LANGUAGE'|translate}}/hotels/4star">{{"4-star"|translate}}</a></div>
+		<div><a href="/{{'LANGUAGE'|translate}}/hotels/3star">{{"3-star"|translate}}</a></div>
+		<div><a href="/{{'LANGUAGE'|translate}}/hotels/2star">{{"2-star"|translate}}</a></div>
+		<div><a href="/{{'LANGUAGE'|translate}}/hotels/1star">{{"1-star"|translate}}</a></div>
+	</div>
+	<div class="info">
+		{{"Hotel rating info"|translate}}
+	</div>
 	<div class="sectionheader">
-		<h2>Total travel time to important Points of Interest</h2>
+		<h2>{{"Total travel time to important Points of Interest"|translate}}</h2>
 	</div>
 	<div class="hotellist">
 		{% for entry in data.ratings %}
 		<div class="hotelentry {% if forloop.counter|divisibleby:2 %}even{% else %}odd{% endif %}">
 			<div class="rank">{{forloop.counter}}</div>
-			<div class="name"><a href="/{{'LANGUAGE'|translate}}/hotel/{{entry.hotel_name}}">{{entry.hotel_name}}</a></div>
+			<div class="name"><a href="/{{'LANGUAGE'|translate}}/hotel/{{entry.hotel_name|urlencode}}">{{entry.hotel_name_local}}</a></div>
 			<div class="duration">{{entry.duration_string}}</div>
 			<div class="price">{{entry.expenses_string}}</div>
 		</div>

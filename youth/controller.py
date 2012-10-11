@@ -1,15 +1,15 @@
 #coding=utf-8
 
 import datetime
+import logging
+from django.utils.translation import ugettext as _
 
 from youth import bot
 from youth import itinerary
 from youth import place
 from youth import maps
-from youth import stuff
 from youth import view
 from youth import param
-from youth import router
 from youth import utils
 from youth import rater
 
@@ -45,9 +45,15 @@ def do_directions(request, response):
     else:
         view.to_html(data, 'directions', request, response)
 
-def do_hotels(request, response):
+def do_hotels(request, response, stars = None):
     ratings = rater.get_all()
-    data = { 'ratings': ratings }
+    if stars is not None:
+        hotels = [x for x in place.get_hotels() if int(x.rating) == stars]
+        ratings = [x for x in ratings if any([y for y in hotels if y.name == x.hotel_name])]
+    data = { 
+            'ratings': ratings,
+            'title': (_("Hotel rating title N stars") % stars) if stars is not None else _("Hotel rating title") 
+            }
     view.to_html(data, 'hotels', request, response)
         
 def do_hotel(request, response, name):
@@ -78,11 +84,12 @@ def post_hotel(request):
     rating = float(request.get('rating'))
     image_id = request.get('imageId')
     address = request.get('address')
+    address_rus = request.get('addressRus')
     min_rate = float(request.get('minRate')) if request.get('minRate') != '' else None 
     lat = float(request.get('lat'))
     lng = float(request.get('lng'))
     hotel_type = request.get('type')
-    place.add_hotel(name, name_rus, file_name, rating, image_id, address, min_rate, lat, lng, hotel_type)
+    place.add_hotel(name, name_rus, file_name, rating, image_id, address, address_rus, min_rate, lat, lng, hotel_type)
     
 def delete_hotel(request):
     # get request parameters        
@@ -103,14 +110,16 @@ def delete_attraction(request):
     place.delete_attraction(name) 
         
 def do_transit(request, response):
-    # get request parameters
-    from_location = maps.GeoPoint(*[float(x) for x in request.get('from').split(',')])
-    to_location = maps.GeoPoint(*[float(x) for x in request.get('to').split(',')])    
+    # get request parameters    
     view_mode = request.get('out', 'html')
+    try:
+        from_location = maps.common.GeoPoint(*[float(x) for x in request.get('from').split(',')])
+        to_location = maps.common.GeoPoint(*[float(x) for x in request.get('to').split(',')])    
 
-    # produce data        
-    #data = maps.get_transit_routes(from_location, to_location)
-    data = maps.get_rusavtobus_routes(from_location, to_location) + maps.get_google_routes(from_location, to_location) 
+        # produce data        
+        data = maps.engine.get_rusavtobus_routes(from_location, to_location) + maps.engine.get_google_routes(from_location, to_location)
+    except:
+        data = None
         
     # populate the requested view
     if view_mode == 'json':
@@ -120,12 +129,12 @@ def do_transit(request, response):
 
 def do_routing(request, response):
     # get request parameters
-    from_location = maps.GeoPoint(*[float(x) for x in request.get('from').split(',')])
-    to_location = maps.GeoPoint(*[float(x) for x in request.get('to').split(',')])    
+    from_location = maps.common.GeoPoint(*[float(x) for x in request.get('from').split(',')])
+    to_location = maps.common.GeoPoint(*[float(x) for x in request.get('to').split(',')])    
     view_mode = request.get('out', 'html')
 
     # produce data        
-    data = router.get_route(from_location, to_location)
+    data = maps.router.get_route(from_location, to_location)
         
     # populate the requested view
     if view_mode == 'json':
@@ -151,11 +160,31 @@ def post_param(request, response):
     name = request.get('name')
     value = request.get('value')
     param.add(name, value)
+    
+def do_booking(request, response):
+    view.to_html(None, 'booking' if utils.get_language() != 'ru' else 'booking_ru', request, response)
 
 def do_test(request, response):
     from google.appengine.tools import dev_appserver 
     dev_appserver.TearDownStubs()
-    response.out.write(stuff.test())
+    #response.out.write(rusavtobus.test())
+    
+def do_calculate_hotel_rating(request, response):
+    current_index_str = param.get('current_hotel_index')
+    if current_index_str == None:
+        current_index = 0
+    else:    
+        current_index = int(current_index_str) + 1
+        
+    hotels = place.get_hotels()
+    if len(hotels) <= current_index:
+        current_index = 0
+    hotel = hotels[current_index]
+    rater.get(hotel)
+    
+    param.add('current_hotel_index', str(current_index))    
+    response.out.write('Processed the rating of hotel ' + hotel.name)
+    logging.info('Processed the rating of hotel ' + hotel.name)
     
 def do_cleanup(request, response):
     hotels = place.cleanup()
