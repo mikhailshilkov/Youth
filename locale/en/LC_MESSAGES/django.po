@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-07 12:32+0400\n"
+"POT-Creation-Date: 2012-11-01 09:45+0400\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -91,8 +91,8 @@ msgstr ""
 msgid "Trip from"
 msgstr "Trip from"
 
-#: .\youth\itinerary.py:138 .\youth\maps\engine.py:332
-#: .\youth\maps\engine.py:334 .\youth\maps\engine.py:336
+#: .\youth\itinerary.py:138 .\youth\maps\engine.py:336
+#: .\youth\maps\engine.py:338 .\youth\maps\engine.py:340
 msgid "to"
 msgstr "to"
 
@@ -124,7 +124,7 @@ msgstr "m"
 msgid "RUB"
 msgstr "rub"
 
-#: .\youth\utils.py:50 .\youth\maps\engine.py:279 .\youth\maps\engine.py:340
+#: .\youth\utils.py:50 .\youth\maps\engine.py:283 .\youth\maps\engine.py:344
 msgid "stop"
 msgstr "stop"
 
@@ -153,62 +153,66 @@ msgid "About"
 msgstr "About"
 
 #: .\youth\common\translatefilter.py:18
+msgid "Blog"
+msgstr "Blog"
+
+#: .\youth\common\translatefilter.py:19
 msgid "First time in St. Petersburg"
 msgstr "First time in St. Petersburg"
 
-#: .\youth\common\translatefilter.py:19
+#: .\youth\common\translatefilter.py:20
 msgid "Get transport directions here"
 msgstr "Get transport directions here"
 
-#: .\youth\common\translatefilter.py:20
+#: .\youth\common\translatefilter.py:21
 msgid "From"
 msgstr "From"
 
-#: .\youth\common\translatefilter.py:21
+#: .\youth\common\translatefilter.py:22
 msgid "To"
 msgstr "To"
 
-#: .\youth\common\translatefilter.py:22
+#: .\youth\common\translatefilter.py:23
 msgid "Print"
 msgstr "Print"
 
-#: .\youth\common\translatefilter.py:23
+#: .\youth\common\translatefilter.py:24
 msgid "Date and time"
 msgstr "Date and time"
 
-#: .\youth\common\translatefilter.py:24
+#: .\youth\common\translatefilter.py:25
 msgid "Get directions"
 msgstr "Get directions"
 
-#: .\youth\common\translatefilter.py:25
+#: .\youth\common\translatefilter.py:26
 msgid "try your hotel name or street address"
 msgstr "try your hotel name or street address"
 
-#: .\youth\common\translatefilter.py:26
+#: .\youth\common\translatefilter.py:27
 msgid "try State Hermitage"
 msgstr "try State Hermitage"
 
-#: .\youth\common\translatefilter.py:27
+#: .\youth\common\translatefilter.py:28
 msgid "Public transport transit in St. Petersburg"
 msgstr "Public transport transit in St. Petersburg"
 
-#: .\youth\common\translatefilter.py:28
+#: .\youth\common\translatefilter.py:29
 msgid "Get transport directions for tourist in St. Petersburg, Russia"
 msgstr "Get transport directions for tourist in St. Petersburg, Russia"
 
-#: .\youth\common\translatefilter.py:29
+#: .\youth\common\translatefilter.py:30
 msgid "Hotels"
 msgstr "Hotels"
 
-#: .\youth\common\translatefilter.py:30
+#: .\youth\common\translatefilter.py:31
 msgid "Check prices"
 msgstr "Check prices"
 
-#: .\youth\common\translatefilter.py:31
+#: .\youth\common\translatefilter.py:32
 msgid "Total travel time to important Points of Interest"
 msgstr "Total travel time to important Points of Interest"
 
-#: .\youth\common\translatefilter.py:32
+#: .\youth\common\translatefilter.py:33
 msgid "Hotel rating info"
 msgstr ""
 "The list of hotels is sorted by the total travel time to 8 most important "
@@ -216,138 +220,141 @@ msgstr ""
 "Paul Cathedral, Saint Isaac's Cathedral, Peterhof, Pushkin, The State "
 "Russian Museum and Mariinsky Theatre."
 
-#: .\youth\common\translatefilter.py:33
+#: .\youth\common\translatefilter.py:34
 msgid "Point of Interest"
 msgstr "Point of Interest"
 
-#: .\youth\common\translatefilter.py:34
+#: .\youth\common\translatefilter.py:35
 msgid "with rooms from"
 msgstr "with rooms from"
 
-#: .\youth\common\translatefilter.py:35
+#: .\youth\common\translatefilter.py:36
 msgid "Route to"
 msgstr "From hotel"
 
-#: .\youth\common\translatefilter.py:36
+#: .\youth\common\translatefilter.py:37
 msgid "Route from"
 msgstr "To hotel"
 
-#: .\youth\common\translatefilter.py:37
+#: .\youth\common\translatefilter.py:38
 msgid "Map"
 msgstr "Map"
 
-#: .\youth\common\translatefilter.py:38
+#: .\youth\common\translatefilter.py:39
 msgid "All"
 msgstr "All"
 
-#: .\youth\common\translatefilter.py:39
+#: .\youth\common\translatefilter.py:40
 msgid "5-star"
 msgstr "5 stars"
 
-#: .\youth\common\translatefilter.py:40
+#: .\youth\common\translatefilter.py:41
 msgid "4-star"
 msgstr "4 stars"
 
-#: .\youth\common\translatefilter.py:41
+#: .\youth\common\translatefilter.py:42
 msgid "3-star"
 msgstr "3 stars"
 
-#: .\youth\common\translatefilter.py:42
+#: .\youth\common\translatefilter.py:43
 msgid "2-star"
 msgstr "2 stars"
 
-#: .\youth\common\translatefilter.py:43
+#: .\youth\common\translatefilter.py:44
 msgid "1-star"
 msgstr "1 star"
 
-#: .\youth\common\translatefilter.py:44
+#: .\youth\common\translatefilter.py:45
 msgid "Filter by stars"
 msgstr "Filter by stars"
 
-#: .\youth\common\translatefilter.py:45
+#: .\youth\common\translatefilter.py:46
 msgid "Contact"
 msgstr "Contact"
 
-#: .\youth\common\translatefilter.py:46
+#: .\youth\common\translatefilter.py:47
 msgid "Special offers"
 msgstr "Special offers"
 
-#: .\youth\common\translatefilter.py:47
+#: .\youth\common\translatefilter.py:48
 msgid "Copyright"
 msgstr ""
 "Made in St. Petersburg, Russia © Copyright 2012 www.TripBenefit.com. All "
 "rights reserved."
 
-#: .\youth\common\translatefilter.py:48
-#, python-format
-msgid "2% discount on Booking.com"
+#: .\youth\common\translatefilter.py:49
+msgid "2 discount on Booking.com"
 msgstr "2% discount on Booking.com"
 
-#: .\youth\common\translatefilter.py:49
+#: .\youth\common\translatefilter.py:50
 msgid "St. Petersburg, Russia"
 msgstr "St. Petersburg, Russia"
 
-#: .\youth\common\translatefilter.py:52
+#: .\youth\common\translatefilter.py:51
+msgid "We will return a part of your payment to your e-wallet"
+msgstr "We will return a part of your payment to your e-wallet"
+
+#: .\youth\common\translatefilter.py:54
 msgid "Bus"
 msgstr "Bus"
 
-#: .\youth\common\translatefilter.py:53
+#: .\youth\common\translatefilter.py:55
 msgid "Share taxi"
 msgstr "Share taxi"
 
-#: .\youth\common\translatefilter.py:54
+#: .\youth\common\translatefilter.py:56
 msgid "Trolleybus"
 msgstr "Trolleybus"
 
-#: .\youth\common\translatefilter.py:55
+#: .\youth\common\translatefilter.py:57
 msgid "Subway"
 msgstr "Subway"
 
-#: .\youth\common\translatefilter.py:56
+#: .\youth\common\translatefilter.py:58
 msgid "Tram"
 msgstr "Tram"
 
-#: .\youth\common\translatefilter.py:57
+#: .\youth\common\translatefilter.py:59
 msgid "Train"
 msgstr "Train"
 
-#: .\youth\common\translatefilter.py:58
+#: .\youth\common\translatefilter.py:60
 msgid "Hotel"
 msgstr "Hotel"
 
-#: .\youth\common\translatefilter.py:59
+#: .\youth\common\translatefilter.py:61
 msgid "Motel"
 msgstr "Motel"
 
-#: .\youth\common\translatefilter.py:60
+#: .\youth\common\translatefilter.py:62
 msgid "Inn"
 msgstr "Inn"
 
-#: .\youth\common\translatefilter.py:61
+#: .\youth\common\translatefilter.py:63
 msgid "Bed & Breakfast"
 msgstr "Bed & Breakfast"
 
-#: .\youth\common\translatefilter.py:62
+#: .\youth\common\translatefilter.py:64
 msgid "Vacation Rental"
 msgstr "Vacation Rental"
 
-#: .\youth\common\translatefilter.py:63
+#: .\youth\common\translatefilter.py:65
 msgid "Hostel"
 msgstr "Hostel"
 
-#: .\youth\common\translatefilter.py:64
+#: .\youth\common\translatefilter.py:66
 msgid "Retreat"
 msgstr "Retreat"
 
-#: .\youth\common\translatefilter.py:65
+#: .\youth\common\translatefilter.py:67
 msgid "Resort"
 msgstr "Resort"
 
-#: .\youth\common\translatefilter.py:66
+#: .\youth\common\translatefilter.py:68
 msgid "Other"
 msgstr "Other"
 
-#: .\youth\common\translatefilter.py:67
+#: .\youth\common\translatefilter.py:69
 msgid "Apartment"
 msgstr "Apartment"
 
@@ -355,7 +362,7 @@ msgstr "Apartment"
 msgid "runs every"
 msgstr "runs every"
 
-#: .\youth\maps\engine.py:63 .\youth\maps\engine.py:341
+#: .\youth\maps\engine.py:63 .\youth\maps\engine.py:345
 msgid "Walk to"
 msgstr "Walk to"
 
@@ -363,48 +370,48 @@ msgstr "Walk to"
 msgid "Walk"
 msgstr "Walk"
 
-#: .\youth\maps\engine.py:223 .\youth\maps\engine.py:295
-#: .\youth\maps\engine.py:331
+#: .\youth\maps\engine.py:227 .\youth\maps\engine.py:299
+#: .\youth\maps\engine.py:335
 msgid "line"
 msgstr "line"
 
-#: .\youth\maps\engine.py:225
+#: .\youth\maps\engine.py:229
 msgid "number"
 msgstr "number"
 
-#: .\youth\maps\engine.py:284
+#: .\youth\maps\engine.py:288
 msgid "Buy the train tickets to"
 msgstr "Buy the train tickets to"
 
-#: .\youth\maps\engine.py:284
+#: .\youth\maps\engine.py:288
 msgid "wait for the train"
 msgstr "wait for the train"
 
-#: .\youth\maps\engine.py:292
+#: .\youth\maps\engine.py:296
 msgid "Enter subway station"
 msgstr "Enter subway station"
 
-#: .\youth\maps\engine.py:292
+#: .\youth\maps\engine.py:296
 msgid "buy the tokens if needed"
 msgstr "buy the tokens if needed"
 
-#: .\youth\maps\engine.py:295
+#: .\youth\maps\engine.py:299
 msgid "Change to"
 msgstr "Change to"
 
-#: .\youth\maps\engine.py:295 .\youth\maps\engine.py:340
+#: .\youth\maps\engine.py:299 .\youth\maps\engine.py:344
 msgid "station"
 msgstr "station"
 
-#: .\youth\maps\engine.py:349
+#: .\youth\maps\engine.py:353
 msgid "leave the subway"
 msgstr "leave the subway"
 
-#: .\youth\maps\engine.py:435
+#: .\youth\maps\engine.py:439
 msgid "/M10"
 msgstr "/M10"
 
-#: .\youth\maps\engine.py:435
+#: .\youth\maps\engine.py:439
 msgid "/M18"
 msgstr "/M18"
 

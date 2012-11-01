@@ -15,6 +15,7 @@ def translate(value):
 def html_dic():
     _("Home")
     _("About")
+    _("Blog")
     _("First time in St. Petersburg")
     _("Get transport directions here")
     _("From")
@@ -45,8 +46,9 @@ def html_dic():
     _("Contact")
     _("Special offers")
     _("Copyright")
-    _("2% discount on Booking.com")
+    _("2 discount on Booking.com")
     _("St. Petersburg, Russia")
+    _("We will return a part of your payment to your e-wallet")
     
 def other_dic():
     _('Bus')

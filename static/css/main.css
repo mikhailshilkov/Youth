@@ -99,10 +99,28 @@ html {
     box-shadow: 0 1px 0 rgba(0, 0, 0, .1),0 1px 0 rgba(255, 255, 255, .5) inset;
     -moz-box-shadow: 0 1px 0 rgba(0,0,0,.1),0 1px 0 rgba(255,255,255,.5) inset;
     -webkit-box-shadow: 0 1px 0 rgba(0, 0, 0, .1),0 1px 0 rgba(255, 255, 255, .5) inset;
-    padding: 20px;        
+    padding: 20px;
 }
 .homeform .to, .homeform .datetime {
     margin-top: 1em;
+}
+.right_box {
+    float: right;
+    text-align: center;
+    padding: 10px 5px;
+    background: #F7F7F7;
+    width: 200px;
+}
+.right_box .attention h4 {
+    color: #45688E;
+    font-size: 1.09em;
+    border-bottom: solid 1px #DAE1E8;
+    padding: 0px 0px 3px;
+    margin: 0px 5px 3px;
+}
+.left_box h4 a:link, .left_box h4 a:active, .left_box h4 a:hover, .left_box h4 a:visited {
+    text-decoration: none;
+    color: #183293;
 }
 .plusonediv {
     float: right;
